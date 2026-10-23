@@ -1,0 +1,40 @@
+# Tabla de contenidos: Entregable 1 (cap. 1-12) y Entregable 2 (cap. 13 en adelante), en orden de ejecución.
+format: jb-book
+root: notebooks/01_introduccion
+parts:
+- caption: "Entregable 1 · Base de datos"
+  chapters:
+  - file: notebooks/02_datos
+- caption: "Entregable 1 · Análisis exploratorio"
+  chapters:
+  - file: notebooks/03_eda_objetivo
+  - file: notebooks/04_eda_univariado
+  - file: notebooks/05_eda_bivariado
+  - file: notebooks/06_eda_multivariado
+  - file: notebooks/07_eda_temporal
+  - file: notebooks/08_eda_espacial
+  - file: notebooks/09_data_leakage
+- caption: "Entregable 1 · Modelado"
+  chapters:
+  - file: notebooks/10_preprocesamiento
+  - file: notebooks/11_modelo_base
+  - file: notebooks/12_conclusiones
+- caption: "Entregable 2 · Diseño experimental"
+  chapters:
+  - file: notebooks/13_diseno_experimental
+- caption: "Entregable 2 · Optimización"
+  chapters:
+  - file: notebooks/14_optimizacion_hiperparametros
+  - file: notebooks/15_multifidelidad
+  - file: notebooks/16_optimizacion_computacional
+- caption: "Entregable 2 · Evaluación y comparación"
+  chapters:
+  - file: notebooks/17_evaluacion_clasificacion
+  - file: notebooks/18_evaluacion_regresion
+  - file: notebooks/19_interpretabilidad
+  - file: notebooks/20_robustez
+  - file: notebooks/21_comparacion_estadistica
+- caption: "Entregable 2 · Modelo propuesto y cierre"
+  chapters:
+  - file: notebooks/22_modelo_propuesto
+  - file: notebooks/23_conclusiones_e2

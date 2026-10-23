@@ -1,0 +1,32 @@
+CÓMO CORRER LOS EXPERIMENTOS DEL ENTREGABLE 2 EN TU MÁQUINA (Windows, Python 3.9)
+================================================================================
+
+1. Descomprime esta carpeta (por ejemplo en C:\Users\juand\OneDrive\Desktop\MachineLearning\jbook_sismos).
+
+2. Abre "Anaconda Prompt", activa tu entorno y entra a la carpeta:
+       conda activate ml_venv
+       cd C:\Users\juand\OneDrive\Desktop\MachineLearning\jbook_sismos
+
+3. Instala las versiones exactas (una sola vez):
+       pip install -r requirements.txt
+   (Si prefieres no tocar ml_venv:  conda create -n sismos python=3.9  y luego  conda activate sismos)
+
+4. Verifica que todo carga (tarda ~10 s):
+       python -c "from src import datos, benchmark; print('ok')"
+
+5. Clasificación (lo que te toca): tamizaje + fase 2 con la regla del capítulo 13.
+   N = número de núcleos físicos menos 1 (con 7 GB de RAM, no más de 5):
+       python scripts/correr_experimentos.py --tarea clf --fase todo --trabajos N
+   - Si se interrumpe (apagas el PC, se cierra la ventana), vuelve a lanzar el MISMO comando: continúa donde iba.
+   - Avanza en pantalla una línea por combinación terminada.
+
+6. GPU (RTX 3050): compara XGBoost en CPU vs GPU (unos minutos):
+       python scripts/xgboost_gpu.py
+
+7. Cuando termine, comprime y envía estos archivos/carpetas:
+       resultados\benchmark\combos\            (todos los .pkl de clasificación)
+       resultados\benchmark\tamizaje_clasificacion.csv
+       resultados\benchmark\xgboost_gpu.csv
+       resultados\benchmark\experimentos_maestro.csv
+
+La regresión (28 combinaciones) ya se está corriendo en la sesión de Claude; no hace falta correrla.

@@ -1,0 +1,27 @@
+# Versiones exactas verificadas con Python 3.9.25 (también instalan en 3.10–3.11).
+# Instalar con: pip install -r requirements.txt
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.13.1
+scikit-learn==1.5.2
+statsmodels==0.14.4
+xgboost==2.1.4
+matplotlib==3.9.4
+seaborn==0.13.2
+joblib==1.4.2
+ipython==8.18.1
+ipykernel==6.29.5
+nbformat==5.10.4
+nbclient==0.10.2
+jupyter-book==1.0.4.post1
+plotly==5.24.1
+dash==2.18.2
+gunicorn==23.0.0
+optuna==4.1.0
+deap==1.4.1
+imbalanced-learn==0.12.4
+shap==0.46.0
+lime==0.2.0.1
+faiss-cpu==1.9.0
+memory-profiler==0.61.0
+python-calamine==0.2.3

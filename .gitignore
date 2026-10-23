@@ -1,0 +1,12 @@
+# Libro compilado (se genera con: jupyter-book build .)
+_build/
+# Cachés de Python, pytest y Jupyter
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+# Entornos virtuales y archivos del sistema
+.venv/
+venv/
+.DS_Store
+Thumbs.db

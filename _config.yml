@@ -1,0 +1,28 @@
+# Jupyter Book: Machine learning para predicción mensual de sismos por celda en Colombia (catálogo SGC 2004-2026)
+title: Machine learning para predicción mensual de sismos por celda en Colombia
+author: Juan David Polo y Gabriella Pallares
+copyright: "2026"
+only_build_toc_files: true
+
+# Los notebooks se entregan YA EJECUTADOS: «off» construye el libro en segundos mostrando sus salidas.
+# Para regenerar todo desde los datos: «force» (o python herramientas/construir_notebooks.py).
+execute:
+  execute_notebooks: "off"
+  timeout: -1
+  allow_errors: false
+
+bibtex_bibfiles:
+  - references.bib
+
+sphinx:
+  config:
+    bibtex_reference_style: author_year
+    html_show_copyright: false
+
+repository:
+  url: https://github.com/juandpolo22/jbook_sismos
+  branch: main
+
+html:
+  use_issues_button: false
+  use_repository_button: false
