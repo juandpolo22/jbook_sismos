@@ -367,7 +367,7 @@ def bca_meses(estadistico, tm, B: int = 1000, alpha: float = 0.05, semilla: int 
 
 
 # ---------------------------------------------------------------------------
-# Independencia de residuos (respuesta a la revisión del docente)
+# Independencia de residuos (pruebas complementarias)
 # ---------------------------------------------------------------------------
 def escanciano_lobato(e, d: int = 12, q: float = 2.4) -> dict:
     """Prueba portmanteau automática de Escanciano y Lobato (2009, J. Econometrics).

@@ -1,4 +1,4 @@
-"""Pruebas de independencia de los residuos de prueba (pedido del docente).
+"""Pruebas de independencia de los residuos de prueba.
 
 Evaluación: origen móvil 2021–2026 (cap. 13.11). Modelos: A+B v2 y el campeón de cada uno de los 7 modelos de
 regresión (elegido con la validación interna anterior a 2016).

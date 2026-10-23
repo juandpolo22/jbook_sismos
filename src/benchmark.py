@@ -178,12 +178,6 @@ ESPACIOS = {
                          ("learning_rate", "float", 0.01, 0.3, True), ("subsample", "float", 0.5, 1.0, False),
                          ("colsample_bytree", "float", 0.5, 1.0, False), ("min_child_weight", "float", 1, 50, True)],
     ("reg", "SVR"): [("C", "float", 0.01, 30, True), ("epsilon", "float", 0.01, 0.5, True), ("gamma", "float", 1e-3, 1, True)],
-    # Miembros adicionales del modelo propuesto (no forman parte de los 7 modelos benchmark del enunciado)
-    ("reg", "LightGBM"): [("n_estimators", "int", 100, 600, False), ("num_leaves", "int", 8, 128, True),
-                          ("learning_rate", "float", 0.01, 0.3, True), ("subsample", "float", 0.5, 1.0, False),
-                          ("colsample_bytree", "float", 0.5, 1.0, False), ("min_child_samples", "int", 5, 200, True)],
-    ("reg", "CatBoost"): [("iterations", "int", 200, 800, False), ("depth", "int", 3, 8, False),
-                          ("learning_rate", "float", 0.01, 0.3, True), ("l2_leaf_reg", "float", 1, 30, True)],
     ("clf", "KNN"): [("n_neighbors", "int", 5, 200, True), ("weights", "cat", ["uniform", "distance"])],
     ("clf", "Naive Bayes"): [("var_smoothing", "float", 1e-12, 1e-1, True)],
     ("clf", "Regresión logística (L1/L2)"): [("C", "float", 1e-3, 1e2, True), ("penalty", "cat", ["l1", "l2"])],
@@ -283,8 +277,6 @@ def construir(tarea: str, modelo: str, params: dict, columnas, balanceo: str = "
             "Random Forest": lambda: RandomForestRegressor(random_state=semilla, n_jobs=n_jobs, max_samples=0.5, **p),
             "XGBoost": lambda: XGBRegressor(tree_method="hist", random_state=semilla, n_jobs=n_jobs, verbosity=0, **p),
             "SVR": lambda: SubmuestraReg(SVR(kernel="rbf", **p), semilla=semilla),
-            "LightGBM": lambda: __import__("lightgbm").LGBMRegressor(subsample_freq=1, random_state=semilla, n_jobs=n_jobs, verbose=-1, **p),
-            "CatBoost": lambda: __import__("catboost").CatBoostRegressor(random_seed=semilla, thread_count=max(n_jobs, 1) if n_jobs > 0 else -1, verbose=0, **p),
         }[modelo]()
         return mdl.con_objetivo_log(Pipeline([("prep", prep), ("modelo", est)]))
     cw = "balanced" if balanceo == "class_weight" else None
