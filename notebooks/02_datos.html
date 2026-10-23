@@ -1,0 +1,2425 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>2. La base de datos: ETL, estructura, calidad y representatividad &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/02_datos';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Análisis de la variable objetivo (2.1)" href="03_eda_objetivo.html" />
+    <link rel="prev" title="1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?" href="01_introduccion.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/02_datos.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>2. La base de datos: ETL, estructura, calidad y representatividad</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extraccion-transformacion-y-carga-etl">2.1 Extracción, transformación y carga (ETL)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diccionario-de-variables">2.2 Diccionario de variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estructura-tamano-y-entidades">2.3 Estructura, tamaño y entidades</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#valores-faltantes-patron">2.4 Valores faltantes: patrón</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#valores-faltantes-mecanismo-mcar-mar-o-mnar">2.5 Valores faltantes: mecanismo (MCAR, MAR o MNAR)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#duplicados-exactos-y-casi-duplicados">2.6 Duplicados exactos y casi-duplicados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#valores-atipicos-catalogo-periodo-de-entrenamiento">2.7 Valores atípicos (catálogo, periodo de entrenamiento)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#valores-imposibles-o-inconsistentes">2.8 Valores imposibles o inconsistentes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sesgos-de-muestreo-y-representatividad">2.9 Sesgos de muestreo y representatividad</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consideraciones-eticas">2.10 Consideraciones éticas</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="la-base-de-datos-etl-estructura-calidad-y-representatividad">
+<h1>2. La base de datos: ETL, estructura, calidad y representatividad<a class="headerlink" href="#la-base-de-datos-etl-estructura-calidad-y-representatividad" title="Link to this heading">#</a></h1>
+<p>Este capítulo cubre la sección 1 del enunciado:</p>
+<ul class="simple">
+<li><p>la ETL desde los archivos crudos del SGC;</p></li>
+<li><p>el diccionario de variables;</p></li>
+<li><p>la estructura de los datos y su tamaño (n, p, n/p y entidades);</p></li>
+<li><p>la calidad: faltantes con su patrón y mecanismo, duplicados y casi-duplicados, atípicos y valores
+imposibles o inconsistentes;</p></li>
+<li><p>los sesgos de muestreo y las consideraciones éticas.</p></li>
+</ul>
+<p><strong>Alcance de los datos usados aquí.</strong> La descripción de la calidad usa <strong>todo</strong> el catálogo, porque no
+toma decisiones de modelado. Las decisiones (umbral de magnitud y tratamiento de atípicos) se
+justifican <strong>solo con el periodo de entrenamiento</strong> (sismos hasta noviembre de 2020).</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="extraccion-transformacion-y-carga-etl">
+<h2>2.1 Extracción, transformación y carga (ETL)<a class="headerlink" href="#extraccion-transformacion-y-carga-etl" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Extracción: lee los 10 archivos crudos de los portales del SGC y resume cobertura y estados por archivo</span>
+<span class="n">crudo</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">leer_crudos</span><span class="p">()</span>
+<span class="n">por_archivo</span> <span class="o">=</span> <span class="p">(</span><span class="n">crudo</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"portal"</span><span class="p">,</span> <span class="s2">"archivo"</span><span class="p">])</span>
+               <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">registros</span><span class="o">=</span><span class="p">(</span><span class="s2">"time"</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">),</span> <span class="n">desde</span><span class="o">=</span><span class="p">(</span><span class="s2">"time"</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">),</span> <span class="n">hasta</span><span class="o">=</span><span class="p">(</span><span class="s2">"time"</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">),</span>
+                    <span class="n">estados</span><span class="o">=</span><span class="p">(</span><span class="s2">"estado"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">())))</span>
+               <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"desde"</span><span class="p">))</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">por_archivo</span><span class="p">,</span> <span class="s2">"etl_archivos.csv"</span><span class="p">)</span>
+<span class="n">por_archivo</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>portal</th>
+      <th>archivo</th>
+      <th>registros</th>
+      <th>desde</th>
+      <th>hasta</th>
+      <th>estados</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>9</th>
+      <td>histórico (xlsx)</td>
+      <td>reporte990.xlsx</td>
+      <td>7008</td>
+      <td>2004-01-01 01:16:10</td>
+      <td>2006-12-31 15:02:43</td>
+      <td>revisado: 7008</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>histórico (xlsx)</td>
+      <td>reporte1087.xlsx</td>
+      <td>5121</td>
+      <td>2007-01-01 06:27:38</td>
+      <td>2009-12-31 14:43:32</td>
+      <td>revisado: 5121</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>histórico (xlsx)</td>
+      <td>reporte212.xlsx</td>
+      <td>4771</td>
+      <td>2010-01-01 11:37:37</td>
+      <td>2012-12-31 22:47:23</td>
+      <td>revisado: 4771</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>histórico (xlsx)</td>
+      <td>reporte961.xlsx</td>
+      <td>5266</td>
+      <td>2013-01-01 02:48:44</td>
+      <td>2015-12-31 18:37:57</td>
+      <td>revisado: 5266</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>histórico (xlsx)</td>
+      <td>reporte323.xlsx</td>
+      <td>3016</td>
+      <td>2016-01-01 00:39:28</td>
+      <td>2018-02-27 15:13:26</td>
+      <td>revisado: 3016</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>actual (csv)</td>
+      <td>Catalogo_Sismico_4.csv</td>
+      <td>1712</td>
+      <td>2018-03-01 10:26:44</td>
+      <td>2018-12-31 21:43:13</td>
+      <td>manual: 1712</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>actual (csv)</td>
+      <td>Catalogo_Sismico_3.csv</td>
+      <td>3709</td>
+      <td>2019-01-01 06:42:41</td>
+      <td>2020-12-31 22:19:27</td>
+      <td>manual: 3706, automatic: 3</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>actual (csv)</td>
+      <td>Catalogo_Sismico_2.csv</td>
+      <td>3513</td>
+      <td>2021-01-01 09:24:04</td>
+      <td>2022-12-31 13:20:39</td>
+      <td>manual: 3511, automatic: 2</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>actual (csv)</td>
+      <td>Catalogo_Sismico_1.csv</td>
+      <td>4182</td>
+      <td>2023-01-01 00:45:28</td>
+      <td>2024-12-31 19:07:36</td>
+      <td>manual: 4182</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>actual (csv)</td>
+      <td>Catalogo_Sismico.csv</td>
+      <td>4985</td>
+      <td>2025-01-01 03:42:33</td>
+      <td>2026-10-17 22:57:30</td>
+      <td>manual: 4957, automatic: 28</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Transformación: aplica las reglas de limpieza (bitácora de filas eliminadas) y verifica que el resultado coincide con el catálogo guardado</span>
+<span class="n">catalogo</span><span class="p">,</span> <span class="n">bitacora</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">limpiar</span><span class="p">(</span><span class="n">crudo</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">bitacora</span><span class="p">,</span> <span class="s2">"etl_bitacora.csv"</span><span class="p">)</span>
+<span class="n">guardado</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">CATALOGO</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s2">"time"</span><span class="p">])</span>
+<span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"time"</span><span class="p">,</span> <span class="s2">"latitude"</span><span class="p">,</span> <span class="s2">"longitude"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"mag"</span><span class="p">,</span> <span class="s2">"depto"</span><span class="p">]</span>
+<span class="n">fusion</span> <span class="o">=</span> <span class="n">catalogo</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">guardado</span><span class="p">[</span><span class="n">cols</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s2">"outer"</span><span class="p">,</span> <span class="n">indicator</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">coincide</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">((</span><span class="n">fusion</span><span class="p">[</span><span class="s2">"_merge"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"both"</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">catalogo</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">guardado</span><span class="p">))</span>
+<span class="n">bitacora</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>regla</th>
+      <th>filas_antes</th>
+      <th>eliminadas</th>
+      <th>filas_despues</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>solución revisada por analista (Revisado/manua...</td>
+      <td>43283</td>
+      <td>33</td>
+      <td>43250</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>fecha, coordenadas y magnitud presentes</td>
+      <td>43250</td>
+      <td>0</td>
+      <td>43250</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>duplicados exactos (fecha-hora, lat, lon, magn...</td>
+      <td>43250</td>
+      <td>11</td>
+      <td>43239</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>sismo atribuido a un departamento colombiano (...</td>
+      <td>43239</td>
+      <td>2621</td>
+      <td>40618</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>magnitud &gt;= 2.5</td>
+      <td>40618</td>
+      <td>0</td>
+      <td>40618</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>desde 2004-01-01</td>
+      <td>40618</td>
+      <td>0</td>
+      <td>40618</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Cobertura de los archivos.** Los diez archivos cubren de forma contigua de </span><span class="si">{</span><span class="n">crudo</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%Y-%m-%d</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">crudo</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%Y-%m-%d</span><span class="si">}</span>
+<span class="s2">  (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">crudo</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> registros): el portal histórico va hasta febrero de 2018 y el actual empieza en marzo de 2018.</span>
+<span class="s2">- **Reglas de limpieza (en este orden):**</span>
+<span class="s2">  1. Solo la solución **revisada por un analista** (`Revisado` en el portal histórico, `manual` en el actual). Las</span>
+<span class="s2">     </span><span class="si">{</span><span class="n">bitacora</span><span class="o">.</span><span class="n">eliminadas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> soluciones `automatic` son preliminares y suelen corregirse después.</span>
+<span class="s2">  2. Se eliminan los **duplicados exactos** (</span><span class="si">{</span><span class="n">bitacora</span><span class="o">.</span><span class="n">eliminadas</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">  3. Se descartan los **</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">bitacora</span><span class="o">.</span><span class="n">eliminadas</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> sismos sin departamento** (en el mar o en zonas fronterizas).</span>
+<span class="s2">     La razón es **homogeneidad entre portales**: el portal histórico solo publica sismos con departamento (0 % sin</span>
+<span class="s2">     departamento), mientras que el actual incluye el mar y los países vecinos. Conservarlos en 2018–2026 crearía un</span>
+<span class="s2">     salto artificial de actividad en las celdas costeras y fronterizas justo al cambiar de portal.</span>
+<span class="s2">- **Filtros sin efecto.** Las reglas de magnitud ≥ 2,5 y fecha ≥ 2004 no eliminan nada: los archivos ya se</span>
+<span class="s2">  descargaron con esos filtros.</span>
+<span class="s2">- **Resultado.** **</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">catalogo</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> sismos.** El catálogo guardado en `data/sismos_sgc_2004_2026.csv`</span>
+<span class="s2">  </span><span class="si">{</span><span class="s2">"**coincide exactamente**"</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">coincide</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">"**NO coincide**"</span><span class="si">}</span><span class="s2"> con el que produce esta ETL desde los crudos."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Cobertura de los archivos.</strong> Los diez archivos cubren de forma contigua de 2004-01-01 a 2026-10-17
+(43.283 registros): el portal histórico va hasta febrero de 2018 y el actual empieza en marzo de 2018.</p></li>
+<li><p><strong>Reglas de limpieza (en este orden):</strong></p>
+<ol class="arabic simple">
+<li><p>Solo la solución <strong>revisada por un analista</strong> (<code class="docutils literal notranslate"><span class="pre">Revisado</span></code> en el portal histórico, <code class="docutils literal notranslate"><span class="pre">manual</span></code> en el actual). Las
+33 soluciones <code class="docutils literal notranslate"><span class="pre">automatic</span></code> son preliminares y suelen corregirse después.</p></li>
+<li><p>Se eliminan los <strong>duplicados exactos</strong> (11).</p></li>
+<li><p>Se descartan los <strong>2.621 sismos sin departamento</strong> (en el mar o en zonas fronterizas).
+La razón es <strong>homogeneidad entre portales</strong>: el portal histórico solo publica sismos con departamento (0 % sin
+departamento), mientras que el actual incluye el mar y los países vecinos. Conservarlos en 2018–2026 crearía un
+salto artificial de actividad en las celdas costeras y fronterizas justo al cambiar de portal.</p></li>
+</ol>
+</li>
+<li><p><strong>Filtros sin efecto.</strong> Las reglas de magnitud ≥ 2,5 y fecha ≥ 2004 no eliminan nada: los archivos ya se
+descargaron con esos filtros.</p></li>
+<li><p><strong>Resultado.</strong> <strong>40.618 sismos.</strong> El catálogo guardado en <code class="docutils literal notranslate"><span class="pre">data/sismos_sgc_2004_2026.csv</span></code>
+<strong>coincide exactamente</strong> con el que produce esta ETL desde los crudos.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="diccionario-de-variables">
+<h2>2.2 Diccionario de variables<a class="headerlink" href="#diccionario-de-variables" title="Link to this heading">#</a></h2>
+<p>Hay dos niveles de datos: el <strong>catálogo</strong> (una fila por sismo) y el <strong>panel de modelado</strong> (una fila
+por celda y mes). Las variables del panel se derivan del catálogo <strong>solo con sismos hasta el final del
+mes <em>t</em></strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Diccionario de variables del catálogo y del panel: tipo, unidad, significado y si se usa</span>
+<span class="n">dicc_cat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"time"</span><span class="p">,</span> <span class="s2">"fecha-hora"</span><span class="p">,</span> <span class="s2">"UTC"</span><span class="p">,</span> <span class="s2">"Momento del origen del sismo"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"latitude"</span><span class="p">,</span> <span class="s2">"numérica continua"</span><span class="p">,</span> <span class="s2">"grados (EPSG:4326)"</span><span class="p">,</span> <span class="s2">"Latitud del epicentro"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"longitude"</span><span class="p">,</span> <span class="s2">"numérica continua"</span><span class="p">,</span> <span class="s2">"grados (EPSG:4326)"</span><span class="p">,</span> <span class="s2">"Longitud del epicentro"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"numérica continua"</span><span class="p">,</span> <span class="s2">"km"</span><span class="p">,</span> <span class="s2">"Profundidad del hipocentro (negativa = sobre el nivel del mar)"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"mag"</span><span class="p">,</span> <span class="s2">"numérica continua"</span><span class="p">,</span> <span class="s2">"magnitud local (Ml/MLr) o Mw"</span><span class="p">,</span> <span class="s2">"Magnitud del sismo"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"tipo_mag"</span><span class="p">,</span> <span class="s2">"categórica"</span><span class="p">,</span> <span class="s2">"—"</span><span class="p">,</span> <span class="s2">"Escala de magnitud reportada (Ml, MLr_*, Mw, …)"</span><span class="p">,</span> <span class="s2">"solo calidad"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"fases"</span><span class="p">,</span> <span class="s2">"numérica discreta"</span><span class="p">,</span> <span class="s2">"conteo"</span><span class="p">,</span> <span class="s2">"Número de fases sísmicas usadas en la localización"</span><span class="p">,</span> <span class="s2">"solo calidad"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"rms"</span><span class="p">,</span> <span class="s2">"numérica continua"</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="s2">"Residuo cuadrático medio de los tiempos de llegada"</span><span class="p">,</span> <span class="s2">"solo calidad"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"gap_az"</span><span class="p">,</span> <span class="s2">"numérica continua"</span><span class="p">,</span> <span class="s2">"grados"</span><span class="p">,</span> <span class="s2">"Mayor hueco azimutal entre estaciones (cobertura de la red)"</span><span class="p">,</span> <span class="s2">"solo calidad"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"err_lat / err_lon / err_prof"</span><span class="p">,</span> <span class="s2">"numérica continua"</span><span class="p">,</span> <span class="s2">"km"</span><span class="p">,</span> <span class="s2">"Error de localización en cada eje"</span><span class="p">,</span> <span class="s2">"solo calidad"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"depto"</span><span class="p">,</span> <span class="s2">"categórica (35 niveles)"</span><span class="p">,</span> <span class="s2">"—"</span><span class="p">,</span> <span class="s2">"Departamento colombiano del epicentro"</span><span class="p">,</span> <span class="s2">"sí (EDA)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"region"</span><span class="p">,</span> <span class="s2">"texto"</span><span class="p">,</span> <span class="s2">"—"</span><span class="p">,</span> <span class="s2">"Municipio (portal histórico) o región descriptiva (portal actual)"</span><span class="p">,</span> <span class="s2">"solo ETL"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"estado"</span><span class="p">,</span> <span class="s2">"categórica"</span><span class="p">,</span> <span class="s2">"—"</span><span class="p">,</span> <span class="s2">"Revisado/manual (revisado por analista) o automatic"</span><span class="p">,</span> <span class="s2">"solo ETL"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"variable"</span><span class="p">,</span> <span class="s2">"tipo"</span><span class="p">,</span> <span class="s2">"unidad"</span><span class="p">,</span> <span class="s2">"significado"</span><span class="p">,</span> <span class="s2">"se usa"</span><span class="p">])</span>
+<span class="n">dicc_panel</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"y (objetivo)"</span><span class="p">,</span> <span class="s2">"conteo entero ≥ 0"</span><span class="p">,</span> <span class="s2">"sismos"</span><span class="p">,</span> <span class="s2">"Sismos M ≥ 2,5 en la celda durante el mes t+1"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"n_1m, n_3m, n_6m, n_12m"</span><span class="p">,</span> <span class="s2">"conteo"</span><span class="p">,</span> <span class="s2">"sismos"</span><span class="p">,</span> <span class="s2">"Sismos en la celda en los últimos 1, 3, 6 y 12 meses (hasta t)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"n35_3m, n35_12m"</span><span class="p">,</span> <span class="s2">"conteo"</span><span class="p">,</span> <span class="s2">"sismos"</span><span class="p">,</span> <span class="s2">"Sismos M ≥ 3,5 en la celda en los últimos 3 y 12 meses"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"mag_media_3m, mag_media_12m"</span><span class="p">,</span> <span class="s2">"continua (faltante si no hubo sismos)"</span><span class="p">,</span> <span class="s2">"magnitud"</span><span class="p">,</span> <span class="s2">"Magnitud media en la ventana"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"mag_max_3m, mag_max_12m"</span><span class="p">,</span> <span class="s2">"continua (faltante si no hubo sismos)"</span><span class="p">,</span> <span class="s2">"magnitud"</span><span class="p">,</span> <span class="s2">"Magnitud máxima en la ventana"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"prof_media_hist"</span><span class="p">,</span> <span class="s2">"continua"</span><span class="p">,</span> <span class="s2">"km"</span><span class="p">,</span> <span class="s2">"Profundidad media histórica de la celda (desde 2004 hasta t)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"vec_1m, vec_3m"</span><span class="p">,</span> <span class="s2">"conteo"</span><span class="p">,</span> <span class="s2">"sismos"</span><span class="p">,</span> <span class="s2">"Sismos en las 8 celdas vecinas en el último mes / 3 meses (rezago espacial)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"n_mismo_mes_anio_prev"</span><span class="p">,</span> <span class="s2">"conteo"</span><span class="p">,</span> <span class="s2">"sismos"</span><span class="p">,</span> <span class="s2">"Sismos de la celda en el mismo mes del año anterior (ingenuo estacional)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"sen_mes, cos_mes"</span><span class="p">,</span> <span class="s2">"continua [-1, 1]"</span><span class="p">,</span> <span class="s2">"—"</span><span class="p">,</span> <span class="s2">"Codificación cíclica del mes objetivo"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"lat, lon"</span><span class="p">,</span> <span class="s2">"continua"</span><span class="p">,</span> <span class="s2">"grados"</span><span class="p">,</span> <span class="s2">"Centro de la celda"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"variable"</span><span class="p">,</span> <span class="s2">"tipo"</span><span class="p">,</span> <span class="s2">"unidad"</span><span class="p">,</span> <span class="s2">"significado"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">dicc_cat</span><span class="p">,</span> <span class="s2">"diccionario_catalogo.csv"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">dicc_panel</span><span class="p">,</span> <span class="s2">"diccionario_panel.csv"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">dicc_cat</span><span class="p">)</span>
+<span class="n">dicc_panel</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>variable</th>
+      <th>tipo</th>
+      <th>unidad</th>
+      <th>significado</th>
+      <th>se usa</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>time</td>
+      <td>fecha-hora</td>
+      <td>UTC</td>
+      <td>Momento del origen del sismo</td>
+      <td>sí</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>latitude</td>
+      <td>numérica continua</td>
+      <td>grados (EPSG:4326)</td>
+      <td>Latitud del epicentro</td>
+      <td>sí</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>longitude</td>
+      <td>numérica continua</td>
+      <td>grados (EPSG:4326)</td>
+      <td>Longitud del epicentro</td>
+      <td>sí</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>depth</td>
+      <td>numérica continua</td>
+      <td>km</td>
+      <td>Profundidad del hipocentro (negativa = sobre e...</td>
+      <td>sí</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>mag</td>
+      <td>numérica continua</td>
+      <td>magnitud local (Ml/MLr) o Mw</td>
+      <td>Magnitud del sismo</td>
+      <td>sí</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>tipo_mag</td>
+      <td>categórica</td>
+      <td>—</td>
+      <td>Escala de magnitud reportada (Ml, MLr_*, Mw, …)</td>
+      <td>solo calidad</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>fases</td>
+      <td>numérica discreta</td>
+      <td>conteo</td>
+      <td>Número de fases sísmicas usadas en la localiza...</td>
+      <td>solo calidad</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>rms</td>
+      <td>numérica continua</td>
+      <td>s</td>
+      <td>Residuo cuadrático medio de los tiempos de lle...</td>
+      <td>solo calidad</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>gap_az</td>
+      <td>numérica continua</td>
+      <td>grados</td>
+      <td>Mayor hueco azimutal entre estaciones (cobertu...</td>
+      <td>solo calidad</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>err_lat / err_lon / err_prof</td>
+      <td>numérica continua</td>
+      <td>km</td>
+      <td>Error de localización en cada eje</td>
+      <td>solo calidad</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>depto</td>
+      <td>categórica (35 niveles)</td>
+      <td>—</td>
+      <td>Departamento colombiano del epicentro</td>
+      <td>sí (EDA)</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>region</td>
+      <td>texto</td>
+      <td>—</td>
+      <td>Municipio (portal histórico) o región descript...</td>
+      <td>solo ETL</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>estado</td>
+      <td>categórica</td>
+      <td>—</td>
+      <td>Revisado/manual (revisado por analista) o auto...</td>
+      <td>solo ETL</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>variable</th>
+      <th>tipo</th>
+      <th>unidad</th>
+      <th>significado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>y (objetivo)</td>
+      <td>conteo entero ≥ 0</td>
+      <td>sismos</td>
+      <td>Sismos M ≥ 2,5 en la celda durante el mes t+1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>n_1m, n_3m, n_6m, n_12m</td>
+      <td>conteo</td>
+      <td>sismos</td>
+      <td>Sismos en la celda en los últimos 1, 3, 6 y 12...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>n35_3m, n35_12m</td>
+      <td>conteo</td>
+      <td>sismos</td>
+      <td>Sismos M ≥ 3,5 en la celda en los últimos 3 y ...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>mag_media_3m, mag_media_12m</td>
+      <td>continua (faltante si no hubo sismos)</td>
+      <td>magnitud</td>
+      <td>Magnitud media en la ventana</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>mag_max_3m, mag_max_12m</td>
+      <td>continua (faltante si no hubo sismos)</td>
+      <td>magnitud</td>
+      <td>Magnitud máxima en la ventana</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>prof_media_hist</td>
+      <td>continua</td>
+      <td>km</td>
+      <td>Profundidad media histórica de la celda (desde...</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>vec_1m, vec_3m</td>
+      <td>conteo</td>
+      <td>sismos</td>
+      <td>Sismos en las 8 celdas vecinas en el último me...</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>n_mismo_mes_anio_prev</td>
+      <td>conteo</td>
+      <td>sismos</td>
+      <td>Sismos de la celda en el mismo mes del año ant...</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>sen_mes, cos_mes</td>
+      <td>continua [-1, 1]</td>
+      <td>—</td>
+      <td>Codificación cíclica del mes objetivo</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>lat, lon</td>
+      <td>continua</td>
+      <td>grados</td>
+      <td>Centro de la celda</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="estructura-tamano-y-entidades">
+<h2>2.3 Estructura, tamaño y entidades<a class="headerlink" href="#estructura-tamano-y-entidades" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Carga: construye el panel celda × mes desde el catálogo limpio y describe su estructura</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">n_meses</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">preparar_eventos</span><span class="p">(</span><span class="n">guardado</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">construir_panel</span><span class="p">(</span><span class="n">ev_</span><span class="p">,</span> <span class="n">n_meses</span><span class="p">)</span>
+<span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">particion</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span>
+<span class="n">estructura</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"Nivel catálogo: filas (sismos, meses completos)"</span><span class="p">,</span> <span class="n">es</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ev_</span><span class="p">),</span> <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">"Nivel catálogo: tipo"</span><span class="p">,</span> <span class="s2">"proceso puntual espacio-temporal irregular"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Nivel panel: unidad de observación"</span><span class="p">,</span> <span class="s2">"celda activa de 0,5° × mes"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Nivel panel: tipo"</span><span class="p">,</span> <span class="s2">"panel espacio-temporal (longitudinal por celda) — ruta D"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Filas del panel (n)"</span><span class="p">,</span> <span class="n">es</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">"Predictoras del modelo base (p)"</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+    <span class="p">(</span><span class="s2">"Relación n/p"</span><span class="p">,</span> <span class="n">es</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">"Entidades independientes: celdas activas"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"celdas"</span><span class="p">])),</span>
+    <span class="p">(</span><span class="s2">"Entidades: meses objetivo"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]))),</span>
+    <span class="p">(</span><span class="s2">"Departamentos con sismos"</span><span class="p">,</span> <span class="n">guardado</span><span class="o">.</span><span class="n">depto</span><span class="o">.</span><span class="n">nunique</span><span class="p">()),</span>
+    <span class="p">(</span><span class="s2">"Rango del objetivo (todo el panel)"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Rango del objetivo (entrenamiento)"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Media / mediana del objetivo (entrenamiento)"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> / </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">]),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Filas duplicadas (celda, mes)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">'c'</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s1">'cc'</span><span class="p">],</span> <span class="s1">'t'</span><span class="p">:</span> <span class="n">info</span><span class="p">[</span><span class="s1">'tt'</span><span class="p">]})</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"medida"</span><span class="p">,</span> <span class="s2">"valor"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">estructura</span><span class="p">,</span> <span class="s2">"estructura_tamano.csv"</span><span class="p">)</span>
+<span class="n">estructura</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>medida</th>
+      <th>valor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Nivel catálogo: filas (sismos, meses completos)</td>
+      <td>40.365</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Nivel catálogo: tipo</td>
+      <td>proceso puntual espacio-temporal irregular</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Nivel panel: unidad de observación</td>
+      <td>celda activa de 0,5° × mes</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Nivel panel: tipo</td>
+      <td>panel espacio-temporal (longitudinal por celda...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Filas del panel (n)</td>
+      <td>42.380</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Predictoras del modelo base (p)</td>
+      <td>18</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Relación n/p</td>
+      <td>2.354</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Entidades independientes: celdas activas</td>
+      <td>163</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Entidades: meses objetivo</td>
+      <td>260</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Departamentos con sismos</td>
+      <td>35</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Rango del objetivo (todo el panel)</td>
+      <td>0 a 713</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Rango del objetivo (entrenamiento)</td>
+      <td>0 a 148</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Media / mediana del objetivo (entrenamiento)</td>
+      <td>0,81 / 0</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Filas duplicadas (celda, mes)</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Dos niveles de datos.** El catálogo es un **proceso puntual** (cada sismo con tiempo y coordenadas, a intervalos irregulares).</span>
+<span class="s2">  Para modelar se agrega en un **panel regular** celda × mes.</span>
+<span class="s2">- **Tamaño del panel.** Tiene </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> filas y </span><span class="si">{</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> predictoras: n/p ≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">, holgado para</span>
+<span class="s2">  modelos lineales y no lineales.</span>
+<span class="s2">- **Tamaño efectivo.** Es menor que n: son </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'celdas'</span><span class="p">])</span><span class="si">}</span><span class="s2"> series (celdas) de hasta </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'tm'</span><span class="p">]))</span><span class="si">}</span><span class="s2"> meses, y</span>
+<span class="s2">  las filas de un mismo mes están correlacionadas porque comparten el estado sísmico regional. Por eso la incertidumbre se</span>
+<span class="s2">  estima remuestreando meses (capítulos 11 y siguientes).</span>
+<span class="s2">- **Sin duplicados.** Cada par (celda, mes) aparece una sola vez."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Dos niveles de datos.</strong> El catálogo es un <strong>proceso puntual</strong> (cada sismo con tiempo y coordenadas, a intervalos irregulares).
+Para modelar se agrega en un <strong>panel regular</strong> celda × mes.</p></li>
+<li><p><strong>Tamaño del panel.</strong> Tiene 42.380 filas y 18 predictoras: n/p ≈ 2.354, holgado para
+modelos lineales y no lineales.</p></li>
+<li><p><strong>Tamaño efectivo.</strong> Es menor que n: son 163 series (celdas) de hasta 260 meses, y
+las filas de un mismo mes están correlacionadas porque comparten el estado sísmico regional. Por eso la incertidumbre se
+estima remuestreando meses (capítulos 11 y siguientes).</p></li>
+<li><p><strong>Sin duplicados.</strong> Cada par (celda, mes) aparece una sola vez.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="valores-faltantes-patron">
+<h2>2.4 Valores faltantes: patrón<a class="headerlink" href="#valores-faltantes-patron" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Valores faltantes: porcentaje por portal en el crudo y por variable en el panel (solo entrenamiento) y su patrón</span>
+<span class="n">faltantes_crudo</span> <span class="o">=</span> <span class="n">crudo</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"portal"</span><span class="p">,</span> <span class="s2">"archivo"</span><span class="p">])</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">crudo</span><span class="o">.</span><span class="n">portal</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">faltantes_panel</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="s2">"</span><span class="si">% f</span><span class="s2">altante (panel, entrenamiento)"</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">faltantes_crudo</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"faltantes_crudo.csv"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">faltantes_panel</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"faltantes_panel.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">),</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">"width_ratios"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">]})</span>
+<span class="n">muestra</span> <span class="o">=</span> <span class="n">crudo</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"time"</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">muestra</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"portal"</span><span class="p">,</span> <span class="s2">"archivo"</span><span class="p">])</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">cbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="p">[</span><span class="s2">"#e2e8f0"</span><span class="p">,</span> <span class="s2">"#c53030"</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">xticklabels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Catálogo crudo: matriz de nulos (3.000 registros, orden temporal)"</span><span class="p">)</span>
+<span class="n">mp</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">cbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="p">[</span><span class="s2">"#e2e8f0"</span><span class="p">,</span> <span class="s2">"#c53030"</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">xticklabels</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Panel (entrenamiento): matriz de nulos (3.000 filas)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"02_matriz_nulos.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">faltantes_crudo</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">faltantes_panel</span><span class="p">[</span><span class="n">faltantes_panel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/567ca78b116d711512f57c3355b2dc9465240c4391591dc52acf4d60c2f4e813.png" src="../_images/567ca78b116d711512f57c3355b2dc9465240c4391591dc52acf4d60c2f4e813.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>portal</th>
+      <th>actual (csv)</th>
+      <th>histórico (xlsx)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>time</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>latitude</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>longitude</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>depth</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>mag</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>tipo_mag</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>fases</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>rms</th>
+      <td>0.00</td>
+      <td>0.01</td>
+    </tr>
+    <tr>
+      <th>gap_az</th>
+      <td>0.00</td>
+      <td>0.01</td>
+    </tr>
+    <tr>
+      <th>err_lat</th>
+      <td>0.00</td>
+      <td>0.01</td>
+    </tr>
+    <tr>
+      <th>err_lon</th>
+      <td>0.00</td>
+      <td>0.01</td>
+    </tr>
+    <tr>
+      <th>err_prof</th>
+      <td>0.00</td>
+      <td>0.01</td>
+    </tr>
+    <tr>
+      <th>depto</th>
+      <td>14.51</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>region</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+    <tr>
+      <th>estado</th>
+      <td>0.00</td>
+      <td>0.00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>% faltante (panel, entrenamiento)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>mag_media_3m</th>
+      <td>51.88</td>
+    </tr>
+    <tr>
+      <th>mag_media_12m</th>
+      <td>16.08</td>
+    </tr>
+    <tr>
+      <th>mag_max_3m</th>
+      <td>51.88</td>
+    </tr>
+    <tr>
+      <th>mag_max_12m</th>
+      <td>16.08</td>
+    </tr>
+    <tr>
+      <th>prof_media_hist</th>
+      <td>1.43</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="valores-faltantes-mecanismo-mcar-mar-o-mnar">
+<h2>2.5 Valores faltantes: mecanismo (MCAR, MAR o MNAR)<a class="headerlink" href="#valores-faltantes-mecanismo-mcar-mar-o-mnar" title="Link to this heading">#</a></h2>
+<p>Hay dos tipos de faltantes, con mecanismos distintos:</p>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">depto</span></code> en el catálogo crudo.</strong> Se evalúa si depende de variables observadas, comparando las
+distribuciones de los registros completos e incompletos y midiendo cuánto predicen las coordenadas
+la ausencia.</p></li>
+<li><p><strong>Magnitudes medias y máximas en el panel.</strong> Faltan cuando la celda no tuvo sismos en la ventana.
+Es un faltante <strong>estructural</strong> («no aplica»). Se aplica la prueba MCAR de Little
+<span id="id1">[<a class="reference internal" href="12_conclusiones.html#id6" title="Roderick J. A. Little. A test of missing completely at random for multivariate data with missing values. Journal of the American Statistical Association, 83(404):1198–1202, 1988.">Little, 1988</a>]</span> y se verifica la regla de forma directa.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mecanismo del faltante de depto: ¿se predice con las demás variables? (si sí, es MAR y no MCAR)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">cross_val_score</span>
+<span class="n">nuevo</span> <span class="o">=</span> <span class="n">crudo</span><span class="p">[</span><span class="n">crudo</span><span class="o">.</span><span class="n">portal</span> <span class="o">==</span> <span class="s2">"actual (csv)"</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">nuevo</span><span class="p">[</span><span class="s2">"falta_depto"</span><span class="p">]</span> <span class="o">=</span> <span class="n">nuevo</span><span class="o">.</span><span class="n">depto</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"latitude"</span><span class="p">,</span> <span class="s2">"longitude"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"mag"</span><span class="p">,</span> <span class="s2">"err_lat"</span><span class="p">,</span> <span class="s2">"err_prof"</span><span class="p">,</span> <span class="s2">"gap_az"</span><span class="p">]:</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">nuevo</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nuevo</span><span class="o">.</span><span class="n">falta_depto</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span> <span class="n">nuevo</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nuevo</span><span class="o">.</span><span class="n">falta_depto</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">mannwhitneyu</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"variable"</span><span class="p">:</span> <span class="n">v</span><span class="p">,</span> <span class="s2">"mediana_sin_depto"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span> <span class="s2">"mediana_con_depto"</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span>
+                  <span class="s2">"U"</span><span class="p">:</span> <span class="n">u</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">:</span> <span class="n">p</span><span class="p">,</span> <span class="s2">"biserial_rangos"</span><span class="p">:</span> <span class="n">eda</span><span class="o">.</span><span class="n">biserial_rangos</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">))})</span>
+<span class="n">mec</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">mec</span><span class="p">[</span><span class="s2">"p_holm"</span><span class="p">]</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">holm</span><span class="p">(</span><span class="n">mec</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+<span class="n">auc_coord</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">RandomForestClassifier</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+                            <span class="n">nuevo</span><span class="p">[[</span><span class="s2">"latitude"</span><span class="p">,</span> <span class="s2">"longitude"</span><span class="p">]],</span> <span class="n">nuevo</span><span class="o">.</span><span class="n">falta_depto</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scoring</span><span class="o">=</span><span class="s2">"roc_auc"</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">mec</span><span class="p">,</span> <span class="s2">"mecanismo_faltantes_depto.csv"</span><span class="p">)</span>
+<span class="n">mec</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>variable</th>
+      <th>mediana_sin_depto</th>
+      <th>mediana_con_depto</th>
+      <th>U</th>
+      <th>p</th>
+      <th>biserial_rangos</th>
+      <th>p_holm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>latitude</td>
+      <td>6.3275</td>
+      <td>6.778</td>
+      <td>22028498.0</td>
+      <td>4.988959e-12</td>
+      <td>-0.084150</td>
+      <td>1.496688e-11</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>longitude</td>
+      <td>-77.9530</td>
+      <td>-73.200</td>
+      <td>4975521.0</td>
+      <td>0.000000e+00</td>
+      <td>0.755126</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>depth</td>
+      <td>13.0350</td>
+      <td>138.090</td>
+      <td>5738560.5</td>
+      <td>0.000000e+00</td>
+      <td>0.717572</td>
+      <td>0.000000e+00</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>mag</td>
+      <td>2.8000</td>
+      <td>2.800</td>
+      <td>22008974.0</td>
+      <td>5.889475e-12</td>
+      <td>-0.083189</td>
+      <td>1.496688e-11</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>err_lat</td>
+      <td>2.2170</td>
+      <td>2.141</td>
+      <td>23838732.5</td>
+      <td>7.016810e-46</td>
+      <td>-0.173242</td>
+      <td>2.806724e-45</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>err_prof</td>
+      <td>3.4000</td>
+      <td>4.200</td>
+      <td>18899694.5</td>
+      <td>9.960586e-09</td>
+      <td>0.069836</td>
+      <td>9.960586e-09</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>gap_az</td>
+      <td>156.0000</td>
+      <td>67.000</td>
+      <td>36679819.5</td>
+      <td>0.000000e+00</td>
+      <td>-0.805227</td>
+      <td>0.000000e+00</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Faltantes de magnitud en el panel: se verifica que solo ocurren cuando no hubo sismos en la ventana, y prueba de Little</span>
+<span class="n">cols_mag</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"mag_media_3m"</span><span class="p">,</span> <span class="s2">"mag_media_12m"</span><span class="p">,</span> <span class="s2">"mag_max_3m"</span><span class="p">,</span> <span class="s2">"mag_max_12m"</span><span class="p">]</span>
+<span class="n">Xtr</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span>
+<span class="n">regla</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="nb">bool</span><span class="p">((</span><span class="n">Xtr</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span> <span class="o">==</span> <span class="p">(</span><span class="n">Xtr</span><span class="p">[</span><span class="s2">"n_3m"</span> <span class="k">if</span> <span class="s2">"3m"</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">else</span> <span class="s2">"n_12m"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">())</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols_mag</span><span class="p">}</span>
+<span class="n">little</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">prueba_little_mcar</span><span class="p">(</span><span class="n">Xtr</span><span class="p">[</span><span class="n">cols_mag</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"n_1m"</span><span class="p">,</span> <span class="s2">"n_3m"</span><span class="p">,</span> <span class="s2">"n_12m"</span><span class="p">,</span> <span class="s2">"vec_1m"</span><span class="p">,</span> <span class="s2">"prof_media_hist"</span><span class="p">]]</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">))</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación (mecanismo).**</span>
+
+<span class="s2">- **`depto` → MAR, explicado por la ubicación.** Solo falta en el portal actual. Los registros sin departamento difieren con</span>
+<span class="s2">  fuerza de los completos en **longitud** (biserial de rangos </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">mec</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mec</span><span class="o">.</span><span class="n">variable</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'longitude'</span><span class="p">,</span><span class="w"> </span><span class="s1">'biserial_rangos'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">: están más al</span>
+<span class="s2">  occidente, en el Pacífico) y **profundidad** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">mec</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mec</span><span class="o">.</span><span class="n">variable</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'depth'</span><span class="p">,</span><span class="w"> </span><span class="s1">'biserial_rangos'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">: son más superficiales).</span>
+<span class="s2">  En latitud y magnitud la diferencia es pequeña (|r| ≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">mec</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mec</span><span class="o">.</span><span class="n">variable</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'latitude'</span><span class="p">,</span><span class="w"> </span><span class="s1">'biserial_rangos'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">),</span>
+<span class="s2">  aunque significativa por el tamaño de muestra (p de Holm </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">mec</span><span class="o">.</span><span class="n">p_holm</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="si">}</span><span class="s2"> en todas las variables).</span>
+<span class="s2">  - Un bosque aleatorio que **solo usa las coordenadas** predice la ausencia con AUC = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">auc_coord</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">  - Por tanto **no es MCAR**: la ausencia depende de la ubicación observada (mar y fronteras). No se imputa. Esos sismos se</span>
+<span class="s2">    excluyen por la regla de homogeneidad entre portales (sección 2.1), y la consecuencia es un sesgo de cobertura que se</span>
+<span class="s2">    discute en la sección 2.9.</span>
+<span class="s2">  - Los sismos sin departamento tienen un **gap azimutal mucho mayor** (mediana </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">mec</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mec</span><span class="o">.</span><span class="n">variable</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'gap_az'</span><span class="p">,</span><span class="w"> </span><span class="s1">'mediana_sin_depto'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">° frente a</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">mec</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mec</span><span class="o">.</span><span class="n">variable</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'gap_az'</span><span class="p">,</span><span class="w"> </span><span class="s1">'mediana_con_depto'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">°): en el mar la red los «ve» desde un solo lado, así que su localización es menos confiable.</span>
+<span class="s2">- **Magnitudes del panel → faltante estructural.** La regla «falta si y solo si no hubo sismos en la ventana» se cumple en</span>
+<span class="s2">  </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">regla</span><span class="o">.</span><span class="n">values</span><span class="p">())</span><span class="si">}</span><span class="s2"> de </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">regla</span><span class="p">)</span><span class="si">}</span><span class="s2"> variables. Por definición no es MCAR, y la prueba de Little lo confirma</span>
+<span class="s2">  (χ² = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">little</span><span class="p">[</span><span class="s1">'chi2'</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">, g.l. = </span><span class="si">{</span><span class="n">little</span><span class="p">[</span><span class="s1">'gl'</span><span class="p">]</span><span class="si">}</span><span class="s2">, p </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">little</span><span class="p">[</span><span class="s1">'p'</span><span class="p">])</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">  - Es un faltante «no aplica»: no hay una magnitud que observar.</span>
+<span class="s2">  - **Tratamiento** (capítulo 10): imputación dentro del Pipeline, ajustada solo con entrenamiento. Para los modelos de</span>
+<span class="s2">    árboles da igual el valor elegido, porque `n_3m = 0` ya marca el caso."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación (mecanismo).</strong></p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">depto</span></code> → MAR, explicado por la ubicación.</strong> Solo falta en el portal actual. Los registros sin departamento difieren con
+fuerza de los completos en <strong>longitud</strong> (biserial de rangos 0,76: están más al
+occidente, en el Pacífico) y <strong>profundidad</strong> (0,72: son más superficiales).
+En latitud y magnitud la diferencia es pequeña (|r| ≈ 0,08),
+aunque significativa por el tamaño de muestra (p de Holm &lt; 0,001 en todas las variables).</p>
+<ul>
+<li><p>Un bosque aleatorio que <strong>solo usa las coordenadas</strong> predice la ausencia con AUC = 0,998.</p></li>
+<li><p>Por tanto <strong>no es MCAR</strong>: la ausencia depende de la ubicación observada (mar y fronteras). No se imputa. Esos sismos se
+excluyen por la regla de homogeneidad entre portales (sección 2.1), y la consecuencia es un sesgo de cobertura que se
+discute en la sección 2.9.</p></li>
+<li><p>Los sismos sin departamento tienen un <strong>gap azimutal mucho mayor</strong> (mediana 156° frente a
+67°): en el mar la red los «ve» desde un solo lado, así que su localización es menos confiable.</p></li>
+</ul>
+</li>
+<li><p><strong>Magnitudes del panel → faltante estructural.</strong> La regla «falta si y solo si no hubo sismos en la ventana» se cumple en
+4 de 4 variables. Por definición no es MCAR, y la prueba de Little lo confirma
+(χ² = 3.103,8, g.l. = 16, p &lt; 0,001).</p>
+<ul>
+<li><p>Es un faltante «no aplica»: no hay una magnitud que observar.</p></li>
+<li><p><strong>Tratamiento</strong> (capítulo 10): imputación dentro del Pipeline, ajustada solo con entrenamiento. Para los modelos de
+árboles da igual el valor elegido, porque <code class="docutils literal notranslate"><span class="pre">n_3m</span> <span class="pre">=</span> <span class="pre">0</span></code> ya marca el caso.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="duplicados-exactos-y-casi-duplicados">
+<h2>2.6 Duplicados exactos y casi-duplicados<a class="headerlink" href="#duplicados-exactos-y-casi-duplicados" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Duplicados probables: pares de sismos consecutivos muy cercanos en tiempo, distancia y magnitud</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">catalogo</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"time"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mf">1e9</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">dd</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">haversine_km</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">shift</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">longitude</span><span class="o">.</span><span class="n">shift</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">longitude</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+<span class="n">dm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">mag</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">seg</span><span class="p">,</span> <span class="n">km</span><span class="p">,</span> <span class="n">dmag</span> <span class="ow">in</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span> <span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)):</span>
+    <span class="n">casi</span> <span class="o">=</span> <span class="p">(</span><span class="n">dt</span> <span class="o">&lt;=</span> <span class="n">seg</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">dd</span> <span class="o">&lt;=</span> <span class="n">km</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">dm</span> <span class="o">&lt;=</span> <span class="n">dmag</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"criterio"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"≤ </span><span class="si">{</span><span class="n">seg</span><span class="si">}</span><span class="s2"> s, ≤ </span><span class="si">{</span><span class="n">km</span><span class="si">}</span><span class="s2"> km, |ΔM| ≤ </span><span class="si">{</span><span class="n">dmag</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"pares_consecutivos"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">casi</span><span class="p">))})</span>
+<span class="n">casi_dup</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">frontera</span> <span class="o">=</span> <span class="n">c</span><span class="p">[(</span><span class="n">c</span><span class="o">.</span><span class="n">time</span> <span class="o">&gt;=</span> <span class="s2">"2018-02-20"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;=</span> <span class="s2">"2018-03-10"</span><span class="p">)]</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">casi_dup</span><span class="p">,</span> <span class="s2">"casi_duplicados.csv"</span><span class="p">)</span>
+<span class="n">casi_dup</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>criterio</th>
+      <th>pares_consecutivos</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>≤ 2 s, ≤ 5 km, |ΔM| ≤ 0.1</td>
+      <td>27</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>≤ 5 s, ≤ 10 km, |ΔM| ≤ 0.2</td>
+      <td>41</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>≤ 10 s, ≤ 20 km, |ΔM| ≤ 0.3</td>
+      <td>51</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>≤ 60 s, ≤ 50 km, |ΔM| ≤ 0.5</td>
+      <td>171</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Duplicados exactos.** La ETL eliminó </span><span class="si">{</span><span class="n">bitacora</span><span class="o">.</span><span class="n">eliminadas</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> (misma fecha-hora, coordenadas y magnitud).</span>
+<span class="s2">- **Casi-duplicados.** Se buscan sismos consecutivos casi idénticos en tiempo, posición y magnitud. Con criterios estrictos</span>
+<span class="s2">  (≤ 2–5 s y ≤ 5–10 km) hay </span><span class="si">{</span><span class="n">casi_dup</span><span class="o">.</span><span class="n">pares_consecutivos</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">casi_dup</span><span class="o">.</span><span class="n">pares_consecutivos</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> pares, menos del 0,1 % del catálogo.</span>
+<span class="s2">- **Por qué no se borran.** Con criterios laxos aparecen más pares, pero ahí ya no son duplicados: son **sismos reales muy</span>
+<span class="s2">  seguidos** (réplicas y enjambres, como el nido de Bucaramanga). Borrarlos eliminaría justamente el agrupamiento que el</span>
+<span class="s2">  modelo debe aprender.</span>
+<span class="s2">- **Cambio de portal.** En la frontera entre portales (20-feb a 10-mar de 2018) hay </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">frontera</span><span class="p">)</span><span class="si">}</span><span class="s2"> sismos y ningún solapamiento</span>
+<span class="s2">  de fechas entre archivos: el corte es limpio."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Duplicados exactos.</strong> La ETL eliminó 11 (misma fecha-hora, coordenadas y magnitud).</p></li>
+<li><p><strong>Casi-duplicados.</strong> Se buscan sismos consecutivos casi idénticos en tiempo, posición y magnitud. Con criterios estrictos
+(≤ 2–5 s y ≤ 5–10 km) hay 27–41 pares, menos del 0,1 % del catálogo.</p></li>
+<li><p><strong>Por qué no se borran.</strong> Con criterios laxos aparecen más pares, pero ahí ya no son duplicados: son <strong>sismos reales muy
+seguidos</strong> (réplicas y enjambres, como el nido de Bucaramanga). Borrarlos eliminaría justamente el agrupamiento que el
+modelo debe aprender.</p></li>
+<li><p><strong>Cambio de portal.</strong> En la frontera entre portales (20-feb a 10-mar de 2018) hay 55 sismos y ningún solapamiento
+de fechas entre archivos: el corte es limpio.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="valores-atipicos-catalogo-periodo-de-entrenamiento">
+<h2>2.7 Valores atípicos (catálogo, periodo de entrenamiento)<a class="headerlink" href="#valores-atipicos-catalogo-periodo-de-entrenamiento" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Atípicos del catálogo (solo entrenamiento): resumen numérico y diagramas de caja</span>
+<span class="n">cat_tr</span> <span class="o">=</span> <span class="n">guardado</span><span class="p">[</span><span class="n">guardado</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"m_test"</span><span class="p">]</span> <span class="o">-</span> <span class="n">cfg</span><span class="o">.</span><span class="n">GAP_MESES</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="n">desc</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">resumen_numerico</span><span class="p">(</span><span class="n">cat_tr</span><span class="p">[[</span><span class="s2">"mag"</span><span class="p">,</span> <span class="s2">"depth"</span><span class="p">,</span> <span class="s2">"latitude"</span><span class="p">,</span> <span class="s2">"longitude"</span><span class="p">]])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"atipicos_catalogo.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">3.6</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cat_tr</span><span class="o">.</span><span class="n">mag</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#90cdf4"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Magnitud"</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">cat_tr</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#9ae6b4"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Profundidad (km)"</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">cat_tr</span><span class="o">.</span><span class="n">depth</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#68d391"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Profundidad: distribución bimodal"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"02_atipicos_boxplots.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">desc</span><span class="p">[[</span><span class="s2">"media"</span><span class="p">,</span> <span class="s2">"mediana"</span><span class="p">,</span> <span class="s2">"desv_est"</span><span class="p">,</span> <span class="s2">"mín"</span><span class="p">,</span> <span class="s2">"p99"</span><span class="p">,</span> <span class="s2">"máx"</span><span class="p">,</span> <span class="s2">"asimetría"</span><span class="p">,</span> <span class="s2">"curtosis"</span><span class="p">,</span> <span class="s2">"atípicos_IQR_%"</span><span class="p">]]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ab7ac9153c04b32d751b1738dea8b49d54008ebca3943b5e3f48cac07b98832d.png" src="../_images/ab7ac9153c04b32d751b1738dea8b49d54008ebca3943b5e3f48cac07b98832d.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>media</th>
+      <th>mediana</th>
+      <th>desv_est</th>
+      <th>mín</th>
+      <th>p99</th>
+      <th>máx</th>
+      <th>asimetría</th>
+      <th>curtosis</th>
+      <th>atípicos_IQR_%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>mag</th>
+      <td>2.93</td>
+      <td>2.80</td>
+      <td>0.46</td>
+      <td>2.50</td>
+      <td>4.50</td>
+      <td>6.70</td>
+      <td>1.80</td>
+      <td>4.45</td>
+      <td>5.42</td>
+    </tr>
+    <tr>
+      <th>depth</th>
+      <td>98.50</td>
+      <td>140.70</td>
+      <td>62.42</td>
+      <td>-1.99</td>
+      <td>161.64</td>
+      <td>594.80</td>
+      <td>-0.60</td>
+      <td>-1.13</td>
+      <td>0.01</td>
+    </tr>
+    <tr>
+      <th>latitude</th>
+      <td>6.29</td>
+      <td>6.81</td>
+      <td>1.78</td>
+      <td>-2.65</td>
+      <td>11.23</td>
+      <td>13.67</td>
+      <td>-0.55</td>
+      <td>2.11</td>
+      <td>19.57</td>
+    </tr>
+    <tr>
+      <th>longitude</th>
+      <td>-74.14</td>
+      <td>-73.16</td>
+      <td>1.81</td>
+      <td>-81.96</td>
+      <td>-71.44</td>
+      <td>-70.15</td>
+      <td>-1.31</td>
+      <td>0.73</td>
+      <td>6.80</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Profundidad en el nido de Bucaramanga, para interpretar la bimodalidad</span>
+<span class="n">prof_nido</span> <span class="o">=</span> <span class="n">cat_tr</span><span class="p">[(</span><span class="n">cat_tr</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mf">6.6</span><span class="p">,</span> <span class="mf">7.0</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">cat_tr</span><span class="o">.</span><span class="n">longitude</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="o">-</span><span class="mf">73.3</span><span class="p">,</span> <span class="o">-</span><span class="mf">72.9</span><span class="p">))]</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Magnitud.** Asimetría </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'mag'</span><span class="p">,</span><span class="w"> </span><span class="s1">'asimetría'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">. El </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'mag'</span><span class="p">,</span><span class="w"> </span><span class="s1">'atípicos_IQR_%'</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> % de los sismos supera la valla</span>
+<span class="s2">  de Tukey, hasta M </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'mag'</span><span class="p">,</span><span class="w"> </span><span class="s1">'máx'</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">. No son errores: la ley de Gutenberg-Richter (Gutenberg y Richter, 1944)</span>
+<span class="s2">  predice exactamente esa cola exponencial (sección 2.9). **Se conservan.**</span>
+<span class="s2">- **Profundidad.** La distribución es **bimodal**, sin rarezas de medición:</span>
+<span class="s2">  - un grupo superficial de corteza (&lt; 40 km);</span>
+<span class="s2">  - un grupo intermedio alrededor de </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">prof_nido</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> km, que es el **nido sísmico de Bucaramanga**</span>
+<span class="s2">    (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">prof_nido</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">cat_tr</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2"> de los sismos del entrenamiento en una zona de unos 40 × 40 km).</span>
+<span class="s2">- **La regla IQR casi no marca atípicos de profundidad** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'depth'</span><span class="p">,</span><span class="w"> </span><span class="s1">'atípicos_IQR_%'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> %) porque la distribución bimodal ensancha el rango</span>
+<span class="s2">  intercuartílico; no por eso hay que usarla a ciegas. Los sismos de más de 200 km (</span><span class="si">{</span><span class="n">es</span><span class="p">((</span><span class="n">cat_tr</span><span class="o">.</span><span class="n">depth</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">200</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">, hasta</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">desc</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'depth'</span><span class="p">,</span><span class="w"> </span><span class="s1">'máx'</span><span class="p">],</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> km) son reales, de la placa en subducción, y se conservan.</span>
+<span class="s2">- **Tratamiento.**</span>
+<span class="s2">  - No se recortan ni se eliminan sismos.</span>
+<span class="s2">  - El objetivo y los conteos se modelan en escala log1p, que amortigua las colas.</span>
+<span class="s2">  - Los atípicos del **panel** (enjambres con cientos de sismos en una celda-mes) se analizan en los capítulos 3 y 6."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Magnitud.</strong> Asimetría 1,80. El 5,4 % de los sismos supera la valla
+de Tukey, hasta M 6,7. No son errores: la ley de Gutenberg-Richter (Gutenberg y Richter, 1944)
+predice exactamente esa cola exponencial (sección 2.9). <strong>Se conservan.</strong></p></li>
+<li><p><strong>Profundidad.</strong> La distribución es <strong>bimodal</strong>, sin rarezas de medición:</p>
+<ul>
+<li><p>un grupo superficial de corteza (&lt; 40 km);</p></li>
+<li><p>un grupo intermedio alrededor de 147 km, que es el <strong>nido sísmico de Bucaramanga</strong>
+(51 % de los sismos del entrenamiento en una zona de unos 40 × 40 km).</p></li>
+</ul>
+</li>
+<li><p><strong>La regla IQR casi no marca atípicos de profundidad</strong> (0,01 %) porque la distribución bimodal ensancha el rango
+intercuartílico; no por eso hay que usarla a ciegas. Los sismos de más de 200 km (0,06 %, hasta
+595 km) son reales, de la placa en subducción, y se conservan.</p></li>
+<li><p><strong>Tratamiento.</strong></p>
+<ul>
+<li><p>No se recortan ni se eliminan sismos.</p></li>
+<li><p>El objetivo y los conteos se modelan en escala log1p, que amortigua las colas.</p></li>
+<li><p>Los atípicos del <strong>panel</strong> (enjambres con cientos de sismos en una celda-mes) se analizan en los capítulos 3 y 6.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="valores-imposibles-o-inconsistentes">
+<h2>2.8 Valores imposibles o inconsistentes<a class="headerlink" href="#valores-imposibles-o-inconsistentes" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Chequeos de valores imposibles: coordenadas, fechas, magnitudes y profundidades fuera de rango</span>
+<span class="n">chequeos</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"latitud fuera de [-90, 90]"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">crudo</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"longitud fuera de [-180, 180]"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">crudo</span><span class="o">.</span><span class="n">longitude</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"coordenadas (0, 0)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(((</span><span class="n">crudo</span><span class="o">.</span><span class="n">latitude</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">crudo</span><span class="o">.</span><span class="n">longitude</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"lat/lon posiblemente invertidas (lat &lt; -10 o lon &gt; -60)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(((</span><span class="n">crudo</span><span class="o">.</span><span class="n">latitude</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">10</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">crudo</span><span class="o">.</span><span class="n">longitude</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">60</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="sa">f</span><span class="s2">"fuera del área de estudio (</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">LAT_MIN</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">LAT_MAX</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">LON_MIN</span><span class="si">}</span><span class="s2">..</span><span class="si">{</span><span class="n">cfg</span><span class="o">.</span><span class="n">LON_MAX</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">crudo</span><span class="o">.</span><span class="n">latitude</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">LAT_MIN</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LAT_MAX</span><span class="p">)</span> <span class="o">|</span> <span class="o">~</span><span class="n">crudo</span><span class="o">.</span><span class="n">longitude</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">LON_MIN</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LON_MAX</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"magnitud fuera de [-1, 10]"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">crudo</span><span class="o">.</span><span class="n">mag</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"profundidad negativa (sobre el nivel del mar)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">crudo</span><span class="o">.</span><span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"profundidad exactamente 0 km (profundidad fijada)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">crudo</span><span class="o">.</span><span class="n">depth</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"profundidad &gt; 700 km (imposible físicamente)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">crudo</span><span class="o">.</span><span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">700</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"errores de localización negativos"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">crudo</span><span class="p">[[</span><span class="s2">"err_lat"</span><span class="p">,</span> <span class="s2">"err_lon"</span><span class="p">,</span> <span class="s2">"err_prof"</span><span class="p">]]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"errores de localización = 99,9 km (tope del localizador)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">crudo</span><span class="p">[[</span><span class="s2">"err_lat"</span><span class="p">,</span> <span class="s2">"err_lon"</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="mf">99.9</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"gap azimutal fuera de [0, 360]"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">crudo</span><span class="o">.</span><span class="n">gap_az</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"fechas futuras (&gt; fecha de descarga)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">crudo</span><span class="o">.</span><span class="n">time</span> <span class="o">&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2026-10-18"</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"nombres de departamento con variantes de escritura"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">crudo</span><span class="o">.</span><span class="n">depto</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span> <span class="o">-</span> <span class="n">guardado</span><span class="o">.</span><span class="n">depto</span><span class="o">.</span><span class="n">nunique</span><span class="p">())),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"chequeo"</span><span class="p">,</span> <span class="s2">"registros"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">chequeos</span><span class="p">,</span> <span class="s2">"valores_imposibles.csv"</span><span class="p">)</span>
+<span class="n">chequeos</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>chequeo</th>
+      <th>registros</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>latitud fuera de [-90, 90]</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>longitud fuera de [-180, 180]</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>coordenadas (0, 0)</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>lat/lon posiblemente invertidas (lat &lt; -10 o l...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>fuera del área de estudio (-5.0..14.0, -82.0.....</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>magnitud fuera de [-1, 10]</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>profundidad negativa (sobre el nivel del mar)</td>
+      <td>241</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>profundidad exactamente 0 km (profundidad fijada)</td>
+      <td>2074</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>profundidad &gt; 700 km (imposible físicamente)</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>errores de localización negativos</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>errores de localización = 99,9 km (tope del lo...</td>
+      <td>26</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>gap azimutal fuera de [0, 360]</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>fechas futuras (&gt; fecha de descarga)</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>nombres de departamento con variantes de escri...</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Profundidades negativas: cuántas hay y de qué magnitud</span>
+<span class="n">neg</span> <span class="o">=</span> <span class="n">crudo</span><span class="p">[</span><span class="n">crudo</span><span class="o">.</span><span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Coordenadas, magnitudes, fechas y gap azimutal.** Ningún valor imposible.</span>
+<span class="s2">- **Profundidades negativas** (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">neg</span><span class="p">)</span><span class="si">}</span><span class="s2">, mínimo </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">neg</span><span class="o">.</span><span class="n">depth</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> km). Son plausibles: la profundidad se mide respecto al nivel</span>
+<span class="s2">  del mar, y un sismo muy superficial bajo una montaña puede quedar «por encima» de él (el mínimo, unos 2 km, es menor que la</span>
+<span class="s2">  altura de la cordillera). Se conservan.</span>
+<span class="s2">  En la variable `prof_media_hist` se recortan a 0 para que la profundidad media no quede sesgada por la convención.</span>
+<span class="s2">- **Profundidades exactamente 0 km** (</span><span class="si">{</span><span class="n">es</span><span class="p">((</span><span class="n">crudo</span><span class="o">.</span><span class="n">depth</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">). Son profundidades **fijadas por el localizador**</span>
+<span class="s2">  cuando no se pudo resolver, no medidas reales. Se marcan como una limitación de la variable profundidad, que no es el</span>
+<span class="s2">  objetivo.</span>
+<span class="s2">- **Errores de localización en el tope de 99,9 km** (</span><span class="si">{</span><span class="p">(</span><span class="n">crudo</span><span class="p">[[</span><span class="s1">'err_lat'</span><span class="p">,</span><span class="w"> </span><span class="s1">'err_lon'</span><span class="p">]]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">99.9</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2"> registros). Son</span>
+<span class="s2">  soluciones mal restringidas, casi todas en el mar o en la frontera, y la ETL ya las excluye por no tener departamento.</span>
+<span class="s2">- **Nombres de departamento.** Las variantes de escritura (tildes, `_`, «San Andrés» largo) se **normalizaron**: mayúsculas</span>
+<span class="s2">  sin tildes y nombre corto de San Andrés.</span>
+<span class="s2">- **Escalas de magnitud.** El portal histórico solo reporta Ml; el actual reporta varias variantes (MLr_1…MLr_4, MLr, Mw, …).</span>
+<span class="s2">  Es una **posible inconsistencia de unidades**: si la calibración de la magnitud local cambió con el portal, un mismo sismo podría</span>
+<span class="s2">  quedar un poco por encima o por debajo del umbral de 2,5. Su efecto se mide en la sección 2.9 (completitud y valor *b* por año)</span>
+<span class="s2">  y como deriva en el capítulo 7."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Coordenadas, magnitudes, fechas y gap azimutal.</strong> Ningún valor imposible.</p></li>
+<li><p><strong>Profundidades negativas</strong> (241, mínimo -2,0 km). Son plausibles: la profundidad se mide respecto al nivel
+del mar, y un sismo muy superficial bajo una montaña puede quedar «por encima» de él (el mínimo, unos 2 km, es menor que la
+altura de la cordillera). Se conservan.
+En la variable <code class="docutils literal notranslate"><span class="pre">prof_media_hist</span></code> se recortan a 0 para que la profundidad media no quede sesgada por la convención.</p></li>
+<li><p><strong>Profundidades exactamente 0 km</strong> (2.074). Son profundidades <strong>fijadas por el localizador</strong>
+cuando no se pudo resolver, no medidas reales. Se marcan como una limitación de la variable profundidad, que no es el
+objetivo.</p></li>
+<li><p><strong>Errores de localización en el tope de 99,9 km</strong> (26 registros). Son
+soluciones mal restringidas, casi todas en el mar o en la frontera, y la ETL ya las excluye por no tener departamento.</p></li>
+<li><p><strong>Nombres de departamento.</strong> Las variantes de escritura (tildes, <code class="docutils literal notranslate"><span class="pre">_</span></code>, «San Andrés» largo) se <strong>normalizaron</strong>: mayúsculas
+sin tildes y nombre corto de San Andrés.</p></li>
+<li><p><strong>Escalas de magnitud.</strong> El portal histórico solo reporta Ml; el actual reporta varias variantes (MLr_1…MLr_4, MLr, Mw, …).
+Es una <strong>posible inconsistencia de unidades</strong>: si la calibración de la magnitud local cambió con el portal, un mismo sismo podría
+quedar un poco por encima o por debajo del umbral de 2,5. Su efecto se mide en la sección 2.9 (completitud y valor <em>b</em> por año)
+y como deriva en el capítulo 7.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sesgos-de-muestreo-y-representatividad">
+<h2>2.9 Sesgos de muestreo y representatividad<a class="headerlink" href="#sesgos-de-muestreo-y-representatividad" title="Link to this heading">#</a></h2>
+<p>Tres fuentes de sesgo propias de un catálogo sísmico:</p>
+<ol class="arabic simple">
+<li><p><strong>Completitud de la red.</strong> La red detecta mejor donde tiene más estaciones, y la red crece con los
+años. Se estima la <strong>magnitud de completitud</strong> Mc por año con el método de máxima curvatura, y el
+valor <em>b</em> de Gutenberg-Richter por máxima verosimilitud <span id="id2">[<a class="reference internal" href="12_conclusiones.html#id9" title="Keiiti Aki. Maximum likelihood estimate of b in the formula log N = a - bM and its confidence limits. Bulletin of the Earthquake Research Institute, 43:237–239, 1965.">Aki, 1965</a>]</span>.</p></li>
+<li><p><strong>Cobertura espacial.</strong> Quedan fuera los sismos en el mar o en las fronteras (sección 2.1).</p></li>
+<li><p><strong>Cambio de portal y de escala de magnitud</strong> en 2018.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Magnitud de completitud (Mc) por máxima curvatura y valor b de Gutenberg-Richter (Aki) por periodo</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mc_maxima_curvatura</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">paso</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">m</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="n">paso</span><span class="p">,</span> <span class="n">paso</span><span class="p">)</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">h</span><span class="p">)]</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">)</span>          <span class="c1"># corrección habitual de +0,2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">b_aki</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">mc</span><span class="p">,</span> <span class="n">paso</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="n">m</span> <span class="o">&gt;=</span> <span class="n">mc</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="n">mc</span> <span class="o">-</span> <span class="n">paso</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))),</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">anio</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">guardado</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">guardado</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span><span class="p">):</span>
+    <span class="n">mc</span> <span class="o">=</span> <span class="n">mc_maxima_curvatura</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">mag</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+    <span class="n">b</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">b_aki</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">mag</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="nb">max</span><span class="p">(</span><span class="n">mc</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">M_MIN</span><span class="p">))</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"año"</span><span class="p">:</span> <span class="n">anio</span><span class="p">,</span> <span class="s2">"sismos"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="p">),</span> <span class="s2">"Mc_max_curvatura"</span><span class="p">:</span> <span class="n">mc</span><span class="p">,</span> <span class="s2">"b_Aki"</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s2">"n_sobre_Mc"</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
+                  <span class="s2">"portal"</span><span class="p">:</span> <span class="s2">"histórico"</span> <span class="k">if</span> <span class="n">anio</span> <span class="o">&lt;</span> <span class="mi">2018</span> <span class="k">else</span> <span class="p">(</span><span class="s2">"cambio"</span> <span class="k">if</span> <span class="n">anio</span> <span class="o">==</span> <span class="mi">2018</span> <span class="k">else</span> <span class="s2">"actual"</span><span class="p">),</span>
+                  <span class="s2">"periodo"</span><span class="p">:</span> <span class="s2">"entrenamiento"</span> <span class="k">if</span> <span class="n">anio</span> <span class="o">&lt;=</span> <span class="mi">2020</span> <span class="k">else</span> <span class="s2">"prueba"</span><span class="p">})</span>
+<span class="n">compl</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">compl</span><span class="p">,</span> <span class="s2">"completitud_por_anio.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">compl</span><span class="p">[</span><span class="s2">"año"</span><span class="p">],</span> <span class="n">compl</span><span class="o">.</span><span class="n">sismos</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">compl</span><span class="o">.</span><span class="n">periodo</span> <span class="o">==</span> <span class="s2">"entrenamiento"</span><span class="p">,</span> <span class="s2">"#2b6cb0"</span><span class="p">,</span> <span class="s2">"#dd6b20"</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">2017.5</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">2017.6</span><span class="p">,</span> <span class="n">compl</span><span class="o">.</span><span class="n">sismos</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.95</span><span class="p">,</span> <span class="s2">"cambio de portal"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Sismos M ≥ 2,5 por año (azul = entrenamiento, naranja = prueba)"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">compl</span><span class="p">[</span><span class="s2">"año"</span><span class="p">],</span> <span class="n">compl</span><span class="o">.</span><span class="n">Mc_max_curvatura</span><span class="p">,</span> <span class="s2">"o-"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Mc (máxima curvatura)"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">M_MIN</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"r"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"umbral del proyecto (2,5)"</span><span class="p">)</span>
+<span class="n">ax2</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">twinx</span><span class="p">();</span> <span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">compl</span><span class="p">[</span><span class="s2">"año"</span><span class="p">],</span> <span class="n">compl</span><span class="o">.</span><span class="n">b_Aki</span><span class="p">,</span> <span class="s2">"s-"</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"#38a169"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"b (Aki)"</span><span class="p">);</span> <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"b"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Completitud y valor b por año"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"02_completitud.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">compl</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/310da54f316135ec0d93a78c64c3bb827eceb8a52d7bcfcbd0736ddfd1f20a4d.png" src="../_images/310da54f316135ec0d93a78c64c3bb827eceb8a52d7bcfcbd0736ddfd1f20a4d.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>año</th>
+      <th>sismos</th>
+      <th>Mc_max_curvatura</th>
+      <th>b_Aki</th>
+      <th>n_sobre_Mc</th>
+      <th>portal</th>
+      <th>periodo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2004</td>
+      <td>2719</td>
+      <td>2.9</td>
+      <td>0.79</td>
+      <td>1015</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2005</td>
+      <td>2141</td>
+      <td>2.9</td>
+      <td>0.76</td>
+      <td>810</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2006</td>
+      <td>2148</td>
+      <td>2.9</td>
+      <td>0.71</td>
+      <td>846</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2007</td>
+      <td>2095</td>
+      <td>2.9</td>
+      <td>0.75</td>
+      <td>835</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2008</td>
+      <td>1317</td>
+      <td>2.9</td>
+      <td>0.75</td>
+      <td>519</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2009</td>
+      <td>1701</td>
+      <td>2.9</td>
+      <td>0.75</td>
+      <td>623</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2010</td>
+      <td>1666</td>
+      <td>2.9</td>
+      <td>0.78</td>
+      <td>577</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2011</td>
+      <td>1514</td>
+      <td>2.9</td>
+      <td>0.78</td>
+      <td>567</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2012</td>
+      <td>1589</td>
+      <td>2.9</td>
+      <td>0.79</td>
+      <td>514</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2013</td>
+      <td>1845</td>
+      <td>2.9</td>
+      <td>0.85</td>
+      <td>629</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2014</td>
+      <td>1837</td>
+      <td>2.9</td>
+      <td>0.76</td>
+      <td>611</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2015</td>
+      <td>1584</td>
+      <td>2.9</td>
+      <td>0.80</td>
+      <td>539</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>2016</td>
+      <td>1454</td>
+      <td>2.9</td>
+      <td>0.79</td>
+      <td>538</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>2017</td>
+      <td>1342</td>
+      <td>2.9</td>
+      <td>0.75</td>
+      <td>461</td>
+      <td>histórico</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>2018</td>
+      <td>1385</td>
+      <td>2.9</td>
+      <td>0.76</td>
+      <td>449</td>
+      <td>cambio</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>2019</td>
+      <td>1514</td>
+      <td>2.9</td>
+      <td>0.75</td>
+      <td>546</td>
+      <td>actual</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>2020</td>
+      <td>1646</td>
+      <td>2.7</td>
+      <td>0.94</td>
+      <td>1015</td>
+      <td>actual</td>
+      <td>entrenamiento</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2021</td>
+      <td>1577</td>
+      <td>2.9</td>
+      <td>0.74</td>
+      <td>527</td>
+      <td>actual</td>
+      <td>prueba</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>2022</td>
+      <td>1458</td>
+      <td>2.9</td>
+      <td>0.73</td>
+      <td>451</td>
+      <td>actual</td>
+      <td>prueba</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>2023</td>
+      <td>1754</td>
+      <td>2.9</td>
+      <td>0.75</td>
+      <td>564</td>
+      <td>actual</td>
+      <td>prueba</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>2024</td>
+      <td>1867</td>
+      <td>2.9</td>
+      <td>0.79</td>
+      <td>564</td>
+      <td>actual</td>
+      <td>prueba</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>2025</td>
+      <td>1936</td>
+      <td>2.9</td>
+      <td>0.83</td>
+      <td>616</td>
+      <td>actual</td>
+      <td>prueba</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>2026</td>
+      <td>2529</td>
+      <td>2.9</td>
+      <td>0.83</td>
+      <td>854</td>
+      <td>actual</td>
+      <td>prueba</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Resumen de la completitud en el entrenamiento</span>
+<span class="n">ctr</span> <span class="o">=</span> <span class="n">compl</span><span class="p">[</span><span class="n">compl</span><span class="o">.</span><span class="n">periodo</span> <span class="o">==</span> <span class="s2">"entrenamiento"</span><span class="p">]</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **El catálogo no está completo desde M 2,5.** Con el método de máxima curvatura (+0,2), la Mc del entrenamiento es</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ctr</span><span class="o">.</span><span class="n">Mc_max_curvatura</span><span class="o">.</span><span class="n">mode</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> en </span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">ctr</span><span class="o">.</span><span class="n">Mc_max_curvatura</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ctr</span><span class="o">.</span><span class="n">Mc_max_curvatura</span><span class="o">.</span><span class="n">mode</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> de </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ctr</span><span class="p">)</span><span class="si">}</span><span class="s2"> años (mínimo</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ctr</span><span class="o">.</span><span class="n">Mc_max_curvatura</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">). Entre M 2,5 y la Mc, la red detecta solo una parte de los sismos que ocurren.</span>
+<span class="s2">- **Es un sesgo de nivel, no de tendencia.** La Mc es prácticamente **constante** en el tiempo, incluido el cambio de portal</span>
+<span class="s2">  de 2018. Los conteos subestiman la actividad real en una proporción parecida todos los años, así que **siguen siendo</span>
+<span class="s2">  comparables entre periodos**, que es lo que necesita un pronóstico mes a mes.</span>
+<span class="s2">- **Por qué se conserva M ≥ 2,5.** Subir el umbral a M 3,0 reduciría el sesgo, pero dejaría menos de la mitad de los sismos</span>
+<span class="s2">  y aumentaría los ceros. Además, las variables del modelo son relativas a la historia de la propia celda, lo que absorbe</span>
+<span class="s2">  diferencias estables de detección. La deriva se mide de forma explícita en el capítulo 7.</span>
+<span class="s2">- **Valor b.** Es estable entre </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ctr</span><span class="o">.</span><span class="n">b_Aki</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> y </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ctr</span><span class="o">.</span><span class="n">b_Aki</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.9</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> (percentiles 10–90). Solo 2020 se aparta</span>
+<span class="s2">  (b = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">compl</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">'año'</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">2020</span><span class="p">,</span><span class="w"> </span><span class="s1">'b_Aki'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">, el único año con Mc = 2,7). No se ve un salto con el cambio de portal en 2018,</span>
+<span class="s2">  lo que indica que la posible inconsistencia de escalas de magnitud (sección 2.8) no altera de forma visible la distribución</span>
+<span class="s2">  de magnitudes.</span>
+<span class="s2">- **Representatividad.** El dataset representa la **sismicidad continental con departamento asignado, registrada por la red</span>
+<span class="s2">  nacional**. No representa:</span>
+<span class="s2">  - los sismos en el mar, ni la sismicidad bajo la Mc;</span>
+<span class="s2">  - igual de bien todas las zonas: la sismicidad está muy concentrada (Santander tiene más de la mitad de los sismos, capítulo 8).</span>
+<span class="s2">  Las conclusiones del modelo valen para las **</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'celdas'</span><span class="p">])</span><span class="si">}</span><span class="s2"> celdas activas** y no se extrapolan a zonas sin historia."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>El catálogo no está completo desde M 2,5.</strong> Con el método de máxima curvatura (+0,2), la Mc del entrenamiento es
+2,9 en 16 de 17 años (mínimo
+2,7). Entre M 2,5 y la Mc, la red detecta solo una parte de los sismos que ocurren.</p></li>
+<li><p><strong>Es un sesgo de nivel, no de tendencia.</strong> La Mc es prácticamente <strong>constante</strong> en el tiempo, incluido el cambio de portal
+de 2018. Los conteos subestiman la actividad real en una proporción parecida todos los años, así que <strong>siguen siendo
+comparables entre periodos</strong>, que es lo que necesita un pronóstico mes a mes.</p></li>
+<li><p><strong>Por qué se conserva M ≥ 2,5.</strong> Subir el umbral a M 3,0 reduciría el sesgo, pero dejaría menos de la mitad de los sismos
+y aumentaría los ceros. Además, las variables del modelo son relativas a la historia de la propia celda, lo que absorbe
+diferencias estables de detección. La deriva se mide de forma explícita en el capítulo 7.</p></li>
+<li><p><strong>Valor b.</strong> Es estable entre 0,75 y 0,82 (percentiles 10–90). Solo 2020 se aparta
+(b = 0,94, el único año con Mc = 2,7). No se ve un salto con el cambio de portal en 2018,
+lo que indica que la posible inconsistencia de escalas de magnitud (sección 2.8) no altera de forma visible la distribución
+de magnitudes.</p></li>
+<li><p><strong>Representatividad.</strong> El dataset representa la <strong>sismicidad continental con departamento asignado, registrada por la red
+nacional</strong>. No representa:</p>
+<ul>
+<li><p>los sismos en el mar, ni la sismicidad bajo la Mc;</p></li>
+<li><p>igual de bien todas las zonas: la sismicidad está muy concentrada (Santander tiene más de la mitad de los sismos, capítulo 8).
+Las conclusiones del modelo valen para las <strong>163 celdas activas</strong> y no se extrapolan a zonas sin historia.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="consideraciones-eticas">
+<h2>2.10 Consideraciones éticas<a class="headerlink" href="#consideraciones-eticas" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Datos personales y reidentificación.</strong> El catálogo no contiene personas: cada registro es un
+fenómeno natural con coordenadas y hora exactas. No hay riesgo de reidentificar a nadie, y las
+coordenadas precisas son, en este caso, información pública de interés general.</p></li>
+<li><p><strong>Comunicación del riesgo.</strong> El principal riesgo ético es interpretar un pronóstico de <strong>tasa de
+actividad</strong> como predicción de un terremoto. Un falso «mes tranquilo» puede generar falsa
+seguridad; un pronóstico alto mal comunicado puede generar alarma. Por eso:</p>
+<ul>
+<li><p>el libro reporta siempre la incertidumbre;</p></li>
+<li><p>no usa términos como «predicción de terremotos»;</p></li>
+<li><p>advierte que el modelo no sustituye la evaluación oficial del SGC.</p></li>
+</ul>
+</li>
+<li><p><strong>Equidad territorial.</strong> Las zonas con menos estaciones (Amazonía, Orinoquía, costas) tienen menos
+sismos registrados y el modelo las pronostica peor, o no las incluye. Una decisión de recursos
+basada solo en el modelo podría reforzar esa desigualdad de cobertura.</p></li>
+<li><p><strong>Uso y licencia.</strong> Uso académico, con atribución al SGC y sin redistribución comercial
+(capítulo 1).</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="01_introduccion.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="03_eda_objetivo.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">3. Análisis de la variable objetivo (2.1)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extraccion-transformacion-y-carga-etl">2.1 Extracción, transformación y carga (ETL)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diccionario-de-variables">2.2 Diccionario de variables</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estructura-tamano-y-entidades">2.3 Estructura, tamaño y entidades</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#valores-faltantes-patron">2.4 Valores faltantes: patrón</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#valores-faltantes-mecanismo-mcar-mar-o-mnar">2.5 Valores faltantes: mecanismo (MCAR, MAR o MNAR)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#duplicados-exactos-y-casi-duplicados">2.6 Duplicados exactos y casi-duplicados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#valores-atipicos-catalogo-periodo-de-entrenamiento">2.7 Valores atípicos (catálogo, periodo de entrenamiento)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#valores-imposibles-o-inconsistentes">2.8 Valores imposibles o inconsistentes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sesgos-de-muestreo-y-representatividad">2.9 Sesgos de muestreo y representatividad</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consideraciones-eticas">2.10 Consideraciones éticas</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

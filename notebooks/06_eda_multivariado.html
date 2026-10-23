@@ -1,0 +1,916 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>6. Análisis multivariado (2.4) &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/06_eda_multivariado';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Componente temporal (2.6)" href="07_eda_temporal.html" />
+    <link rel="prev" title="5. Análisis bivariado (2.3)" href="05_eda_bivariado.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/06_eda_multivariado.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>6. Análisis multivariado (2.4)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pca-varianza-explicada-y-estructura">6.1 PCA: varianza explicada y estructura</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#atipicos-multivariados">6.2 Atípicos multivariados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subpoblaciones-de-celdas-k-means-sobre-el-perfil-de-cada-celda">6.3 Subpoblaciones de celdas: k-means sobre el perfil de cada celda</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="analisis-multivariado-2-4">
+<h1>6. Análisis multivariado (2.4)<a class="headerlink" href="#analisis-multivariado-2-4" title="Link to this heading">#</a></h1>
+<p>Se usan las 18 predictoras del panel de entrenamiento: conteos en log1p, magnitudes faltantes
+imputadas con la mediana y todo estandarizado. Hay tres preguntas:</p>
+<ol class="arabic simple">
+<li><p>¿Cuál es la <strong>dimensionalidad efectiva</strong>? (PCA)</p></li>
+<li><p>¿Hay <strong>observaciones atípicas multivariadas</strong>? (Mahalanobis robusta e Isolation Forest)</p></li>
+<li><p>¿Hay <strong>subpoblaciones</strong> de celdas con comportamientos distintos? (k-means y t-SNE como apoyo visual)</p></li>
+</ol>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Datos estandarizados (imputación con la mediana) para PCA, atípicos multivariados y clustering</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.decomposition</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.covariance</span><span class="w"> </span><span class="kn">import</span> <span class="n">MinCovDet</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">IsolationForest</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">silhouette_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.manifold</span><span class="w"> </span><span class="kn">import</span> <span class="n">TSNE</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_completo</span><span class="p">()</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_dataframe</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">)</span>
+<span class="n">conteos</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"n_"</span><span class="p">,</span> <span class="s2">"n35"</span><span class="p">,</span> <span class="s2">"vec"</span><span class="p">,</span> <span class="s2">"n_mismo"</span><span class="p">))]</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">Z</span><span class="p">[</span><span class="n">conteos</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">Z</span><span class="p">[</span><span class="n">conteos</span><span class="p">])</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="p">(</span><span class="n">Z</span> <span class="o">-</span> <span class="n">Z</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">/</span> <span class="n">Z</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="pca-varianza-explicada-y-estructura">
+<h2>6.1 PCA: varianza explicada y estructura<a class="headerlink" href="#pca-varianza-explicada-y-estructura" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># PCA: varianza explicada y cargas de las primeras componentes</span>
+<span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+<span class="n">var</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"componente"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">"varianza_%"</span><span class="p">:</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">pca</span><span class="o">.</span><span class="n">explained_variance_ratio_</span><span class="p">})</span>
+<span class="n">var</span><span class="p">[</span><span class="s2">"acumulada_%"</span><span class="p">]</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="s2">"varianza_%"</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+<span class="n">cargas</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pca</span><span class="o">.</span><span class="n">components_</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"CP1"</span><span class="p">,</span> <span class="s2">"CP2"</span><span class="p">,</span> <span class="s2">"CP3"</span><span class="p">,</span> <span class="s2">"CP4"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">"pca_varianza.csv"</span><span class="p">);</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">cargas</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"pca_cargas.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">"width_ratios"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]})</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">componente</span><span class="p">,</span> <span class="n">var</span><span class="p">[</span><span class="s2">"varianza_%"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#4299e1"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">componente</span><span class="p">,</span> <span class="n">var</span><span class="p">[</span><span class="s2">"acumulada_%"</span><span class="p">],</span> <span class="s2">"o-"</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"#dd6b20"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Varianza explicada (%)"</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cargas</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"RdBu_r"</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">".2f"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">annot_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">"size"</span><span class="p">:</span> <span class="mi">7</span><span class="p">});</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Cargas de CP1–CP4"</span><span class="p">)</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">Z</span><span class="p">)[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">sc</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">S</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">S</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">log_y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"magma_r"</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">"log(1+y)"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Filas en CP1–CP2 (color = objetivo)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"06_pca.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">k90</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">var</span><span class="p">[</span><span class="s2">"acumulada_%"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **CP1** explica el </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">var</span><span class="p">[</span><span class="s1">'varianza_%'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> % de la varianza. Tiene cargas positivas y parecidas (≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">cargas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'n_3m'</span><span class="p">,</span><span class="w"> </span><span class="s1">'CP1'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">) en todos</span>
+<span class="s2">  los **conteos de la propia celda**, y menores en los de la vecindad (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">cargas</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'vec_1m'</span><span class="p">,</span><span class="w"> </span><span class="s1">'CP1'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">). Es un eje de **«nivel de actividad»**,</span>
+<span class="s2">  y el color de la figura muestra que ordena bien el objetivo.</span>
+<span class="s2">- **CP2** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">var</span><span class="p">[</span><span class="s1">'varianza_%'</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> %) contrapone las **magnitudes** de la ventana (cargas de +0,3 a +0,4) a la **actividad vecina y la</span>
+<span class="s2">  profundidad** (≈ −0,3 a −0,4): separa celdas con sismos más grandes de celdas profundas rodeadas de actividad, como el entorno del nido.</span>
+<span class="s2">- **CP3 y CP4** recogen sobre todo la **ubicación** (lat, lon) y la vecindad.</span>
+<span class="s2">- **Dimensionalidad efectiva.** Se necesitan **</span><span class="si">{</span><span class="n">k90</span><span class="si">}</span><span class="s2"> componentes** para el 90 % de la varianza, de 18 variables: hay redundancia (los</span>
+<span class="s2">  bloques del capítulo 5), pero no colapso a uno o dos ejes. Las variables de calendario (`sen_mes`, `cos_mes`) tienen cargas ≈ 0 en las</span>
+<span class="s2">  cuatro primeras componentes: son ortogonales al resto y ocupan componentes propias.</span>
+<span class="s2">- **Uso.** El PCA es solo exploratorio. Los modelos usan las variables originales dentro de su Pipeline, y no se ajusta ningún</span>
+<span class="s2">  PCA con datos de prueba."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ca162e3e422ec9b6f8e32471477b2fbf1056bd97ab8ce034aa92a45f6ee08326.png" src="../_images/ca162e3e422ec9b6f8e32471477b2fbf1056bd97ab8ce034aa92a45f6ee08326.png" />
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>CP1</strong> explica el 34,6 % de la varianza. Tiene cargas positivas y parecidas (≈ 0,34) en todos
+los <strong>conteos de la propia celda</strong>, y menores en los de la vecindad (0,15). Es un eje de <strong>«nivel de actividad»</strong>,
+y el color de la figura muestra que ordena bien el objetivo.</p></li>
+<li><p><strong>CP2</strong> (13,8 %) contrapone las <strong>magnitudes</strong> de la ventana (cargas de +0,3 a +0,4) a la <strong>actividad vecina y la
+profundidad</strong> (≈ −0,3 a −0,4): separa celdas con sismos más grandes de celdas profundas rodeadas de actividad, como el entorno del nido.</p></li>
+<li><p><strong>CP3 y CP4</strong> recogen sobre todo la <strong>ubicación</strong> (lat, lon) y la vecindad.</p></li>
+<li><p><strong>Dimensionalidad efectiva.</strong> Se necesitan <strong>10 componentes</strong> para el 90 % de la varianza, de 18 variables: hay redundancia (los
+bloques del capítulo 5), pero no colapso a uno o dos ejes. Las variables de calendario (<code class="docutils literal notranslate"><span class="pre">sen_mes</span></code>, <code class="docutils literal notranslate"><span class="pre">cos_mes</span></code>) tienen cargas ≈ 0 en las
+cuatro primeras componentes: son ortogonales al resto y ocupan componentes propias.</p></li>
+<li><p><strong>Uso.</strong> El PCA es solo exploratorio. Los modelos usan las variables originales dentro de su Pipeline, y no se ajusta ningún
+PCA con datos de prueba.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="atipicos-multivariados">
+<h2>6.2 Atípicos multivariados<a class="headerlink" href="#atipicos-multivariados" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Atípicos multivariados: distancia de Mahalanobis robusta (MCD) e Isolation Forest</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>   <span class="c1"># avisos numéricos de MCD con variables discretas</span>
+<span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span>
+<span class="n">mcd</span> <span class="o">=</span> <span class="n">MinCovDet</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">,</span> <span class="n">support_fraction</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Z</span><span class="p">),</span> <span class="mi">8000</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)])</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">mcd</span><span class="o">.</span><span class="n">mahalanobis</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+<span class="n">umbral</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">chi2</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.999</span><span class="p">,</span> <span class="n">Z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">iso</span> <span class="o">=</span> <span class="n">IsolationForest</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">contamination</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+<span class="n">score</span> <span class="o">=</span> <span class="o">-</span><span class="n">iso</span><span class="o">.</span><span class="n">score_samples</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+<span class="n">P</span><span class="p">[</span><span class="s2">"atipico_mahal"</span><span class="p">]</span> <span class="o">=</span> <span class="n">d2</span> <span class="o">&gt;</span> <span class="n">umbral</span>
+<span class="n">P</span><span class="p">[</span><span class="s2">"atipico_iso"</span><span class="p">]</span> <span class="o">=</span> <span class="n">iso</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">tabla_at</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"método"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Mahalanobis robusta (MCD, χ² 99,9 %)"</span><span class="p">,</span> <span class="s2">"Isolation Forest"</span><span class="p">,</span> <span class="s2">"ambos"</span><span class="p">],</span>
+    <span class="s2">"</span><span class="si">% f</span><span class="s2">ilas"</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span> <span class="o">*</span> <span class="n">P</span><span class="o">.</span><span class="n">atipico_mahal</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">P</span><span class="o">.</span><span class="n">atipico_iso</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">atipico_mahal</span> <span class="o">&amp;</span> <span class="n">P</span><span class="o">.</span><span class="n">atipico_iso</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()],</span>
+    <span class="s2">"media y si atípico"</span><span class="p">:</span> <span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">atipico_mahal</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">P</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">atipico_iso</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">P</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">atipico_mahal</span> <span class="o">&amp;</span> <span class="n">P</span><span class="o">.</span><span class="n">atipico_iso</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()],</span>
+    <span class="s2">"media y si no"</span><span class="p">:</span> <span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">P</span><span class="o">.</span><span class="n">atipico_mahal</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">P</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">P</span><span class="o">.</span><span class="n">atipico_iso</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">P</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="p">(</span><span class="n">P</span><span class="o">.</span><span class="n">atipico_mahal</span> <span class="o">&amp;</span> <span class="n">P</span><span class="o">.</span><span class="n">atipico_iso</span><span class="p">),</span> <span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()],</span>
+<span class="p">})</span>
+<span class="n">celdas_at</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">atipico_mahal</span> <span class="o">&amp;</span> <span class="n">P</span><span class="o">.</span><span class="n">atipico_iso</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">tabla_at</span><span class="p">,</span> <span class="s2">"atipicos_multivariados.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">d2</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#4299e1"</span><span class="p">);</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">umbral</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="s2">"r"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">);</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"log10 distancia de Mahalanobis robusta²"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">d2</span><span class="p">),</span> <span class="n">score</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">P</span><span class="o">.</span><span class="n">log_y</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"magma_r"</span><span class="p">);</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"log10 D²"</span><span class="p">);</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"puntaje Isolation Forest"</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Concordancia entre métodos (color = objetivo)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"06_atipicos.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">tabla_at</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">celdas_at</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="s2">"filas atípicas (ambos)"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/11e6de5fe246a1468a063c1d27c518dc36d7f82db786515e8461336feea69e78.png" src="../_images/11e6de5fe246a1468a063c1d27c518dc36d7f82db786515e8461336feea69e78.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>método</th>
+      <th>% filas</th>
+      <th>media y si atípico</th>
+      <th>media y si no</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Mahalanobis robusta (MCD, χ² 99,9 %)</td>
+      <td>29.03</td>
+      <td>2.20</td>
+      <td>0.24</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Isolation Forest</td>
+      <td>15.55</td>
+      <td>3.69</td>
+      <td>0.28</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>ambos</td>
+      <td>14.15</td>
+      <td>4.04</td>
+      <td>0.28</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>filas atípicas (ambos)</th>
+    </tr>
+    <tr>
+      <th>lat</th>
+      <th>lon</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>6.75</th>
+      <th>-73.25</th>
+      <td>190</td>
+    </tr>
+    <tr>
+      <th>5.25</th>
+      <th>-73.75</th>
+      <td>189</td>
+    </tr>
+    <tr>
+      <th>7.25</th>
+      <th>-73.25</th>
+      <td>188</td>
+    </tr>
+    <tr>
+      <th>6.25</th>
+      <th>-73.75</th>
+      <td>186</td>
+    </tr>
+    <tr>
+      <th>6.75</th>
+      <th>-73.75</th>
+      <td>169</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Mahalanobis robusta.** Marca el </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">tabla_at</span><span class="p">[</span><span class="s1">'</span><span class="si">% f</span><span class="s1">ilas'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> % de las filas. Es mucho más que el 0,1 % que se esperaría con datos</span>
+<span class="s2">  normales: el núcleo robusto (MCD) lo forman las celdas casi inactivas, así que cualquier celda con actividad queda lejos de él.</span>
+<span class="s2">- **Isolation Forest.** Marca el </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">tabla_at</span><span class="p">[</span><span class="s1">'</span><span class="si">% f</span><span class="s1">ilas'</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> %, y </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">tabla_at</span><span class="p">[</span><span class="s1">'</span><span class="si">% f</span><span class="s1">ilas'</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> % coincide con Mahalanobis.</span>
+<span class="s2">- **Qué son los atípicos.** Las filas atípicas tienen un objetivo medio de </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">tabla_at</span><span class="p">[</span><span class="s1">'media y si atípico'</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> sismos, frente a</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">tabla_at</span><span class="p">[</span><span class="s1">'media y si no'</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> en el resto. Se concentran en las celdas **más activas**: el nido de Bucaramanga y sus vecinas aparecen</span>
+<span class="s2">  como atípicas en prácticamente todos sus meses (tabla). No son errores.</span>
+<span class="s2">- **Tratamiento.** No se eliminan: son justamente donde está la información sobre los sismos. Eliminarlas sesgaría el modelo</span>
+<span class="s2">  hacia «no pasa nada». Su influencia en los modelos lineales se controla con log1p y estandarización (capítulo 10). Los</span>
+<span class="s2">  modelos de árboles del Entregable 2 son robustos a ellas por construcción."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Mahalanobis robusta.</strong> Marca el 29,0 % de las filas. Es mucho más que el 0,1 % que se esperaría con datos
+normales: el núcleo robusto (MCD) lo forman las celdas casi inactivas, así que cualquier celda con actividad queda lejos de él.</p></li>
+<li><p><strong>Isolation Forest.</strong> Marca el 15,6 %, y 14,1 % coincide con Mahalanobis.</p></li>
+<li><p><strong>Qué son los atípicos.</strong> Las filas atípicas tienen un objetivo medio de 4,0 sismos, frente a
+0,28 en el resto. Se concentran en las celdas <strong>más activas</strong>: el nido de Bucaramanga y sus vecinas aparecen
+como atípicas en prácticamente todos sus meses (tabla). No son errores.</p></li>
+<li><p><strong>Tratamiento.</strong> No se eliminan: son justamente donde está la información sobre los sismos. Eliminarlas sesgaría el modelo
+hacia «no pasa nada». Su influencia en los modelos lineales se controla con log1p y estandarización (capítulo 10). Los
+modelos de árboles del Entregable 2 son robustos a ellas por construcción.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="subpoblaciones-de-celdas-k-means-sobre-el-perfil-de-cada-celda">
+<h2>6.3 Subpoblaciones de celdas: k-means sobre el perfil de cada celda<a class="headerlink" href="#subpoblaciones-de-celdas-k-means-sobre-el-perfil-de-cada-celda" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Unidad de agrupamiento.</strong> Se agrupan <strong>celdas</strong>, no filas: así se responde si hay tipos de
+zonas sísmicas.</p></li>
+<li><p><strong>Perfil de cada celda (entrenamiento):</strong> media de log(1+y), proporción de meses en cero,
+variabilidad (desviación de log(1+y)), proporción de sismos M ≥ 3,5, profundidad media y
+magnitud media.</p></li>
+<li><p><strong>Elección de k:</strong> silueta.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perfil de cada celda y agrupamiento con K-means (silueta) y t-SNE</span>
+<span class="n">perfil</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"celda"</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">lat</span><span class="o">=</span><span class="p">(</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"first"</span><span class="p">),</span> <span class="n">lon</span><span class="o">=</span><span class="p">(</span><span class="s2">"lon"</span><span class="p">,</span> <span class="s2">"first"</span><span class="p">),</span> <span class="n">media_log</span><span class="o">=</span><span class="p">(</span><span class="s2">"log_y"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">),</span>
+                               <span class="n">ceros</span><span class="o">=</span><span class="p">(</span><span class="s2">"y"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">s</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">variab</span><span class="o">=</span><span class="p">(</span><span class="s2">"log_y"</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">),</span>
+                               <span class="n">frac_m35</span><span class="o">=</span><span class="p">(</span><span class="s2">"n35_12m"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">),</span> <span class="n">n12</span><span class="o">=</span><span class="p">(</span><span class="s2">"n_12m"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">),</span>
+                               <span class="n">prof</span><span class="o">=</span><span class="p">(</span><span class="s2">"prof_media_hist"</span><span class="p">,</span> <span class="s2">"last"</span><span class="p">),</span> <span class="n">mag</span><span class="o">=</span><span class="p">(</span><span class="s2">"mag_media_12m"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">))</span>
+<span class="n">perfil</span><span class="p">[</span><span class="s2">"frac_m35"</span><span class="p">]</span> <span class="o">=</span> <span class="n">perfil</span><span class="o">.</span><span class="n">frac_m35</span> <span class="o">/</span> <span class="n">perfil</span><span class="o">.</span><span class="n">n12</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+<span class="n">perfil</span> <span class="o">=</span> <span class="n">perfil</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"n12"</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">perfil</span><span class="o">.</span><span class="n">median</span><span class="p">())</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">perfil</span><span class="p">[[</span><span class="s2">"media_log"</span><span class="p">,</span> <span class="s2">"ceros"</span><span class="p">,</span> <span class="s2">"variab"</span><span class="p">,</span> <span class="s2">"frac_m35"</span><span class="p">,</span> <span class="s2">"prof"</span><span class="p">,</span> <span class="s2">"mag"</span><span class="p">]]</span>
+<span class="n">F</span> <span class="o">=</span> <span class="p">(</span><span class="n">F</span> <span class="o">-</span> <span class="n">F</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">/</span> <span class="n">F</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+<span class="n">sil</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">silhouette_score</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">F</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">)}</span>
+<span class="n">k_opt</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sil</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">sil</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+<span class="n">perfil</span><span class="p">[</span><span class="s2">"grupo"</span><span class="p">]</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">k_opt</span><span class="p">,</span> <span class="n">n_init</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
+<span class="n">resumen_g</span> <span class="o">=</span> <span class="n">perfil</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"grupo"</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">celdas</span><span class="o">=</span><span class="p">(</span><span class="s2">"lat"</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">),</span> <span class="n">media_mensual</span><span class="o">=</span><span class="p">(</span><span class="s2">"media_log"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()),</span>
+                                        <span class="n">ceros</span><span class="o">=</span><span class="p">(</span><span class="s2">"ceros"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">),</span> <span class="n">prof_media</span><span class="o">=</span><span class="p">(</span><span class="s2">"prof"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">),</span> <span class="n">mag_media</span><span class="o">=</span><span class="p">(</span><span class="s2">"mag"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">))</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">perfil</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"clusters_celdas.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mf">4.6</span><span class="p">),</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">"width_ratios"</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]})</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">sil</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">sil</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="s2">"o-"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Silueta según k"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"k"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">g_</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">perfil</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"grupo"</span><span class="p">):</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">lat</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"s"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"grupo </span><span class="si">{</span><span class="n">g_</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">"equal"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Grupos de celdas (k = </span><span class="si">{</span><span class="n">k_opt</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<span class="n">sub</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">4000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span>
+<span class="n">emb</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">perplexity</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s2">"pca"</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">sub</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">emb</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">emb</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">sub</span><span class="o">.</span><span class="n">celda</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">perfil</span><span class="o">.</span><span class="n">grupo</span><span class="p">),</span> <span class="n">s</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"tab10"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"t-SNE de filas (color = grupo de su celda; solo visual)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"06_clusters.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">resumen_g</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/022356ab45eba5f48a5c9c167e0af8fcc07db9fbfa5378616f2b3121dd1b0106.png" src="../_images/022356ab45eba5f48a5c9c167e0af8fcc07db9fbfa5378616f2b3121dd1b0106.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>celdas</th>
+      <th>media_mensual</th>
+      <th>ceros</th>
+      <th>prof_media</th>
+      <th>mag_media</th>
+    </tr>
+    <tr>
+      <th>grupo</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>145</td>
+      <td>0.17</td>
+      <td>0.81</td>
+      <td>30.02</td>
+      <td>2.95</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>18</td>
+      <td>4.41</td>
+      <td>0.40</td>
+      <td>95.54</td>
+      <td>2.89</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Número de grupos.** La silueta es máxima con **k = </span><span class="si">{</span><span class="n">k_opt</span><span class="si">}</span><span class="s2">** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sil</span><span class="p">[</span><span class="n">k_opt</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">): una separación </span><span class="si">{</span><span class="p">(</span><span class="s1">'clara'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">sil</span><span class="p">[</span><span class="n">k_opt</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'moderada'</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">- **Qué separan los grupos.** El **nivel de actividad** (media mensual y proporción de ceros) y la **profundidad**. Uno de ellos reúne</span>
+<span class="s2">  las celdas muy activas y profundas del nido de Bucaramanga (ver la tabla).</span>
+<span class="s2">- **t-SNE.** Se usa **solo como apoyo visual**, no para inferir nada. Muestra que las filas de un mismo grupo de celdas tienden a</span>
+<span class="s2">  ocupar regiones contiguas, con superposición en las celdas de baja actividad.</span>
+<span class="s2">- **Implicaciones para el modelado.**</span>
+<span class="s2">  1. Hay subpoblaciones de celdas con dinámicas distintas, así que un modelo global debe recibir variables que identifiquen la</span>
+<span class="s2">     celda o su régimen (historia propia, profundidad, ubicación). Las 18 variables ya lo hacen.</span>
+<span class="s2">  2. Los modelos no lineales podrán ajustar relaciones distintas por grupo.</span>
+<span class="s2">  3. La evaluación debe revisar el desempeño **por grupo de celdas** (capítulo 11), no solo el promedio."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Número de grupos.</strong> La silueta es máxima con <strong>k = 2</strong> (0,48): una separación moderada.</p></li>
+<li><p><strong>Qué separan los grupos.</strong> El <strong>nivel de actividad</strong> (media mensual y proporción de ceros) y la <strong>profundidad</strong>. Uno de ellos reúne
+las celdas muy activas y profundas del nido de Bucaramanga (ver la tabla).</p></li>
+<li><p><strong>t-SNE.</strong> Se usa <strong>solo como apoyo visual</strong>, no para inferir nada. Muestra que las filas de un mismo grupo de celdas tienden a
+ocupar regiones contiguas, con superposición en las celdas de baja actividad.</p></li>
+<li><p><strong>Implicaciones para el modelado.</strong></p>
+<ol class="arabic simple">
+<li><p>Hay subpoblaciones de celdas con dinámicas distintas, así que un modelo global debe recibir variables que identifiquen la
+celda o su régimen (historia propia, profundidad, ubicación). Las 18 variables ya lo hacen.</p></li>
+<li><p>Los modelos no lineales podrán ajustar relaciones distintas por grupo.</p></li>
+<li><p>La evaluación debe revisar el desempeño <strong>por grupo de celdas</strong> (capítulo 11), no solo el promedio.</p></li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="05_eda_bivariado.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">5. Análisis bivariado (2.3)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="07_eda_temporal.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">7. Componente temporal (2.6)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pca-varianza-explicada-y-estructura">6.1 PCA: varianza explicada y estructura</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#atipicos-multivariados">6.2 Atípicos multivariados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subpoblaciones-de-celdas-k-means-sobre-el-perfil-de-cada-celda">6.3 Subpoblaciones de celdas: k-means sobre el perfil de cada celda</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

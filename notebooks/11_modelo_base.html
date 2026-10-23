@@ -1,0 +1,1954 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>11. Modelo base: líneas base triviales y SVR lineal &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/11_modelo_base';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="12. Conclusiones del Entregable 1, limitaciones y checklist" href="12_conclusiones.html" />
+    <link rel="prev" title="10. Preprocesamiento y Pipeline (2.9)" href="10_preprocesamiento.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/11_modelo_base.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>11. Modelo base: líneas base triviales y SVR lineal</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hiperparametros-del-svr-lineal-solo-con-validacion-cruzada-temporal">11.1 Hiperparámetros del SVR lineal (solo con validación cruzada temporal)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validacion-cruzada-temporal-principal-bloques-espaciales-y-aleatoria">11.2 Validación cruzada: temporal (principal), bloques espaciales y aleatoria</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ajuste-final-y-evaluacion-unica-en-la-prueba">11.3 Ajuste final y evaluación única en la prueba</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-explicita-con-las-lineas-base-triviales">Comparación explícita con las líneas base triviales</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnostico-de-residuos">11.4 Diagnóstico de residuos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#curva-de-aprendizaje">11.5 Curva de aprendizaje</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion-de-los-coeficientes">11.6 Interpretación de los coeficientes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#desempeno-por-subgrupos-y-por-ano-de-la-prueba">11.7 Desempeño por subgrupos y por año de la prueba</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#representacion-de-entrenamiento-validacion-y-prueba-con-sus-predicciones">11.8 Representación de entrenamiento, validación y prueba con sus predicciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nota-critica-del-enunciado-desempeno-sospechosamente-alto">11.9 Nota crítica del enunciado: ¿desempeño sospechosamente alto?</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="modelo-base-lineas-base-triviales-y-svr-lineal">
+<h1>11. Modelo base: líneas base triviales y SVR lineal<a class="headerlink" href="#modelo-base-lineas-base-triviales-y-svr-lineal" title="Link to this heading">#</a></h1>
+<p><strong>Ruta D (regresión espacio-temporal).</strong> El enunciado pide un modelo base (SVR lineal) comparado con
+líneas base triviales. Se usan cinco, todas sin aprendizaje o con aprendizaje mínimo:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Línea base</p></th>
+<th class="head"><p>Pronóstico para la celda <em>c</em> en el mes <em>t</em> + 1</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">DummyRegressor</span></code> (media)</p></td>
+<td><p>media global del objetivo en entrenamiento</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">DummyRegressor</span></code> (mediana)</p></td>
+<td><p>0, la mediana (el «nunca pasa nada»)</p></td>
+</tr>
+<tr class="row-even"><td><p>Media por celda (zona)</p></td>
+<td><p>media del objetivo de la celda en entrenamiento</p></td>
+</tr>
+<tr class="row-odd"><td><p>Persistencia</p></td>
+<td><p>sismos de la celda en el mes <em>t</em></p></td>
+</tr>
+<tr class="row-even"><td><p>Ingenuo estacional</p></td>
+<td><p>sismos de la celda en el mismo mes del año anterior</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Métrica principal: RMSLE.</strong> Complementarias: RMSE, MAE, MAPE (solo y &gt; 0), sMAPE, R² y R² en log.
+La partición, la validación cruzada y el Pipeline son los de los capítulos 1, 7 y 10.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Librerías, datos y pliegues temporales del modelo base</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.dummy</span><span class="w"> </span><span class="kn">import</span> <span class="n">DummyRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">KFold</span><span class="p">,</span> <span class="n">GroupKFold</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.graphics.tsaplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_acf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">modelos</span> <span class="k">as</span> <span class="n">mdl</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_completo</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">);</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">];</span> <span class="n">cc</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"cc"</span><span class="p">]</span>
+<span class="n">par</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TABLAS</span> <span class="o">/</span> <span class="s2">"parametros_preprocesamiento.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"parametro"</span><span class="p">)[</span><span class="s2">"valor"</span><span class="p">]</span>
+<span class="n">IMPUT</span> <span class="o">=</span> <span class="n">par</span><span class="p">[</span><span class="s2">"imputacion_magnitud"</span><span class="p">];</span> <span class="n">COLS</span> <span class="o">=</span> <span class="n">par</span><span class="p">[</span><span class="s2">"variables"</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">";"</span><span class="p">)</span>
+<span class="n">pl</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">pliegues_temporales</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Imputación de magnitudes: **</span><span class="si">{</span><span class="n">IMPUT</span><span class="si">}</span><span class="s2">**; variables: **</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">COLS</span><span class="p">)</span><span class="si">}</span><span class="s2">** (capítulo 10)."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p>Imputación de magnitudes: <strong>constante</strong>; variables: <strong>18</strong> (capítulo 10).</p>
+</div>
+</div>
+<section id="hiperparametros-del-svr-lineal-solo-con-validacion-cruzada-temporal">
+<h2>11.1 Hiperparámetros del SVR lineal (solo con validación cruzada temporal)<a class="headerlink" href="#hiperparametros-del-svr-lineal-solo-con-validacion-cruzada-temporal" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>C</strong> controla la regularización: a menor C, más regularización. Se explora en escala logarítmica.</p></li>
+<li><p><strong>ε</strong> es el ancho del tubo insensible de la pérdida, en escala log1p. ε = 0 equivale a una regresión
+robusta de tipo L1, que estima la <strong>mediana</strong> condicional en log1p.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Búsqueda en rejilla de C y ε del SVR lineal con CV temporal</span>
+<span class="n">rejilla</span> <span class="o">=</span> <span class="p">[(</span><span class="n">C</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">C</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.003</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)]</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">C</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">rejilla</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pl</span><span class="p">:</span>
+        <span class="n">m_</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">svr_lineal</span><span class="p">(</span><span class="n">COLS</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">imputacion_magnitud</span><span class="o">=</span><span class="n">IMPUT</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">[</span><span class="n">a</span><span class="p">]][</span><span class="n">COLS</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">[</span><span class="n">a</span><span class="p">]])</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">[</span><span class="n">v</span><span class="p">]],</span> <span class="n">m_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">[</span><span class="n">v</span><span class="p">]][</span><span class="n">COLS</span><span class="p">])))</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"C"</span><span class="p">:</span> <span class="n">C</span><span class="p">,</span> <span class="s2">"epsilon"</span><span class="p">:</span> <span class="n">e</span><span class="p">,</span> <span class="s2">"RMSLE_CV"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="s2">"desv"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">r</span><span class="p">)})</span>
+<span class="n">hp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">mejor</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">hp</span><span class="o">.</span><span class="n">RMSLE_CV</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()]</span>
+<span class="n">C_OPT</span><span class="p">,</span> <span class="n">EPS_OPT</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">mejor</span><span class="o">.</span><span class="n">C</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">mejor</span><span class="o">.</span><span class="n">epsilon</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">hp</span><span class="p">,</span> <span class="s2">"svr_hiperparametros.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">hp</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"epsilon"</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">RMSLE_CV</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="n">g</span><span class="o">.</span><span class="n">desv</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pl</span><span class="p">)),</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"ε = </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"C"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"RMSLE (CV temporal)"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Ajuste de C y ε"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"11_hiperparametros.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.** El mejor par es **C = </span><span class="si">{</span><span class="n">C_OPT</span><span class="si">}</span><span class="s2">, ε = </span><span class="si">{</span><span class="n">EPS_OPT</span><span class="si">}</span><span class="s2">** (RMSLE de validación </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">mejor</span><span class="o">.</span><span class="n">RMSLE_CV</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">mejor</span><span class="o">.</span><span class="n">desv</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">- La curva es plana para C ≥ 0,01: el modelo apenas cambia al regularizar menos, señal de que no hay sobreajuste por exceso de parámetros.</span>
+<span class="s2">- Un ε grande empeora el error: con 76 % de ceros, un tubo ancho ignora la diferencia entre 0 y 1 sismo, que es justamente lo que mide el RMSLE.</span>
+<span class="s2">- La prueba no se usó en ninguna de estas decisiones."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/b7629e7fbe6291a3343be29eab3c12ac640fde74efde1b5634e5de6b27c0af5a.png" src="../_images/b7629e7fbe6291a3343be29eab3c12ac640fde74efde1b5634e5de6b27c0af5a.png" />
+<p><strong>Interpretación.</strong> El mejor par es <strong>C = 0.3, ε = 0.1</strong> (RMSLE de validación 0,3771 ± 0,0308).</p>
+<ul class="simple">
+<li><p>La curva es plana para C ≥ 0,01: el modelo apenas cambia al regularizar menos, señal de que no hay sobreajuste por exceso de parámetros.</p></li>
+<li><p>Un ε grande empeora el error: con 76 % de ceros, un tubo ancho ignora la diferencia entre 0 y 1 sismo, que es justamente lo que mide el RMSLE.</p></li>
+<li><p>La prueba no se usó en ninguna de estas decisiones.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="validacion-cruzada-temporal-principal-bloques-espaciales-y-aleatoria">
+<h2>11.2 Validación cruzada: temporal (principal), bloques espaciales y aleatoria<a class="headerlink" href="#validacion-cruzada-temporal-principal-bloques-espaciales-y-aleatoria" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Temporal (principal):</strong> ventana creciente con gap de un mes (5 pliegues). Mide lo que importa:
+pronosticar meses futuros.</p></li>
+<li><p><strong>Bloques espaciales:</strong> <code class="docutils literal notranslate"><span class="pre">GroupKFold</span></code> (5 grupos) con bloques de 2° × 2°. Las celdas a una celda de
+distancia del bloque de validación (≈ 55 km) se <strong>excluyen del entrenamiento</strong> (buffer). Mide la
+generalización a <strong>zonas no vistas</strong>.</p></li>
+<li><p><strong>Aleatoria (KFold):</strong> se incluye <strong>solo para mostrar el optimismo</strong> de ignorar la estructura.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Modelos base (SVR lineal y líneas triviales) evaluados con tres esquemas de validación</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">modelos_base</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"Dummy (media)"</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">DummyRegressor</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">"mean"</span><span class="p">),</span>
+        <span class="s2">"Dummy (mediana = 0)"</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">DummyRegressor</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">"median"</span><span class="p">),</span>
+        <span class="s2">"SVR lineal"</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">mdl</span><span class="o">.</span><span class="n">svr_lineal</span><span class="p">(</span><span class="n">COLS</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C_OPT</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">EPS_OPT</span><span class="p">,</span> <span class="n">imputacion_magnitud</span><span class="o">=</span><span class="n">IMPUT</span><span class="p">),</span>
+    <span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">evaluar</span><span class="p">(</span><span class="n">nombre</span><span class="p">,</span> <span class="n">idx_a</span><span class="p">,</span> <span class="n">idx_v</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">nombre</span> <span class="o">==</span> <span class="s2">"Persistencia"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">info</span><span class="p">[</span><span class="s2">"persist"</span><span class="p">][</span><span class="n">idx_v</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">nombre</span> <span class="o">==</span> <span class="s2">"Ingenuo estacional"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">info</span><span class="p">[</span><span class="s2">"estacional"</span><span class="p">][</span><span class="n">idx_v</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">nombre</span> <span class="o">==</span> <span class="s2">"Media por celda"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mdl</span><span class="o">.</span><span class="n">MediaPorCelda</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">cc</span><span class="p">[</span><span class="n">idx_a</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">idx_a</span><span class="p">])</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">cc</span><span class="p">[</span><span class="n">idx_v</span><span class="p">])</span>
+    <span class="n">m_</span> <span class="o">=</span> <span class="n">modelos_base</span><span class="p">()[</span><span class="n">nombre</span><span class="p">]()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_a</span><span class="p">][</span><span class="n">COLS</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">idx_a</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">m_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_v</span><span class="p">][</span><span class="n">COLS</span><span class="p">])</span>
+
+<span class="n">nombres</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"Dummy (media)"</span><span class="p">,</span> <span class="s2">"Dummy (mediana = 0)"</span><span class="p">,</span> <span class="s2">"Media por celda"</span><span class="p">,</span> <span class="s2">"Persistencia"</span><span class="p">,</span> <span class="s2">"Ingenuo estacional"</span><span class="p">,</span> <span class="s2">"SVR lineal"</span><span class="p">]</span>
+<span class="n">lat_c</span><span class="p">,</span> <span class="n">lon_c</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">centro_celda</span><span class="p">(</span><span class="n">cc</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">bloque</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lat_c</span> <span class="o">-</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LAT_MIN</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">lon_c</span> <span class="o">-</span> <span class="n">cfg</span><span class="o">.</span><span class="n">LON_MIN</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
+<span class="n">esquemas</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"temporal (ventana creciente + gap)"</span><span class="p">:</span> <span class="p">[(</span><span class="n">tr</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">tr</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pl</span><span class="p">]}</span>
+<span class="n">gkf</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">GroupKFold</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">tr</span><span class="p">,</span> <span class="n">groups</span><span class="o">=</span><span class="n">bloque</span><span class="p">):</span>
+    <span class="n">lv</span><span class="p">,</span> <span class="n">lo_v</span> <span class="o">=</span> <span class="n">lat_c</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">lon_c</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+    <span class="n">cerca</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">la_</span><span class="p">,</span> <span class="n">lo_</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">lv</span><span class="p">,</span> <span class="n">lo_v</span><span class="p">)):</span>
+        <span class="n">cerca</span> <span class="o">|=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lat_c</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-</span> <span class="n">la_</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">CELDA_GRADOS</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">lon_c</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-</span> <span class="n">lo_</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">CELDA_GRADOS</span> <span class="o">+</span> <span class="mf">1e-9</span><span class="p">)</span>
+    <span class="n">gkf</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tr</span><span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="o">~</span><span class="n">cerca</span><span class="p">]],</span> <span class="n">tr</span><span class="p">[</span><span class="n">v</span><span class="p">]))</span>
+<span class="n">esquemas</span><span class="p">[</span><span class="s2">"bloques espaciales 2° + buffer"</span><span class="p">]</span> <span class="o">=</span> <span class="n">gkf</span>
+<span class="n">esquemas</span><span class="p">[</span><span class="s2">"aleatoria (KFold, optimista)"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">tr</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">tr</span><span class="p">[</span><span class="n">v</span><span class="p">])</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">KFold</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">tr</span><span class="p">)]</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">esq</span><span class="p">,</span> <span class="n">pliegues</span> <span class="ow">in</span> <span class="n">esquemas</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nombres</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">v</span><span class="p">],</span> <span class="n">evaluar</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pliegues</span><span class="p">]</span>
+        <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"esquema"</span><span class="p">:</span> <span class="n">esq</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s2">"RMSLE_media"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="s2">"RMSLE_desv"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">r</span><span class="p">)})</span>
+<span class="n">cv</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">cv</span><span class="p">,</span> <span class="s2">"cv_resumen.csv"</span><span class="p">)</span>
+<span class="n">tabla_cv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"esquema"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"RMSLE_media"</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nombres</span><span class="p">]</span>
+<span class="n">tabla_cv</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>esquema</th>
+      <th>aleatoria (KFold, optimista)</th>
+      <th>bloques espaciales 2° + buffer</th>
+      <th>temporal (ventana creciente + gap)</th>
+    </tr>
+    <tr>
+      <th>modelo</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Dummy (media)</th>
+      <td>0.6307</td>
+      <td>0.6558</td>
+      <td>0.6406</td>
+    </tr>
+    <tr>
+      <th>Dummy (mediana = 0)</th>
+      <td>0.5633</td>
+      <td>0.5271</td>
+      <td>0.5511</td>
+    </tr>
+    <tr>
+      <th>Media por celda</th>
+      <td>0.3964</td>
+      <td>0.6558</td>
+      <td>0.4249</td>
+    </tr>
+    <tr>
+      <th>Persistencia</th>
+      <td>0.4707</td>
+      <td>0.4704</td>
+      <td>0.4718</td>
+    </tr>
+    <tr>
+      <th>Ingenuo estacional</th>
+      <td>0.5009</td>
+      <td>0.5005</td>
+      <td>0.4953</td>
+    </tr>
+    <tr>
+      <th>SVR lineal</th>
+      <td>0.3787</td>
+      <td>0.4841</td>
+      <td>0.3771</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de la comparación entre esquemas de validación</span>
+<span class="n">T_</span><span class="p">,</span> <span class="n">E_</span><span class="p">,</span> <span class="n">A_</span> <span class="o">=</span> <span class="s2">"temporal (ventana creciente + gap)"</span><span class="p">,</span> <span class="s2">"bloques espaciales 2° + buffer"</span><span class="p">,</span> <span class="s2">"aleatoria (KFold, optimista)"</span>
+<span class="n">t_cv</span> <span class="o">=</span> <span class="n">tabla_cv</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Temporal (esquema principal).** El SVR lineal tiene el menor RMSLE (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="n">T_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">). Le sigue la media por celda</span>
+<span class="s2">  (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Media por celda'</span><span class="p">,</span><span class="w"> </span><span class="n">T_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">). La persistencia (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Persistencia'</span><span class="p">,</span><span class="w"> </span><span class="n">T_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">) y el ingenuo estacional (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Ingenuo estacional'</span><span class="p">,</span><span class="w"> </span><span class="n">T_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">)</span>
+<span class="s2">  superan a los Dummy, pero quedan lejos de la media por celda: copiar un solo mes ruidoso es peor que usar el nivel típico de la celda.</span>
+<span class="s2">- **Bloques espaciales.** En zonas no vistas, el SVR empeora a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="n">E_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">, y la media por celda deja de ser aplicable (usa la</span>
+<span class="s2">  media global, </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Media por celda'</span><span class="p">,</span><span class="w"> </span><span class="n">E_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">). Es el costo de generalizar a otras zonas: no es el uso previsto, pero cuantifica el riesgo.</span>
+<span class="s2">- **Aleatoria.** El KFold aleatorio da </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="n">A_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> para el SVR, prácticamente igual a la temporal. Con 18 variables solo del pasado,</span>
+<span class="s2">  el modelo lineal no tiene cómo «memorizar» el futuro. En cambio, la media por celda sí sale más optimista con KFold</span>
+<span class="s2">  (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Media por celda'</span><span class="p">,</span><span class="w"> </span><span class="n">A_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> frente a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">t_cv</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Media por celda'</span><span class="p">,</span><span class="w"> </span><span class="n">T_</span><span class="p">],</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">), porque promedia meses futuros de la misma celda. Por esa razón</span>
+<span class="s2">  no se usa para decidir."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Temporal (esquema principal).</strong> El SVR lineal tiene el menor RMSLE (0,3771). Le sigue la media por celda
+(0,4249). La persistencia (0,4718) y el ingenuo estacional (0,4953)
+superan a los Dummy, pero quedan lejos de la media por celda: copiar un solo mes ruidoso es peor que usar el nivel típico de la celda.</p></li>
+<li><p><strong>Bloques espaciales.</strong> En zonas no vistas, el SVR empeora a 0,4841, y la media por celda deja de ser aplicable (usa la
+media global, 0,6558). Es el costo de generalizar a otras zonas: no es el uso previsto, pero cuantifica el riesgo.</p></li>
+<li><p><strong>Aleatoria.</strong> El KFold aleatorio da 0,3787 para el SVR, prácticamente igual a la temporal. Con 18 variables solo del pasado,
+el modelo lineal no tiene cómo «memorizar» el futuro. En cambio, la media por celda sí sale más optimista con KFold
+(0,3964 frente a 0,4249), porque promedia meses futuros de la misma celda. Por esa razón
+no se usa para decidir.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="ajuste-final-y-evaluacion-unica-en-la-prueba">
+<h2>11.3 Ajuste final y evaluación única en la prueba<a class="headerlink" href="#ajuste-final-y-evaluacion-unica-en-la-prueba" title="Link to this heading">#</a></h2>
+<p>El SVR lineal se reajusta con <strong>todo el entrenamiento</strong> y se evalúa <strong>una sola vez</strong> en la prueba
+(enero de 2021 a septiembre de 2026). Los intervalos de confianza del 95 % se obtienen con <strong>bootstrap
+por bloques de meses</strong> (2.000 réplicas, percentil y BCa).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ajuste final en entrenamiento y predicción en prueba de todos los modelos base</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">svr</span> <span class="o">=</span> <span class="n">modelos_base</span><span class="p">()[</span><span class="s2">"SVR lineal"</span><span class="p">]()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">][</span><span class="n">COLS</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">t_ajuste</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">evaluar</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">te</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nombres</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="s2">"SVR lineal"</span><span class="p">}</span>
+<span class="n">preds</span><span class="p">[</span><span class="s2">"SVR lineal"</span><span class="p">]</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">te</span><span class="p">][</span><span class="n">COLS</span><span class="p">])</span>
+<span class="n">pred_tr_svr</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">][</span><span class="n">COLS</span><span class="p">])</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">"modelo"</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="o">**</span><span class="n">ev</span><span class="o">.</span><span class="n">metricas_regresion</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">],</span> <span class="n">p</span><span class="p">)}</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">preds</span><span class="o">.</span><span class="n">items</span><span class="p">()])</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">nombres</span><span class="p">]</span>
+<span class="n">ic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">bootstrap_meses</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">])</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"métrica"</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nombres</span><span class="p">})</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"resultados_prueba.csv"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">ic</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"level_0"</span><span class="p">:</span> <span class="s2">"modelo"</span><span class="p">}),</span> <span class="s2">"intervalos_bootstrap.csv"</span><span class="p">)</span>
+<span class="n">ic_rmsle</span> <span class="o">=</span> <span class="n">ic</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="s2">"RMSLE"</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)[[</span><span class="s2">"valor"</span><span class="p">,</span> <span class="s2">"IC_BCa_inf"</span><span class="p">,</span> <span class="s2">"IC_BCa_sup"</span><span class="p">]]</span>
+<span class="n">display</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">ic_rmsle</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RMSLE</th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>MAPE_y&gt;0_%</th>
+      <th>sMAPE_%</th>
+      <th>R2</th>
+      <th>R2_log</th>
+    </tr>
+    <tr>
+      <th>modelo</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Dummy (media)</th>
+      <td>0.6498</td>
+      <td>9.3918</td>
+      <td>1.3993</td>
+      <td>36.4407</td>
+      <td>169.2606</td>
+      <td>-0.0002</td>
+      <td>-0.5276</td>
+    </tr>
+    <tr>
+      <th>Dummy (mediana = 0)</th>
+      <td>0.5662</td>
+      <td>9.4368</td>
+      <td>0.9276</td>
+      <td>100.0000</td>
+      <td>41.6111</td>
+      <td>-0.0098</td>
+      <td>-0.1599</td>
+    </tr>
+    <tr>
+      <th>Media por celda</th>
+      <td>0.3972</td>
+      <td>7.2083</td>
+      <td>0.6712</td>
+      <td>62.0184</td>
+      <td>178.1431</td>
+      <td>0.4108</td>
+      <td>0.4293</td>
+    </tr>
+    <tr>
+      <th>Persistencia</th>
+      <td>0.4363</td>
+      <td>7.0671</td>
+      <td>0.5672</td>
+      <td>78.4254</td>
+      <td>50.2676</td>
+      <td>0.4337</td>
+      <td>0.3114</td>
+    </tr>
+    <tr>
+      <th>Ingenuo estacional</th>
+      <td>0.4575</td>
+      <td>7.2902</td>
+      <td>0.6367</td>
+      <td>82.9614</td>
+      <td>52.1785</td>
+      <td>0.3974</td>
+      <td>0.2428</td>
+    </tr>
+    <tr>
+      <th>SVR lineal</th>
+      <td>0.3635</td>
+      <td>7.9072</td>
+      <td>0.7048</td>
+      <td>78.3211</td>
+      <td>116.4032</td>
+      <td>0.2911</td>
+      <td>0.5218</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>valor</th>
+      <th>IC_BCa_inf</th>
+      <th>IC_BCa_sup</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Dummy (media)</th>
+      <td>0.6498</td>
+      <td>0.6419</td>
+      <td>0.6661</td>
+    </tr>
+    <tr>
+      <th>Dummy (mediana = 0)</th>
+      <td>0.5662</td>
+      <td>0.5526</td>
+      <td>0.5907</td>
+    </tr>
+    <tr>
+      <th>Media por celda</th>
+      <td>0.3972</td>
+      <td>0.3828</td>
+      <td>0.4275</td>
+    </tr>
+    <tr>
+      <th>Persistencia</th>
+      <td>0.4363</td>
+      <td>0.4240</td>
+      <td>0.4584</td>
+    </tr>
+    <tr>
+      <th>Ingenuo estacional</th>
+      <td>0.4575</td>
+      <td>0.4422</td>
+      <td>0.4871</td>
+    </tr>
+    <tr>
+      <th>SVR lineal</th>
+      <td>0.3635</td>
+      <td>0.3487</td>
+      <td>0.3911</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># RMSLE en prueba con IC 95 % BCa (bootstrap por meses)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="n">orden</span> <span class="o">=</span> <span class="n">ic_rmsle</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"valor"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">orden</span><span class="o">.</span><span class="n">valor</span><span class="p">,</span> <span class="n">orden</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">xerr</span><span class="o">=</span><span class="p">[</span><span class="n">orden</span><span class="o">.</span><span class="n">valor</span> <span class="o">-</span> <span class="n">orden</span><span class="o">.</span><span class="n">IC_BCa_inf</span><span class="p">,</span> <span class="n">orden</span><span class="o">.</span><span class="n">IC_BCa_sup</span> <span class="o">-</span> <span class="n">orden</span><span class="o">.</span><span class="n">valor</span><span class="p">],</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"RMSLE en prueba (IC 95 % BCa, bootstrap por meses)"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Modelo base vs líneas base triviales"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"11_rmsle_ic.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ba5552a8287147a55fe2c6843102071b643da99e8f1c22ae54ca7424dbf4a0fc.png" src="../_images/ba5552a8287147a55fe2c6843102071b643da99e8f1c22ae54ca7424dbf4a0fc.png" />
+</div>
+</div>
+<section id="comparacion-explicita-con-las-lineas-base-triviales">
+<h3>Comparación explícita con las líneas base triviales<a class="headerlink" href="#comparacion-explicita-con-las-lineas-base-triviales" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Diferencia de RMSLE</strong> entre cada línea base y el SVR lineal, con IC por bootstrap de meses.</p></li>
+<li><p><strong>Prueba de Diebold-Mariano</strong> con corrección de Harvey-Leybourne-Newbold
+<span id="id1">[<a class="reference internal" href="12_conclusiones.html#id4" title="Francis X. Diebold and Roberto S. Mariano. Comparing predictive accuracy. Journal of Business &amp; Economic Statistics, 13(3):253–263, 1995.">Diebold and Mariano, 1995</a>, <a class="reference internal" href="12_conclusiones.html#id5" title="David Harvey, Stephen Leybourne, and Paul Newbold. Testing the equality of prediction mean squared errors. International Journal of Forecasting, 13(2):281–291, 1997.">Harvey <em>et al.</em>, 1997</a>]</span>, sobre la serie de pérdidas mensuales (error cuadrático
+en log1p promediado por mes), con varianza de Newey-West.</p></li>
+<li><p><strong>Corrección de Holm</strong> por las cinco comparaciones.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># SVR frente a cada línea trivial: Diebold-Mariano y bootstrap de la diferencia por meses</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">L_svr</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">perdida_mensual</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="s2">"SVR lineal"</span><span class="p">],</span> <span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">])</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nombres</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">L_b</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">perdida_mensual</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">])</span>
+    <span class="n">dm</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">diebold_mariano</span><span class="p">(</span><span class="n">L_b</span><span class="p">,</span> <span class="n">L_svr</span><span class="p">)</span>
+    <span class="n">bd</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">bootstrap_diferencia</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="s2">"SVR lineal"</span><span class="p">],</span> <span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">])</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"línea base"</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s2">"RMSLE_base − RMSLE_SVR"</span><span class="p">:</span> <span class="n">bd</span><span class="p">[</span><span class="s2">"dif"</span><span class="p">],</span> <span class="s2">"IC95_inf"</span><span class="p">:</span> <span class="n">bd</span><span class="p">[</span><span class="s2">"IC_inf"</span><span class="p">],</span> <span class="s2">"IC95_sup"</span><span class="p">:</span> <span class="n">bd</span><span class="p">[</span><span class="s2">"IC_sup"</span><span class="p">],</span>
+                  <span class="s2">"DM_HLN"</span><span class="p">:</span> <span class="n">dm</span><span class="p">[</span><span class="s2">"DM_HLN"</span><span class="p">],</span> <span class="s2">"p_DM"</span><span class="p">:</span> <span class="n">dm</span><span class="p">[</span><span class="s2">"p"</span><span class="p">],</span> <span class="s2">"meses"</span><span class="p">:</span> <span class="n">dm</span><span class="p">[</span><span class="s2">"T"</span><span class="p">]})</span>
+<span class="n">comp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">comp</span><span class="p">[</span><span class="s2">"p_DM_Holm"</span><span class="p">]</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">holm</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">p_DM</span><span class="p">)</span>
+<span class="n">comp</span><span class="p">[</span><span class="s2">"veredicto"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">comp</span><span class="o">.</span><span class="n">p_DM_Holm</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">comp</span><span class="p">[</span><span class="s2">"RMSLE_base − RMSLE_SVR"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">"SVR mejor"</span><span class="p">,</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">comp</span><span class="o">.</span><span class="n">p_DM_Holm</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">),</span> <span class="s2">"línea base mejor"</span><span class="p">,</span> <span class="s2">"sin diferencia significativa"</span><span class="p">))</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="s2">"diferencias_vs_triviales.csv"</span><span class="p">)</span>
+<span class="n">comp</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>línea base</th>
+      <th>RMSLE_base − RMSLE_SVR</th>
+      <th>IC95_inf</th>
+      <th>IC95_sup</th>
+      <th>DM_HLN</th>
+      <th>p_DM</th>
+      <th>meses</th>
+      <th>p_DM_Holm</th>
+      <th>veredicto</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Dummy (media)</td>
+      <td>0.2863</td>
+      <td>0.2741</td>
+      <td>0.2969</td>
+      <td>104.4756</td>
+      <td>0.0</td>
+      <td>69</td>
+      <td>0.0</td>
+      <td>SVR mejor</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Dummy (mediana = 0)</td>
+      <td>0.2027</td>
+      <td>0.1962</td>
+      <td>0.2091</td>
+      <td>33.0112</td>
+      <td>0.0</td>
+      <td>69</td>
+      <td>0.0</td>
+      <td>SVR mejor</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Media por celda</td>
+      <td>0.0336</td>
+      <td>0.0264</td>
+      <td>0.0411</td>
+      <td>12.3711</td>
+      <td>0.0</td>
+      <td>69</td>
+      <td>0.0</td>
+      <td>SVR mejor</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Persistencia</td>
+      <td>0.0727</td>
+      <td>0.0650</td>
+      <td>0.0804</td>
+      <td>20.6809</td>
+      <td>0.0</td>
+      <td>69</td>
+      <td>0.0</td>
+      <td>SVR mejor</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Ingenuo estacional</td>
+      <td>0.0939</td>
+      <td>0.0859</td>
+      <td>0.1022</td>
+      <td>20.7419</td>
+      <td>0.0</td>
+      <td>69</td>
+      <td>0.0</td>
+      <td>SVR mejor</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de las métricas en prueba</span>
+<span class="n">r_</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"SVR lineal"</span><span class="p">]</span>
+<span class="n">mejor_triv</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"SVR lineal"</span><span class="p">)</span><span class="o">.</span><span class="n">RMSLE</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación de las métricas en la prueba.**</span>
+<span class="s2">- **Métrica principal.** El SVR lineal obtiene **RMSLE = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">r_</span><span class="o">.</span><span class="n">RMSLE</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">** (IC 95 % BCa: </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ic_rmsle</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="s1">'IC_BCa_inf'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ic_rmsle</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="s1">'IC_BCa_sup'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">  La mejor línea base trivial es **</span><span class="si">{</span><span class="n">mejor_triv</span><span class="si">}</span><span class="s2">**, con </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mejor_triv</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">- **Comparación con las triviales.** El SVR es significativamente mejor que </span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">comp</span><span class="o">.</span><span class="n">veredicto</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'SVR mejor'</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> de las </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span><span class="si">}</span><span class="s2"> líneas base</span>
+<span class="s2">  (Diebold-Mariano HLN con Holm).</span>
+<span class="s2">- **R² en log = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">r_</span><span class="o">.</span><span class="n">R2_log</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">.** El modelo explica cerca de la mitad de la variación del log del conteo. Es un resultado razonable y, sobre todo,</span>
+<span class="s2">  **lejos del 80–90 %** que exigiría revisar fuga (sección 11.9).</span>
+<span class="s2">- **R² en conteos = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">r_</span><span class="o">.</span><span class="n">R2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}{</span><span class="s1">' (negativo)'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">r_</span><span class="o">.</span><span class="n">R2</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span><span class="s2">.** Hay que leerlo con cuidado: el modelo se entrena en escala log y, al</span>
+<span class="s2">  devolver con `expm1`, los errores en los meses extremos del nido se amplifican. Por eso el RMSE (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">r_</span><span class="o">.</span><span class="n">RMSE</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">) es</span>
+<span class="s2">  </span><span class="si">{</span><span class="p">(</span><span class="s1">'mayor'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">r_</span><span class="o">.</span><span class="n">RMSE</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Dummy (media)'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSE'</span><span class="p">]</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'menor'</span><span class="p">)</span><span class="si">}</span><span class="s2"> que el del Dummy de la media (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Dummy (media)'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSE'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">): el RMSE premia</span>
+<span class="s2">  acertar los pocos meses con cientos de sismos, que el RMSLE (la métrica elegida) pondera en proporción.</span>
+<span class="s2">- **MAPE (solo y &gt; 0) = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">r_</span><span class="p">[</span><span class="s1">'MAPE_y&gt;0_%'</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> %; sMAPE = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">r_</span><span class="p">[</span><span class="s1">'sMAPE_%'</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> %.** Errores relativos grandes, esperables con conteos pequeños: con y = 1,</span>
+<span class="s2">  predecir 0,5 ya es un error del 50 %."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación de las métricas en la prueba.</strong></p>
+<ul class="simple">
+<li><p><strong>Métrica principal.</strong> El SVR lineal obtiene <strong>RMSLE = 0,364</strong> (IC 95 % BCa: 0,349–0,391).
+La mejor línea base trivial es <strong>Media por celda</strong>, con 0,397.</p></li>
+<li><p><strong>Comparación con las triviales.</strong> El SVR es significativamente mejor que 5 de las 5 líneas base
+(Diebold-Mariano HLN con Holm).</p></li>
+<li><p><strong>R² en log = 0,522.</strong> El modelo explica cerca de la mitad de la variación del log del conteo. Es un resultado razonable y, sobre todo,
+<strong>lejos del 80–90 %</strong> que exigiría revisar fuga (sección 11.9).</p></li>
+<li><p><strong>R² en conteos = 0,291.</strong> Hay que leerlo con cuidado: el modelo se entrena en escala log y, al
+devolver con <code class="docutils literal notranslate"><span class="pre">expm1</span></code>, los errores en los meses extremos del nido se amplifican. Por eso el RMSE (7,91) es
+menor que el del Dummy de la media (9,39): el RMSE premia
+acertar los pocos meses con cientos de sismos, que el RMSLE (la métrica elegida) pondera en proporción.</p></li>
+<li><p><strong>MAPE (solo y &gt; 0) = 78,3 %; sMAPE = 116,4 %.</strong> Errores relativos grandes, esperables con conteos pequeños: con y = 1,
+predecir 0,5 ya es un error del 50 %.</p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="diagnostico-de-residuos">
+<h2>11.4 Diagnóstico de residuos<a class="headerlink" href="#diagnostico-de-residuos" title="Link to this heading">#</a></h2>
+<p>Los residuos se analizan en la escala del modelo, r = log(1 + y) − log(1 + ŷ), que es la escala de la
+métrica principal. Se revisan:</p>
+<ol class="arabic simple">
+<li><p><strong>normalidad:</strong> histograma, QQ y Jarque-Bera;</p></li>
+<li><p><strong>heterocedasticidad:</strong> White y Breusch-Pagan contra los valores ajustados;</p></li>
+<li><p><strong>independencia temporal:</strong> ACF del residuo medio mensual, Ljung-Box y BDS;</p></li>
+<li><p><strong>independencia espacial:</strong> I de Moran del residuo medio por celda.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Diagnóstico de residuos del SVR: pruebas de forma y Ljung-Box sobre el residuo mensual</span>
+<span class="n">lp_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">preds</span><span class="p">[</span><span class="s2">"SVR lineal"</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+<span class="n">res_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">])</span> <span class="o">-</span> <span class="n">lp_te</span>
+<span class="n">pr</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">pruebas_residuos</span><span class="p">(</span><span class="n">res_te</span><span class="p">,</span> <span class="n">lp_te</span><span class="p">)</span>
+<span class="n">meses_te</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">perdida_mensual</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="s2">"SVR lineal"</span><span class="p">],</span> <span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">])</span>
+<span class="n">r_mes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">res_te</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">lb</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">ljung_box</span><span class="p">(</span><span class="n">r_mes</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">res_te</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#4299e1"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Histograma de residuos (log1p)"</span><span class="p">)</span>
+<span class="n">stats</span><span class="o">.</span><span class="n">probplot</span><span class="p">(</span><span class="n">res_te</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="s2">"norm"</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"QQ normal"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">lp_te</span><span class="p">,</span> <span class="n">res_te</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"k"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"ajustado log(1+ŷ)"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Residuo vs ajustado"</span><span class="p">)</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">r_mes</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"ACF del residuo medio mensual"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"11_residuos.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">pr</span><span class="p">]),</span> <span class="s2">"diagnostico_residuos.csv"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">pr</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">lb</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/2f9ac49792ed6e5a6015a250805293825baad371f33111fecf3962f6cae5c3b1.png" src="../_images/2f9ac49792ed6e5a6015a250805293825baad371f33111fecf3962f6cae5c3b1.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>JB_estad</th>
+      <th>JB_p</th>
+      <th>asimetria</th>
+      <th>curtosis_exceso</th>
+      <th>White_LM</th>
+      <th>White_p</th>
+      <th>BP_LM</th>
+      <th>BP_p</th>
+      <th>BDS_estad</th>
+      <th>BDS_p</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>189810.4365</td>
+      <td>0.0</td>
+      <td>2.447</td>
+      <td>19.5214</td>
+      <td>328.6925</td>
+      <td>0.0</td>
+      <td>249.7664</td>
+      <td>0.0</td>
+      <td>8.1163</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rezago</th>
+      <th>lb_stat</th>
+      <th>lb_pvalue</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>1.0592</td>
+      <td>0.3034</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>3</td>
+      <td>1.7160</td>
+      <td>0.6334</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>6</td>
+      <td>3.5619</td>
+      <td>0.7357</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>12</td>
+      <td>5.3760</td>
+      <td>0.9442</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dependencia espacial de los residuos (I de Moran por celda y por mes)</span>
+<span class="n">rc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"celda"</span><span class="p">:</span> <span class="n">cc</span><span class="p">[</span><span class="n">te</span><span class="p">],</span> <span class="s2">"r"</span><span class="p">:</span> <span class="n">res_te</span><span class="p">})</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"celda"</span><span class="p">)</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">la_</span><span class="p">,</span> <span class="n">lo_</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">centro_celda</span><span class="p">(</span><span class="n">rc</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+<span class="n">moran_res</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">moran_global</span><span class="p">(</span><span class="n">rc</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">eda</span><span class="o">.</span><span class="n">pesos_knn</span><span class="p">(</span><span class="n">la_</span><span class="p">,</span> <span class="n">lo_</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">moran_mes</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">m_</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">])[::</span><span class="mi">3</span><span class="p">]:</span>
+    <span class="n">sel_</span> <span class="o">=</span> <span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">]</span> <span class="o">==</span> <span class="n">m_</span>
+    <span class="n">rr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">res_te</span><span class="p">[</span><span class="n">sel_</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">cc</span><span class="p">[</span><span class="n">te</span><span class="p">][</span><span class="n">sel_</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">a_</span><span class="p">,</span> <span class="n">b_</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">centro_celda</span><span class="p">(</span><span class="n">rr</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span>
+    <span class="n">moran_mes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eda</span><span class="o">.</span><span class="n">moran_global</span><span class="p">(</span><span class="n">rr</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">eda</span><span class="o">.</span><span class="n">pesos_knn</span><span class="p">(</span><span class="n">a_</span><span class="p">,</span> <span class="n">b_</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">permutaciones</span><span class="o">=</span><span class="mi">199</span><span class="p">)[</span><span class="s2">"I"</span><span class="p">])</span>
+<span class="n">lb_celda</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">c_</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">cc</span><span class="p">[</span><span class="n">te</span><span class="p">]):</span>
+    <span class="n">s_</span> <span class="o">=</span> <span class="n">res_te</span><span class="p">[</span><span class="n">cc</span><span class="p">[</span><span class="n">te</span><span class="p">]</span> <span class="o">==</span> <span class="n">c_</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">s_</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">lb_celda</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">ljung_box</span><span class="p">(</span><span class="n">s_</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,))</span><span class="o">.</span><span class="n">lb_pvalue</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">"I_moran_residuo_medio_celda"</span><span class="p">:</span> <span class="n">moran_res</span><span class="p">[</span><span class="s2">"I"</span><span class="p">],</span> <span class="s2">"p"</span><span class="p">:</span> <span class="n">moran_res</span><span class="p">[</span><span class="s2">"p"</span><span class="p">],</span>
+                                 <span class="s2">"I_moran_mensual_media"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">moran_mes</span><span class="p">),</span> <span class="s2">"frac_celdas_LjungBox_p&lt;0.05"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lb_celda</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">)}]),</span>
+                  <span class="s2">"residuos_espacio_tiempo.csv"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación de los residuos.**</span>
+<span class="s2">- **Normalidad: no.** Asimetría </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">pr</span><span class="p">[</span><span class="s1">'asimetria'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">, curtosis en exceso </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">pr</span><span class="p">[</span><span class="s1">'curtosis_exceso'</span><span class="p">],</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">, Jarque-Bera p </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">pr</span><span class="p">[</span><span class="s1">'JB_p'</span><span class="p">])</span><span class="si">}</span><span class="s2">. Es esperable con un objetivo</span>
+<span class="s2">  discreto con 76 % de ceros: el residuo tiene una masa en valores negativos pequeños (meses sin sismos donde se pronosticaba algo) y una</span>
+<span class="s2">  cola positiva (enjambres no anticipados). La normalidad no es necesaria para el pronóstico; sí impide usar intervalos paramétricos, por eso</span>
+<span class="s2">  se usa bootstrap.</span>
+<span class="s2">- **Heterocedasticidad: sí.** White p </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">pr</span><span class="p">[</span><span class="s1">'White_p'</span><span class="p">])</span><span class="si">}</span><span class="s2"> y Breusch-Pagan p </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">pr</span><span class="p">[</span><span class="s1">'BP_p'</span><span class="p">])</span><span class="si">}</span><span class="s2">. La varianza del residuo crece con el nivel pronosticado: las</span>
+<span class="s2">  celdas activas son más volátiles (embudo en la figura).</span>
+<span class="s2">- **Independencia temporal.**</span>
+<span class="s2">  - El residuo medio mensual </span><span class="si">{</span><span class="s1">'tiene'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lb</span><span class="o">.</span><span class="n">lb_pvalue</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'no tiene'</span><span class="si">}</span><span class="s2"> autocorrelación significativa (Ljung-Box p = </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">es</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">lb</span><span class="o">.</span><span class="n">lb_pvalue</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">    para rezagos </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">lb</span><span class="o">.</span><span class="n">rezago</span><span class="p">)</span><span class="si">}</span><span class="s2">): a nivel agregado no quedan rachas de meses con error del mismo signo.</span>
+<span class="s2">  - Dentro de cada celda, solo el </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lb_celda</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2"> de las celdas tiene Ljung-Box (3 rezagos) significativo, apenas por encima del 5 %</span>
+<span class="s2">    que se esperaría por azar.</span>
+<span class="s2">  - En cambio, BDS (dimensión 2, sobre 3.000 residuos) p </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">pr</span><span class="p">[</span><span class="s1">'BDS_p'</span><span class="p">])</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'rechaza'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">pr</span><span class="p">[</span><span class="s1">'BDS_p'</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'no rechaza'</span><span class="si">}</span><span class="s2"> la hipótesis i.i.d. BDS es sensible a dependencia</span>
+<span class="s2">    **no lineal** y a la heterocedasticidad, no solo a autocorrelación lineal. Su rechazo, junto con Ljung-Box no significativo, apunta a</span>
+<span class="s2">    estructura no lineal (varianza que cambia con el nivel) más que a autocorrelación serial.</span>
+<span class="s2">- **Independencia espacial.**</span>
+<span class="s2">  - El I de Moran del residuo **medio por celda** es </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">moran_res</span><span class="p">[</span><span class="s1">'I'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> (p = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">moran_res</span><span class="p">[</span><span class="s1">'p'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">): hay sesgos **persistentes por región**, con celdas vecinas que</span>
+<span class="s2">    el modelo sobreestima o subestima sistemáticamente.</span>
+<span class="s2">  - Mes a mes, el I de Moran promedio es </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">moran_mes</span><span class="p">),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">: el error de un mes concreto no se contagia entre vecinas.</span>
+<span class="s2">  - Es información espacial que un modelo lineal global no captura (heterogeneidad regional, capítulo 8).</span>
+<span class="s2">- **Implicación para el Entregable 2.** Los residuos con estructura indican que hay información sin capturar: interacciones no lineales con la</span>
+<span class="s2">  ubicación, agrupamiento espacio-temporal y celdas con dinámicas distintas. Es la motivación directa para los modelos no lineales y las</span>
+<span class="s2">  variables de excitación del Entregable 2."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación de los residuos.</strong></p>
+<ul class="simple">
+<li><p><strong>Normalidad: no.</strong> Asimetría 2,45, curtosis en exceso 19,5, Jarque-Bera p &lt; 0,001. Es esperable con un objetivo
+discreto con 76 % de ceros: el residuo tiene una masa en valores negativos pequeños (meses sin sismos donde se pronosticaba algo) y una
+cola positiva (enjambres no anticipados). La normalidad no es necesaria para el pronóstico; sí impide usar intervalos paramétricos, por eso
+se usa bootstrap.</p></li>
+<li><p><strong>Heterocedasticidad: sí.</strong> White p &lt; 0,001 y Breusch-Pagan p &lt; 0,001. La varianza del residuo crece con el nivel pronosticado: las
+celdas activas son más volátiles (embudo en la figura).</p></li>
+<li><p><strong>Independencia temporal.</strong></p>
+<ul>
+<li><p>El residuo medio mensual no tiene autocorrelación significativa (Ljung-Box p = 0,303, 0,633, 0,736, 0,944
+para rezagos 1, 3, 6, 12): a nivel agregado no quedan rachas de meses con error del mismo signo.</p></li>
+<li><p>Dentro de cada celda, solo el 11 % de las celdas tiene Ljung-Box (3 rezagos) significativo, apenas por encima del 5 %
+que se esperaría por azar.</p></li>
+<li><p>En cambio, BDS (dimensión 2, sobre 3.000 residuos) p &lt; 0,001 rechaza la hipótesis i.i.d. BDS es sensible a dependencia
+<strong>no lineal</strong> y a la heterocedasticidad, no solo a autocorrelación lineal. Su rechazo, junto con Ljung-Box no significativo, apunta a
+estructura no lineal (varianza que cambia con el nivel) más que a autocorrelación serial.</p></li>
+</ul>
+</li>
+<li><p><strong>Independencia espacial.</strong></p>
+<ul>
+<li><p>El I de Moran del residuo <strong>medio por celda</strong> es 0,175 (p = 0,001): hay sesgos <strong>persistentes por región</strong>, con celdas vecinas que
+el modelo sobreestima o subestima sistemáticamente.</p></li>
+<li><p>Mes a mes, el I de Moran promedio es 0,003: el error de un mes concreto no se contagia entre vecinas.</p></li>
+<li><p>Es información espacial que un modelo lineal global no captura (heterogeneidad regional, capítulo 8).</p></li>
+</ul>
+</li>
+<li><p><strong>Implicación para el Entregable 2.</strong> Los residuos con estructura indican que hay información sin capturar: interacciones no lineales con la
+ubicación, agrupamiento espacio-temporal y celdas con dinámicas distintas. Es la motivación directa para los modelos no lineales y las
+variables de excitación del Entregable 2.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="curva-de-aprendizaje">
+<h2>11.5 Curva de aprendizaje<a class="headerlink" href="#curva-de-aprendizaje" title="Link to this heading">#</a></h2>
+<p>Se entrena el SVR con fracciones crecientes de los meses de entrenamiento, siempre los más recientes
+antes del bloque de validación. El bloque de validación son los últimos 24 meses del entrenamiento,
+con gap. Se mide el RMSLE en la parte de ajuste y en la de validación.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Curva de aprendizaje: error en validación con fracciones crecientes del entrenamiento</span>
+<span class="n">meses_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">val_ini</span> <span class="o">=</span> <span class="n">meses_tr</span><span class="p">[</span><span class="o">-</span><span class="mi">24</span><span class="p">]</span>
+<span class="n">idx_val</span> <span class="o">=</span> <span class="n">tr</span><span class="p">[</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">val_ini</span><span class="p">]</span>
+<span class="n">disp</span> <span class="o">=</span> <span class="n">meses_tr</span><span class="p">[</span><span class="n">meses_tr</span> <span class="o">&lt;</span> <span class="n">val_ini</span> <span class="o">-</span> <span class="n">cfg</span><span class="o">.</span><span class="n">GAP_MESES</span><span class="p">]</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">frac</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">):</span>
+    <span class="n">m_sel</span> <span class="o">=</span> <span class="n">disp</span><span class="p">[</span><span class="o">-</span><span class="nb">max</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">disp</span><span class="p">)</span> <span class="o">*</span> <span class="n">frac</span><span class="p">)):]</span>
+    <span class="n">idx_a</span> <span class="o">=</span> <span class="n">tr</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">],</span> <span class="n">m_sel</span><span class="p">)]</span>
+    <span class="n">m_</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">svr_lineal</span><span class="p">(</span><span class="n">COLS</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C_OPT</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="n">EPS_OPT</span><span class="p">,</span> <span class="n">imputacion_magnitud</span><span class="o">=</span><span class="n">IMPUT</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_a</span><span class="p">][</span><span class="n">COLS</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">idx_a</span><span class="p">])</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"fraccion_meses"</span><span class="p">:</span> <span class="n">frac</span><span class="p">,</span> <span class="s2">"meses"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">m_sel</span><span class="p">),</span> <span class="s2">"filas"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_a</span><span class="p">),</span>
+                  <span class="s2">"RMSLE_ajuste"</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">idx_a</span><span class="p">],</span> <span class="n">m_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_a</span><span class="p">][</span><span class="n">COLS</span><span class="p">])),</span>
+                  <span class="s2">"RMSLE_validacion"</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">idx_val</span><span class="p">],</span> <span class="n">m_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_val</span><span class="p">][</span><span class="n">COLS</span><span class="p">]))})</span>
+<span class="n">lc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">lc</span><span class="p">,</span> <span class="s2">"curva_aprendizaje.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lc</span><span class="o">.</span><span class="n">filas</span><span class="p">,</span> <span class="n">lc</span><span class="o">.</span><span class="n">RMSLE_ajuste</span><span class="p">,</span> <span class="s2">"o-"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"ajuste"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lc</span><span class="o">.</span><span class="n">filas</span><span class="p">,</span> <span class="n">lc</span><span class="o">.</span><span class="n">RMSLE_validacion</span><span class="p">,</span> <span class="s2">"s-"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"validación"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"filas de entrenamiento"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"RMSLE"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Curva de aprendizaje (SVR lineal)"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"11_curva_aprendizaje.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">lc</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/81856e082b7aa0b62e7a5e8bfd13d70e4bd71037b187e88a6b30b8b5766f2fba.png" src="../_images/81856e082b7aa0b62e7a5e8bfd13d70e4bd71037b187e88a6b30b8b5766f2fba.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>fraccion_meses</th>
+      <th>meses</th>
+      <th>filas</th>
+      <th>RMSLE_ajuste</th>
+      <th>RMSLE_validacion</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.10</td>
+      <td>16</td>
+      <td>2608</td>
+      <td>0.3722</td>
+      <td>0.3375</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.20</td>
+      <td>33</td>
+      <td>5379</td>
+      <td>0.3717</td>
+      <td>0.3412</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.35</td>
+      <td>57</td>
+      <td>9291</td>
+      <td>0.3878</td>
+      <td>0.3418</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.50</td>
+      <td>82</td>
+      <td>13366</td>
+      <td>0.3975</td>
+      <td>0.3416</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.75</td>
+      <td>123</td>
+      <td>20049</td>
+      <td>0.3879</td>
+      <td>0.3362</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>1.00</td>
+      <td>165</td>
+      <td>26895</td>
+      <td>0.3864</td>
+      <td>0.3347</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Sin sobreajuste.** El error de validación (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">lc</span><span class="o">.</span><span class="n">RMSLE_validacion</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">) no es peor que el de ajuste (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">lc</span><span class="o">.</span><span class="n">RMSLE_ajuste</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">) con ningún tamaño. El bloque</span>
+<span class="s2">  de validación (2019–2020) resulta un periodo algo más fácil que el promedio de los años de ajuste.</span>
+<span class="s2">- **Tamaño de muestra suficiente.** La curva de validación </span><span class="si">{</span><span class="p">(</span><span class="s1">'se estabiliza'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">lc</span><span class="o">.</span><span class="n">RMSLE_validacion</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lc</span><span class="o">.</span><span class="n">RMSLE_validacion</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.01</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'todavía cambia'</span><span class="p">)</span><span class="si">}</span><span class="s2"> al pasar de</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">lc</span><span class="o">.</span><span class="n">filas</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">lc</span><span class="o">.</span><span class="n">filas</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> filas: más meses de historia aportan poco a un modelo **lineal**.</span>
+<span class="s2">- **Diagnóstico: sesgo, no varianza.** El límite del SVR lineal es su capacidad (es demasiado simple para relaciones no lineales), no la cantidad de</span>
+<span class="s2">  datos. Es otra motivación para los modelos no lineales del Entregable 2."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Sin sobreajuste.</strong> El error de validación (0,335) no es peor que el de ajuste (0,386) con ningún tamaño. El bloque
+de validación (2019–2020) resulta un periodo algo más fácil que el promedio de los años de ajuste.</p></li>
+<li><p><strong>Tamaño de muestra suficiente.</strong> La curva de validación se estabiliza al pasar de
+13366 a 26895 filas: más meses de historia aportan poco a un modelo <strong>lineal</strong>.</p></li>
+<li><p><strong>Diagnóstico: sesgo, no varianza.</strong> El límite del SVR lineal es su capacidad (es demasiado simple para relaciones no lineales), no la cantidad de
+datos. Es otra motivación para los modelos no lineales del Entregable 2.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="interpretacion-de-los-coeficientes">
+<h2>11.6 Interpretación de los coeficientes<a class="headerlink" href="#interpretacion-de-los-coeficientes" title="Link to this heading">#</a></h2>
+<p>Los coeficientes están en unidades de <strong>log(1 + y) por desviación estándar</strong> de cada entrada
+transformada (conteos en log1p). Con la colinealidad de los bloques (capítulo 5), los coeficientes
+individuales dentro de un bloque no son estables. Por eso se leen también <strong>sumados por bloque</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Interpretación: coeficientes del SVR lineal agrupados por bloque de variables</span>
+<span class="n">nombres_x</span> <span class="o">=</span> <span class="n">svr</span><span class="o">.</span><span class="n">regressor_</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">"prep"</span><span class="p">]</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">()</span>
+<span class="n">coef</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"variable"</span><span class="p">:</span> <span class="n">nombres_x</span><span class="p">,</span> <span class="s2">"coef"</span><span class="p">:</span> <span class="n">svr</span><span class="o">.</span><span class="n">regressor_</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">"svr"</span><span class="p">]</span><span class="o">.</span><span class="n">coef_</span><span class="p">})</span>
+<span class="n">bloq</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="s2">"conteos propios"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"n_1m"</span><span class="p">,</span> <span class="s2">"n_3m"</span><span class="p">,</span> <span class="s2">"n_6m"</span><span class="p">,</span> <span class="s2">"n_12m"</span><span class="p">,</span> <span class="s2">"n_mismo_mes_anio_prev"</span><span class="p">]},</span>
+        <span class="o">**</span><span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="s2">"conteos M ≥ 3,5"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"n35_3m"</span><span class="p">,</span> <span class="s2">"n35_12m"</span><span class="p">]},</span> <span class="o">**</span><span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="s2">"vecindad"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"vec_1m"</span><span class="p">,</span> <span class="s2">"vec_3m"</span><span class="p">]},</span>
+        <span class="o">**</span><span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="s2">"magnitudes"</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">mdl</span><span class="o">.</span><span class="n">MAGNITUDES</span><span class="p">},</span> <span class="s2">"prof_media_hist"</span><span class="p">:</span> <span class="s2">"profundidad"</span><span class="p">,</span>
+        <span class="s2">"sen_mes"</span><span class="p">:</span> <span class="s2">"calendario"</span><span class="p">,</span> <span class="s2">"cos_mes"</span><span class="p">:</span> <span class="s2">"calendario"</span><span class="p">,</span> <span class="s2">"lat"</span><span class="p">:</span> <span class="s2">"ubicación"</span><span class="p">,</span> <span class="s2">"lon"</span><span class="p">:</span> <span class="s2">"ubicación"</span><span class="p">}</span>
+<span class="n">coef</span><span class="p">[</span><span class="s2">"bloque"</span><span class="p">]</span> <span class="o">=</span> <span class="n">coef</span><span class="o">.</span><span class="n">variable</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">bloq</span><span class="p">)</span>
+<span class="n">por_bloque</span> <span class="o">=</span> <span class="n">coef</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"bloque"</span><span class="p">)</span><span class="o">.</span><span class="n">coef</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="s2">"sum"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()])</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"sum"</span><span class="p">:</span> <span class="s2">"suma"</span><span class="p">,</span> <span class="s2">"&lt;lambda_0&gt;"</span><span class="p">:</span> <span class="s2">"suma_abs"</span><span class="p">})</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"suma_abs"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">coef</span><span class="p">,</span> <span class="s2">"coeficientes_svr.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">coef</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"coef"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">variable</span><span class="p">,</span> <span class="n">cs</span><span class="o">.</span><span class="n">coef</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cs</span><span class="o">.</span><span class="n">coef</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"#c53030"</span><span class="p">,</span> <span class="s2">"#2b6cb0"</span><span class="p">));</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Coeficientes del SVR lineal (entradas estandarizadas)"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"11_coeficientes.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">por_bloque</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Tres bloques con peso parecido** (suma de |coef|):</span>
+<span class="s2">  - **Conteos propios** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">por_bloque</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'conteos propios'</span><span class="p">,</span><span class="w"> </span><span class="s1">'suma_abs'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">): todos positivos. A más sismos recientes en la celda, más se esperan el mes siguiente; el</span>
+<span class="s2">    peso se reparte entre las ventanas de 1 a 12 meses y el mismo mes del año anterior.</span>
+<span class="s2">  - **Conteos M ≥ 3,5** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">por_bloque</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'conteos M ≥ 3,5'</span><span class="p">,</span><span class="w"> </span><span class="s1">'suma_abs'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">): positivos. `n35_3m` es el coeficiente individual más grande</span>
+<span class="s2">    (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">coef</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">'variable'</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'n35_3m'</span><span class="p">,</span><span class="w"> </span><span class="s1">'coef'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">): los sismos moderados recientes anuncian más actividad (réplicas).</span>
+<span class="s2">  - **Magnitudes** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">por_bloque</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'magnitudes'</span><span class="p">,</span><span class="w"> </span><span class="s1">'suma_abs'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">): con suma **negativa** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">por_bloque</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'magnitudes'</span><span class="p">,</span><span class="w"> </span><span class="s1">'suma'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">). Como los conteos ya están en</span>
+<span class="s2">    el modelo, se leen como contraste: a igual número de sismos, una magnitud media más alta indica actividad **esporádica de eventos</span>
+<span class="s2">    más grandes** y no un enjambre persistente de sismos pequeños (como el del nido), y se asocia a menos sismos al mes siguiente.</span>
+<span class="s2">- **Vecindad** (suma </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">por_bloque</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'vecindad'</span><span class="p">,</span><span class="w"> </span><span class="s1">'suma'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">) y **ubicación** aportan poco al modelo lineal. Su relación es no lineal (capítulos 5 y 8).</span>
+<span class="s2">- **Calendario: coeficientes ≈ 0** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">por_bloque</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'calendario'</span><span class="p">,</span><span class="w"> </span><span class="s1">'suma_abs'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> en valor absoluto), coherente con la ausencia de estacionalidad.</span>
+<span class="s2">- **No son efectos causales.** Los coeficientes describen asociaciones predictivas."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/9f0b5f20aa76c8a20a0c74993ffd80bbed7708590ff7d51cce2531b69c89f4b8.png" src="../_images/9f0b5f20aa76c8a20a0c74993ffd80bbed7708590ff7d51cce2531b69c89f4b8.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>suma</th>
+      <th>suma_abs</th>
+    </tr>
+    <tr>
+      <th>bloque</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>magnitudes</th>
+      <td>-0.133</td>
+      <td>0.245</td>
+    </tr>
+    <tr>
+      <th>conteos propios</th>
+      <td>0.228</td>
+      <td>0.228</td>
+    </tr>
+    <tr>
+      <th>conteos M ≥ 3,5</th>
+      <td>0.227</td>
+      <td>0.227</td>
+    </tr>
+    <tr>
+      <th>profundidad</th>
+      <td>0.030</td>
+      <td>0.030</td>
+    </tr>
+    <tr>
+      <th>ubicación</th>
+      <td>-0.003</td>
+      <td>0.015</td>
+    </tr>
+    <tr>
+      <th>vecindad</th>
+      <td>0.005</td>
+      <td>0.008</td>
+    </tr>
+    <tr>
+      <th>calendario</th>
+      <td>0.001</td>
+      <td>0.003</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Tres bloques con peso parecido</strong> (suma de |coef|):</p>
+<ul>
+<li><p><strong>Conteos propios</strong> (0,228): todos positivos. A más sismos recientes en la celda, más se esperan el mes siguiente; el
+peso se reparte entre las ventanas de 1 a 12 meses y el mismo mes del año anterior.</p></li>
+<li><p><strong>Conteos M ≥ 3,5</strong> (0,227): positivos. <code class="docutils literal notranslate"><span class="pre">n35_3m</span></code> es el coeficiente individual más grande
+(0,148): los sismos moderados recientes anuncian más actividad (réplicas).</p></li>
+<li><p><strong>Magnitudes</strong> (0,245): con suma <strong>negativa</strong> (-0,133). Como los conteos ya están en
+el modelo, se leen como contraste: a igual número de sismos, una magnitud media más alta indica actividad <strong>esporádica de eventos
+más grandes</strong> y no un enjambre persistente de sismos pequeños (como el del nido), y se asocia a menos sismos al mes siguiente.</p></li>
+</ul>
+</li>
+<li><p><strong>Vecindad</strong> (suma 0,005) y <strong>ubicación</strong> aportan poco al modelo lineal. Su relación es no lineal (capítulos 5 y 8).</p></li>
+<li><p><strong>Calendario: coeficientes ≈ 0</strong> (0,003 en valor absoluto), coherente con la ausencia de estacionalidad.</p></li>
+<li><p><strong>No son efectos causales.</strong> Los coeficientes describen asociaciones predictivas.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="desempeno-por-subgrupos-y-por-ano-de-la-prueba">
+<h2>11.7 Desempeño por subgrupos y por año de la prueba<a class="headerlink" href="#desempeno-por-subgrupos-y-por-ano-de-la-prueba" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Error por subgrupos: tercil de actividad de la celda y año</span>
+<span class="n">media_tr_celda</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">cc</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">terc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">qcut</span><span class="p">(</span><span class="n">media_tr_celda</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">"baja"</span><span class="p">,</span> <span class="s2">"media"</span><span class="p">,</span> <span class="s2">"alta"</span><span class="p">])</span>
+<span class="n">g_te</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">cc</span><span class="p">[</span><span class="n">te</span><span class="p">])</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">terc</span><span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">anio_te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">])</span><span class="o">.</span><span class="n">year</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">etiqueta</span><span class="p">,</span> <span class="n">grupos</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"actividad de la celda (tercil en entrenamiento)"</span><span class="p">,</span> <span class="n">g_te</span><span class="p">),</span> <span class="p">(</span><span class="s2">"año de la prueba"</span><span class="p">,</span> <span class="n">anio_te</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">g_</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">grupos</span><span class="p">):</span>
+        <span class="n">s_</span> <span class="o">=</span> <span class="n">grupos</span> <span class="o">==</span> <span class="n">g_</span>
+        <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"criterio"</span><span class="p">:</span> <span class="n">etiqueta</span><span class="p">,</span> <span class="s2">"grupo"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">g_</span><span class="p">),</span> <span class="s2">"filas"</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">s_</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+                      <span class="s2">"RMSLE_SVR"</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">][</span><span class="n">s_</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="s2">"SVR lineal"</span><span class="p">][</span><span class="n">s_</span><span class="p">]),</span>
+                      <span class="s2">"RMSLE_media_celda"</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">][</span><span class="n">s_</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="s2">"Media por celda"</span><span class="p">][</span><span class="n">s_</span><span class="p">]),</span>
+                      <span class="s2">"RMSLE_Dummy_mediana"</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">][</span><span class="n">s_</span><span class="p">],</span> <span class="n">preds</span><span class="p">[</span><span class="s2">"Dummy (mediana = 0)"</span><span class="p">][</span><span class="n">s_</span><span class="p">])})</span>
+<span class="n">sub</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="s2">"desempeno_subgrupos.csv"</span><span class="p">)</span>
+<span class="n">sub</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>criterio</th>
+      <th>grupo</th>
+      <th>filas</th>
+      <th>RMSLE_SVR</th>
+      <th>RMSLE_media_celda</th>
+      <th>RMSLE_Dummy_mediana</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>actividad de la celda (tercil en entrenamiento)</td>
+      <td>baja</td>
+      <td>3795</td>
+      <td>0.2367</td>
+      <td>0.2351</td>
+      <td>0.2411</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>actividad de la celda (tercil en entrenamiento)</td>
+      <td>alta</td>
+      <td>3795</td>
+      <td>0.4966</td>
+      <td>0.5636</td>
+      <td>0.8904</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>actividad de la celda (tercil en entrenamiento)</td>
+      <td>media</td>
+      <td>3657</td>
+      <td>0.3039</td>
+      <td>0.3134</td>
+      <td>0.3209</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>año de la prueba</td>
+      <td>2021</td>
+      <td>1956</td>
+      <td>0.3453</td>
+      <td>0.3736</td>
+      <td>0.5442</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>año de la prueba</td>
+      <td>2022</td>
+      <td>1956</td>
+      <td>0.3390</td>
+      <td>0.3728</td>
+      <td>0.5281</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>año de la prueba</td>
+      <td>2023</td>
+      <td>1956</td>
+      <td>0.3625</td>
+      <td>0.3990</td>
+      <td>0.5689</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>año de la prueba</td>
+      <td>2024</td>
+      <td>1956</td>
+      <td>0.3574</td>
+      <td>0.3944</td>
+      <td>0.5724</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>año de la prueba</td>
+      <td>2025</td>
+      <td>1956</td>
+      <td>0.3517</td>
+      <td>0.3818</td>
+      <td>0.5696</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>año de la prueba</td>
+      <td>2026</td>
+      <td>1467</td>
+      <td>0.4365</td>
+      <td>0.4733</td>
+      <td>0.6248</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura del error por subgrupos</span>
+<span class="n">sa</span> <span class="o">=</span> <span class="n">sub</span><span class="p">[</span><span class="n">sub</span><span class="o">.</span><span class="n">criterio</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"actividad"</span><span class="p">)]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"grupo"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Por actividad de la celda.** El error crece con la actividad: RMSLE </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'baja'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_SVR'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> en el tercil bajo y </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'alta'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_SVR'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> en el alto.</span>
+<span class="s2">  En las celdas tranquilas casi todo es cero y es fácil acertar; en las activas está la información y la dificultad.</span>
+<span class="s2">- **Dónde gana el SVR.** Supera claramente a la media por celda en las celdas activas (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'alta'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_SVR'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> frente a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'alta'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_media_celda'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">), donde la</span>
+<span class="s2">  historia reciente informa. En el tercil bajo empatan en la práctica (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'baja'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_SVR'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> frente a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sa</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'baja'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_media_celda'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">- **Por año.** El error es estable entre 2021 y 2025 y sube en **2026** (año parcial y el más activo del catálogo, capítulo 2):</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sub</span><span class="p">[(</span><span class="n">sub</span><span class="o">.</span><span class="n">criterio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'año de la prueba'</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">grupo</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'2026'</span><span class="p">)]</span><span class="o">.</span><span class="n">RMSLE_SVR</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> frente a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sub</span><span class="p">[(</span><span class="n">sub</span><span class="o">.</span><span class="n">criterio</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'año de la prueba'</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">sub</span><span class="o">.</span><span class="n">grupo</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="s1">'2026'</span><span class="p">)]</span><span class="o">.</span><span class="n">RMSLE_SVR</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> de media en los demás años.</span>
+<span class="s2">  Es la deriva moderada detectada en el EDA."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Por actividad de la celda.</strong> El error crece con la actividad: RMSLE 0,237 en el tercil bajo y 0,497 en el alto.
+En las celdas tranquilas casi todo es cero y es fácil acertar; en las activas está la información y la dificultad.</p></li>
+<li><p><strong>Dónde gana el SVR.</strong> Supera claramente a la media por celda en las celdas activas (0,497 frente a 0,564), donde la
+historia reciente informa. En el tercil bajo empatan en la práctica (0,237 frente a 0,235).</p></li>
+<li><p><strong>Por año.</strong> El error es estable entre 2021 y 2025 y sube en <strong>2026</strong> (año parcial y el más activo del catálogo, capítulo 2):
+0,437 frente a 0,351 de media en los demás años.
+Es la deriva moderada detectada en el EDA.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="representacion-de-entrenamiento-validacion-y-prueba-con-sus-predicciones">
+<h2>11.8 Representación de entrenamiento, validación y prueba con sus predicciones<a class="headerlink" href="#representacion-de-entrenamiento-validacion-y-prueba-con-sus-predicciones" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Serie total observada frente a la predicha (entrenamiento y prueba)</span>
+<span class="n">serie_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">tm</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">pred_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">);</span> <span class="n">pred_full</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span> <span class="o">=</span> <span class="n">pred_tr_svr</span><span class="p">;</span> <span class="n">pred_full</span><span class="p">[</span><span class="n">te</span><span class="p">]</span> <span class="o">=</span> <span class="n">preds</span><span class="p">[</span><span class="s2">"SVR lineal"</span><span class="p">]</span>
+<span class="n">serie_pred</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pred_full</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">tm</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">min_count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">fechas</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">serie_obs</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fechas</span><span class="p">,</span> <span class="n">serie_obs</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"observado (suma de celdas activas)"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"entrenamiento (ajuste)"</span><span class="p">,</span> <span class="n">tr</span><span class="p">[</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">val_ini</span><span class="p">],</span> <span class="s2">"#2b6cb0"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"validación (últimos 24 meses de train)"</span><span class="p">,</span> <span class="n">idx_val</span><span class="p">,</span> <span class="s2">"#38a169"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"prueba"</span><span class="p">,</span> <span class="n">te</span><span class="p">,</span> <span class="s2">"#dd6b20"</span><span class="p">)):</span>
+    <span class="n">s_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pred_full</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">s_</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="n">s_</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.4</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"pronóstico SVR · </span><span class="si">{</span><span class="n">nombre</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Sismos por mes en las celdas activas: observado vs pronóstico del SVR lineal"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"11_series_particiones.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">razon</span> <span class="o">=</span> <span class="p">{</span><span class="n">n_</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">pred_full</span><span class="p">[</span><span class="n">i_</span><span class="p">])</span> <span class="o">/</span> <span class="n">y</span><span class="p">[</span><span class="n">i_</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="k">for</span> <span class="n">n_</span><span class="p">,</span> <span class="n">i_</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"entrenamiento"</span><span class="p">,</span> <span class="n">tr</span><span class="p">),</span> <span class="p">(</span><span class="s2">"prueba"</span><span class="p">,</span> <span class="n">te</span><span class="p">))}</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Nivel medio.** El SVR sigue el nivel medio de la actividad en las tres particiones, pero **suaviza los picos**: no anticipa los enjambres y</span>
+<span class="s2">  pronostica menos sismos totales que los observados (suma pronosticada / observada = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">razon</span><span class="p">[</span><span class="s1">'entrenamiento'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> en entrenamiento y</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">razon</span><span class="p">[</span><span class="s1">'prueba'</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> en prueba).</span>
+<span class="s2">- **Por qué.** Es consecuencia de entrenar en escala log, que estima algo cercano a la mediana condicional, y de que los enjambres no se pueden</span>
+<span class="s2">  anticipar con la historia de la celda.</span>
+<span class="s2">- **Consistencia entre particiones.** El ajuste no es mejor en entrenamiento que en prueba, otra señal de que no hay sobreajuste."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0df8ada9a1b709f8a9d1e016e82fc63fa90a913357e89bfdf865086d81e10486.png" src="../_images/0df8ada9a1b709f8a9d1e016e82fc63fa90a913357e89bfdf865086d81e10486.png" />
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Nivel medio.</strong> El SVR sigue el nivel medio de la actividad en las tres particiones, pero <strong>suaviza los picos</strong>: no anticipa los enjambres y
+pronostica menos sismos totales que los observados (suma pronosticada / observada = 0,46 en entrenamiento y
+0,39 en prueba).</p></li>
+<li><p><strong>Por qué.</strong> Es consecuencia de entrenar en escala log, que estima algo cercano a la mediana condicional, y de que los enjambres no se pueden
+anticipar con la historia de la celda.</p></li>
+<li><p><strong>Consistencia entre particiones.</strong> El ajuste no es mejor en entrenamiento que en prueba, otra señal de que no hay sobreajuste.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="nota-critica-del-enunciado-desempeno-sospechosamente-alto">
+<h2>11.9 Nota crítica del enunciado: ¿desempeño sospechosamente alto?<a class="headerlink" href="#nota-critica-del-enunciado-desempeno-sospechosamente-alto" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Notas de verificación: R², auditoría de fuga y esquema de validación</span>
+<span class="n">nota</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"R² (escala log) del SVR lineal en prueba"</span><span class="p">,</span> <span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span> <span class="s1">'R2_log'</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">"&lt; 0,80: no hay señal de desempeño sospechoso"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"R² (conteos) del SVR lineal en prueba"</span><span class="p">,</span> <span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span> <span class="s1">'R2'</span><span class="p">],</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">"&lt; 0,80"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Mayor R² univariado de una predictora (cap. 9)"</span><span class="p">,</span> <span class="n">es</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TABLAS</span> <span class="o">/</span> <span class="s1">'auditoria_univariado.csv'</span><span class="p">)</span><span class="o">.</span><span class="n">R2_univariado_log_OOF</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">3</span><span class="p">),</span> <span class="s2">"sin proxies del objetivo"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Auditoría de fuga (cap. 9)"</span><span class="p">,</span> <span class="s2">"limpia"</span><span class="p">,</span> <span class="s2">"variables solo del pasado; partición cronológica con gap"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Validación respeta tiempo y espacio"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"CV temporal; bloques espaciales aparte; KFold solo como contraste"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Comparación con la trivial"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"mejora en RMSLE frente a la mediana 0: </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Dummy (mediana = 0)'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE'</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"no es un acierto trivial"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"¿Problema trivial?"</span><span class="p">,</span> <span class="s2">"no"</span><span class="p">,</span> <span class="s2">"R² log ≈ 0,5; enjambres no anticipables; residuos con estructura"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"chequeo"</span><span class="p">,</span> <span class="s2">"resultado"</span><span class="p">,</span> <span class="s2">"lectura"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">nota</span><span class="p">,</span> <span class="s2">"nota_critica.csv"</span><span class="p">)</span>
+<span class="n">nota</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>chequeo</th>
+      <th>resultado</th>
+      <th>lectura</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>R² (escala log) del SVR lineal en prueba</td>
+      <td>0,522</td>
+      <td>&lt; 0,80: no hay señal de desempeño sospechoso</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>R² (conteos) del SVR lineal en prueba</td>
+      <td>0,291</td>
+      <td>&lt; 0,80</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Mayor R² univariado de una predictora (cap. 9)</td>
+      <td>0,481</td>
+      <td>sin proxies del objetivo</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Auditoría de fuga (cap. 9)</td>
+      <td>limpia</td>
+      <td>variables solo del pasado; partición cronológi...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Validación respeta tiempo y espacio</td>
+      <td>sí</td>
+      <td>CV temporal; bloques espaciales aparte; KFold ...</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Comparación con la trivial</td>
+      <td>mejora en RMSLE frente a la mediana 0: 0,203</td>
+      <td>no es un acierto trivial</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>¿Problema trivial?</td>
+      <td>no</td>
+      <td>R² log ≈ 0,5; enjambres no anticipables; resid...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p><strong>Conclusión del modelo base.</strong></p>
+<ul class="simple">
+<li><p><strong>Mejor que lo trivial, sin exagerar.</strong> El SVR lineal supera a las líneas base en RMSLE con un
+desempeño moderado: R² en log ≈ 0,5, muy por debajo del umbral del 80 % de la nota crítica.</p></li>
+<li><p><strong>Diseño válido.</strong> La auditoría de fuga está limpia y la validación respeta la estructura temporal y
+espacial.</p></li>
+<li><p><strong>Lo que el modelo lineal no captura.</strong> Los residuos muestran heterocedasticidad, dependencia temporal y
+espacial y errores mayores en las celdas activas.</p></li>
+<li><p><strong>Siguiente paso.</strong> Eso motiva los modelos benchmark no lineales y la optimización del Entregable 2.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="10_preprocesamiento.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">10. Preprocesamiento y Pipeline (2.9)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="12_conclusiones.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">12. Conclusiones del Entregable 1, limitaciones y checklist</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hiperparametros-del-svr-lineal-solo-con-validacion-cruzada-temporal">11.1 Hiperparámetros del SVR lineal (solo con validación cruzada temporal)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validacion-cruzada-temporal-principal-bloques-espaciales-y-aleatoria">11.2 Validación cruzada: temporal (principal), bloques espaciales y aleatoria</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ajuste-final-y-evaluacion-unica-en-la-prueba">11.3 Ajuste final y evaluación única en la prueba</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-explicita-con-las-lineas-base-triviales">Comparación explícita con las líneas base triviales</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnostico-de-residuos">11.4 Diagnóstico de residuos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#curva-de-aprendizaje">11.5 Curva de aprendizaje</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpretacion-de-los-coeficientes">11.6 Interpretación de los coeficientes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#desempeno-por-subgrupos-y-por-ano-de-la-prueba">11.7 Desempeño por subgrupos y por año de la prueba</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#representacion-de-entrenamiento-validacion-y-prueba-con-sus-predicciones">11.8 Representación de entrenamiento, validación y prueba con sus predicciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nota-critica-del-enunciado-desempeno-sospechosamente-alto">11.9 Nota crítica del enunciado: ¿desempeño sospechosamente alto?</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1610 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>22. Modelo propuesto: A+B v2 &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/22_modelo_propuesto';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="23. Conclusiones del Entregable 2 y matriz de trazabilidad" href="23_conclusiones_e2.html" />
+    <link rel="prev" title="21. Comparación estadística de modelos" href="21_comparacion_estadistica.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/22_modelo_propuesto.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>22. Modelo propuesto: A+B v2</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#idea-y-componentes">22.1 Idea y componentes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#protocolo-seleccion-ajuste-y-evaluacion-separados">22.2 Protocolo: selección, ajuste y evaluación separados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datos-usados-en-cada-etapa">22.3 Datos usados en cada etapa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resultados-en-el-origen-movil-20212026">22.4 Resultados en el origen móvil 2021–2026</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validacion-previa-20-final-del-entrenamiento-sin-tocar-los-meses-evaluados">Validación previa (20 % final del entrenamiento, sin tocar los meses evaluados)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-directa-contra-el-campeon-de-cada-modelo">Comparación directa contra el campeón de cada modelo</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ablacion-cuanto-aporta-cada-componente">Ablación: cuánto aporta cada componente</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resultados-ano-por-ano-y-pesos-del-combinador">22.5 Resultados año por año y pesos del combinador</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uso-del-modelo-propuesto-en-la-tarea-de-clasificacion">22.6 Uso del modelo propuesto en la tarea de clasificación</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#costo-computacional-y-limitaciones">22.7 Costo computacional y limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">22.8 Conclusión</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="modelo-propuesto-a-b-v2">
+<h1>22. Modelo propuesto: A+B v2<a class="headerlink" href="#modelo-propuesto-a-b-v2" title="Link to this heading">#</a></h1>
+<p>Este capítulo presenta el modelo original del proyecto, el protocolo con que se evaluó, la independencia de la
+evaluación y los resultados frente a los benchmark en la <strong>evaluación
+definitiva en origen móvil 2021–2026</strong> (cap. 13.11): 69 meses, modelos reentrenados cada año.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Predicciones del origen móvil y módulos estadísticos</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">FancyBboxPatch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">roc_auc_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">resultados_e2</span> <span class="k">as</span> <span class="n">r2</span><span class="p">,</span> <span class="n">estadistica</span> <span class="k">as</span> <span class="n">est</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_completo</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">);</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">];</span> <span class="n">tmt</span> <span class="o">=</span> <span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">]</span>
+<span class="n">O</span><span class="p">,</span> <span class="n">Fi</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">origen_movil</span><span class="p">(),</span> <span class="n">r2</span><span class="o">.</span><span class="n">filas_origen_movil</span><span class="p">()</span>
+<span class="n">yo</span><span class="p">,</span> <span class="n">tmo</span> <span class="o">=</span> <span class="n">O</span><span class="p">[</span><span class="s2">"y"</span><span class="p">],</span> <span class="n">O</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]</span>
+<span class="n">persist</span><span class="p">,</span> <span class="n">estac</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"C"</span><span class="p">][</span><span class="n">Fi</span><span class="p">[</span><span class="s2">"cc"</span><span class="p">],</span> <span class="n">Fi</span><span class="p">[</span><span class="s2">"tt"</span><span class="p">]],</span> <span class="n">info</span><span class="p">[</span><span class="s2">"C"</span><span class="p">][</span><span class="n">Fi</span><span class="p">[</span><span class="s2">"cc"</span><span class="p">],</span> <span class="n">Fi</span><span class="p">[</span><span class="s2">"tt"</span><span class="p">]</span> <span class="o">-</span> <span class="mi">11</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="idea-y-componentes">
+<h2>22.1 Idea y componentes<a class="headerlink" href="#idea-y-componentes" title="Link to this heading">#</a></h2>
+<p>El EDA del Entregable 1 mostró tres rasgos del objetivo que los modelos benchmark no tratan de forma
+explícita: (i) <strong>exceso de ceros</strong> (≈ 76 % de las celdas-mes sin sismos), (ii) <strong>sobredispersión</strong> (varianza
+mucho mayor que la media, enjambres) y (iii) <strong>dependencia del contexto</strong>: qué modelo acierta más cambia según
+la historia reciente de la celda (tranquila, activa, en enjambre). A+B ataca los tres:</p>
+<ul class="simple">
+<li><p><strong>B — boosting ZINB (propio).</strong> Un gradient boosting escrito desde cero cuya pérdida es la
+log-verosimilitud negativa de una <strong>binomial negativa con inflación de ceros (ZINB)</strong>. En cada iteración
+ajusta dos árboles CART propios (<code class="docutils literal notranslate"><span class="pre">src/arbol_cart.py</span></code>) por pasos de Newton (gradiente/hessiano analíticos): uno para η = log μ (media de la
+parte de conteo) y otro para ξ = logit π (probabilidad de cero estructural); la dispersión α se reoptimiza
+cada 20 iteraciones. El número de iteraciones se elige con el último 20 % de meses del entrenamiento. Su
+salida es E[log(1 + Y)] bajo la ZINB, que es exactamente lo que minimiza el RMSLE. Usa las 18 predictoras y
+13 variables de <strong>excitación tipo ETAS</strong> (suma de sismos pasados ponderada por magnitud, distancia y tiempo).</p></li>
+<li><p><strong>Núcleo ZINB (propio).</strong> La misma distribución como modelo lineal generalizado regularizado.</p></li>
+<li><p><strong>A — combinador softmax con pesos que dependen del contexto (propio).</strong> La predicción final, en escala
+log1p, es <strong>ŷ = Σ_j w_j(z)·f_j(x)</strong> con w(z) = softmax(z·Θ). Las meta-características z describen el estado
+de la celda (conteos recientes, excitación, 4 componentes principales de los últimos 12 meses, fracción de
+meses en cero, magnitud máxima, estacionalidad). Θ se estima minimizando el error cuadrático en log1p con
+penalización L2 (elegida en validación temporal) por L-BFGS. Así el modelo <strong>aprende cuándo confiar en cada
+miembro</strong>, en vez de promediarlos con pesos fijos.</p></li>
+<li><p><strong>Calibración final (propia).</strong> Combinar pronósticos en escala log tiende a <strong>encoger</strong> el resultado hacia
+cero (un promedio de logaritmos queda por debajo del logaritmo del promedio), lo que se nota como un sesgo
+sistemático en los meses con sismos. La última etapa corrige ese sesgo con una recta en escala log1p:
+ŷ_final = expm1(máx(0, c₀ + c₁·ŷ)). (c₀, c₁) se estiman por mínimos cuadrados <strong>solo con el entrenamiento</strong>:
+el combinador se ajusta con el 80 % inicial de los meses con predicción fuera de pliegue y la recta se ajusta
+con su pronóstico del 20 % final. Son dos parámetros por origen, por lo que no puede sobreajustar.</p></li>
+<li><p><strong>Miembros (v2).</strong> Las cuatro versiones optimizadas de XGBoost y de Random Forest (Grid, Random, TPE, AG),
+el mejor KNN y el mejor Ridge según el bucle externo, el núcleo ZINB, B, persistencia e ingenuo estacional.
+El combinador recibe las predicciones <strong>fuera de pliegue cronológicas</strong> de cada miembro (22.2), nunca
+predicciones dentro de la muestra ni hechas con meses posteriores.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Diagrama de la arquitectura de A+B v2</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.6</span><span class="p">));</span> <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">"off"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">caja</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">FancyBboxPatch</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y_</span><span class="p">),</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">boxstyle</span><span class="o">=</span><span class="s2">"round,pad=0.05"</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s2">"0.3"</span><span class="p">));</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y_</span> <span class="o">+</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mf">8.5</span><span class="p">)</span>
+<span class="n">caja</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">"Panel celda × mes</span><span class="se">\n</span><span class="s2">18 predictoras</span><span class="se">\n</span><span class="s2">+ 13 de excitación"</span><span class="p">,</span> <span class="s2">"#eeeeee"</span><span class="p">)</span>
+<span class="n">miembros_txt</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"XGBoost ×4 (Grid, Random,</span><span class="se">\n</span><span class="s2">TPE, AG)"</span><span class="p">,</span> <span class="s2">"Random Forest ×4"</span><span class="p">,</span> <span class="s2">"KNN · Ridge"</span><span class="p">,</span> <span class="s2">"Núcleo ZINB (propio)"</span><span class="p">,</span> <span class="s2">"B: boosting ZINB (propio)"</span><span class="p">,</span> <span class="s2">"Persistencia · estacional"</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">miembros_txt</span><span class="p">):</span>
+    <span class="n">caja</span><span class="p">(</span><span class="mf">2.6</span><span class="p">,</span> <span class="mf">4.25</span> <span class="o">-</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">k</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">0.62</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="s2">"#ffd8b1"</span> <span class="k">if</span> <span class="s2">"propio"</span> <span class="ow">in</span> <span class="n">t</span> <span class="k">else</span> <span class="s2">"#cfe2f3"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.6</span><span class="p">,</span> <span class="mf">4.55</span> <span class="o">-</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">k</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.95</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">),</span> <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"0.5"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.7</span><span class="p">))</span>
+<span class="n">caja</span><span class="p">(</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">3.7</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">"Meta-características z</span><span class="se">\n</span><span class="s2">(historia, excitación, PCA,</span><span class="se">\n</span><span class="s2">ceros, magnitud, estación)"</span><span class="p">,</span> <span class="s2">"#d9ead3"</span><span class="p">)</span>
+<span class="n">caja</span><span class="p">(</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s2">"A: combinador softmax</span><span class="se">\n</span><span class="s2">w(z) = softmax(zΘ)</span><span class="se">\n</span><span class="s2">ŷ = Σ w_j(z) f_j(x)</span><span class="se">\n</span><span class="s2">(L2, L-BFGS)"</span><span class="p">,</span> <span class="s2">"#ffd8b1"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="p">(</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">2.05</span><span class="p">),</span> <span class="p">(</span><span class="mf">5.25</span><span class="p">,</span> <span class="mf">4.55</span> <span class="o">-</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">k</span><span class="p">),</span> <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"0.5"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.7</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="p">(</span><span class="mf">7.2</span><span class="p">,</span> <span class="mf">2.85</span><span class="p">),</span> <span class="p">(</span><span class="mf">7.2</span><span class="p">,</span> <span class="mf">3.65</span><span class="p">),</span> <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"0.3"</span><span class="p">))</span>
+<span class="n">caja</span><span class="p">(</span><span class="mf">8.85</span><span class="p">,</span> <span class="mf">2.45</span><span class="p">,</span> <span class="mf">1.45</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="s2">"Calibración</span><span class="se">\n</span><span class="s2">c₀ + c₁·ŷ</span><span class="se">\n</span><span class="s2">(propia)"</span><span class="p">,</span> <span class="s2">"#ffd8b1"</span><span class="p">)</span>
+<span class="n">caja</span><span class="p">(</span><span class="mf">10.55</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="s2">"Predicción</span><span class="se">\n</span><span class="s2">sismos M ≥ 2,5</span><span class="se">\n</span><span class="s2">en t+1"</span><span class="p">,</span> <span class="s2">"#eeeeee"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="p">(</span><span class="mf">8.85</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">),</span> <span class="p">(</span><span class="mf">8.45</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">),</span> <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"0.3"</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="p">(</span><span class="mf">10.55</span><span class="p">,</span> <span class="mf">1.65</span><span class="p">),</span> <span class="p">(</span><span class="mf">10.3</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">),</span> <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">"-&gt;"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"0.3"</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s2">"Naranja = componentes originales del proyecto. A recibe predicciones fuera de pliegue cronológicas de los miembros (cada bloque de meses predicho solo con meses anteriores)."</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"e2_ab2_arquitectura.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4963e5592aa6c73312a513defff836b3c720e8d7bf94493a2c1173ac35710425.png" src="../_images/4963e5592aa6c73312a513defff836b3c720e8d7bf94493a2c1173ac35710425.png" />
+</div>
+</div>
+<p><strong>¿Por qué es original?</strong> Ninguna librería implementa un boosting con pérdida ZINB ni un combinador con
+pesos softmax dependientes del contexto; los componentes naranjas están escritos en <code class="docutils literal notranslate"><span class="pre">src/propuesto.py</span></code>
+(≈ 280 líneas, con gradientes y hessianos analíticos) y en <code class="docutils literal notranslate"><span class="pre">scripts/origen_movil_final.py</span></code> (calibración). Los árboles
+débiles de B tampoco vienen de una librería: son un CART ponderado programado con numpy en <code class="docutils literal notranslate"><span class="pre">src/arbol_cart.py</span></code>
+(búsqueda exacta de cortes que maximiza <span class="math notranslate nohighlight">\(Y_L^2/W_L + Y_R^2/W_R\)</span>; pruebas en <code class="docutils literal notranslate"><span class="pre">tests/test_arbol_cart.py</span></code>, incluida su
+coincidencia con CART de referencia). Los modelos benchmark entran como <strong>insumos</strong>, igual que
+en cualquier <em>stacking</em>, pero la forma de combinarlos y el modelo B son propios.</p>
+</section>
+<section id="protocolo-seleccion-ajuste-y-evaluacion-separados">
+<h2>22.2 Protocolo: selección, ajuste y evaluación separados<a class="headerlink" href="#protocolo-seleccion-ajuste-y-evaluacion-separados" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Etapa</p></th>
+<th class="head"><p>Qué se decide</p></th>
+<th class="head"><p>Con qué datos</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Selección</strong></p></td>
+<td><p>hiperparámetros de cada miembro y qué versión de KNN y Ridge entra</p></td>
+<td><p>validación interna con datos anteriores a 2016</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Ajuste</strong></p></td>
+<td><p>predicciones fuera de pliegue de los miembros; parámetros de B y del núcleo ZINB; pesos Θ y penalización L2 del combinador</p></td>
+<td><p>solo entrenamiento</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Calibración</strong></p></td>
+<td><p>c₀ y c₁ de la recta final</p></td>
+<td><p>solo entrenamiento: 20 % final de los meses con predicción fuera de pliegue, con el combinador ajustado en el 80 % inicial</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Validación previa</strong></p></td>
+<td><p>¿el combinador empeora a algún miembro?</p></td>
+<td><p>20 % final de los meses de entrenamiento, con el combinador ajustado en el 80 % inicial</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Evaluación</strong></p></td>
+<td><p>comparación con los campeones de cada familia y con las 28 combinaciones</p></td>
+<td><p>origen móvil 2021–2026: el modelo completo (miembros, B, núcleo ZINB y combinador) se reentrena cada año con todo el pasado; hiperparámetros de los miembros y campeones fijados con datos &lt; 2016</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Predicciones fuera de pliegue cronológicas.</strong> El combinador aprende cuánto confiar en cada miembro a partir de
+sus predicciones fuera de pliegue. Los meses de entrenamiento se dividen en 5 bloques contiguos y cada bloque
+f ≥ 1 se predice con un miembro entrenado <strong>solo con los meses anteriores</strong> (con un mes de gap). El primer bloque
+no tiene predicción y no se usa para ajustar el combinador. Así ni los miembros ni el combinador usan nunca
+información posterior al mes que se predice.</p>
+<p>Una validación cruzada k-fold estándar no sirve aquí: predeciría cada bloque con modelos entrenados también con
+bloques <strong>posteriores</strong>, y el combinador aprendería con predicciones que «conocen el futuro», confiando de más
+en los miembros que mejor memorizan.</p>
+</section>
+<section id="datos-usados-en-cada-etapa">
+<h2>22.3 Datos usados en cada etapa<a class="headerlink" href="#datos-usados-en-cada-etapa" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Elemento</p></th>
+<th class="head"><p>Con qué datos se fijó</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Hiperparámetros de los 28 benchmark y de cada miembro</p></td>
+<td><p>validación interna con datos &lt; 2016</p></td>
+</tr>
+<tr class="row-odd"><td><p>Campeón de cada familia (los 7 rivales)</p></td>
+<td><p>validación interna con datos &lt; 2016</p></td>
+</tr>
+<tr class="row-even"><td><p>Predicciones fuera de pliegue, parámetros de B y del núcleo ZINB, pesos del combinador y calibración (en cada origen)</p></td>
+<td><p>solo los meses anteriores al año pronosticado</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>En cada origen anual el modelo se ajusta solo con el pasado, y todo lo anterior es reproducible con los scripts
+del proyecto (<code class="docutils literal notranslate"><span class="pre">scripts/origen_movil.py</span></code> y <code class="docutils literal notranslate"><span class="pre">scripts/origen_movil_final.py</span></code>). La confirmación con datos que no
+existían al construir el modelo requiere meses <strong>futuros</strong> (octubre de 2026 en adelante).</p>
+</section>
+<section id="resultados-en-el-origen-movil-20212026">
+<h2>22.4 Resultados en el origen móvil 2021–2026<a class="headerlink" href="#resultados-en-el-origen-movil-20212026" title="Link to this heading">#</a></h2>
+<section id="validacion-previa-20-final-del-entrenamiento-sin-tocar-los-meses-evaluados">
+<h3>Validación previa (20 % final del entrenamiento, sin tocar los meses evaluados)<a class="headerlink" href="#validacion-previa-20-final-del-entrenamiento-sin-tocar-los-meses-evaluados" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Validación previa a 2021: A+B v2 frente a cada miembro</span>
+<span class="n">VP</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">PROP</span> <span class="o">/</span> <span class="s2">"validacion_previa_final.csv"</span><span class="p">)</span>
+<span class="n">VP</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>RMSLE_AB</th>
+      <th>miembro</th>
+      <th>RMSLE_miembro</th>
+      <th>dif</th>
+      <th>p</th>
+      <th>p_holm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.3143</td>
+      <td>XGBoost (Grid)</td>
+      <td>0.3137</td>
+      <td>-0.0004</td>
+      <td>0.4666</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.3143</td>
+      <td>XGBoost (Random)</td>
+      <td>0.3143</td>
+      <td>-0.0001</td>
+      <td>0.8913</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.3143</td>
+      <td>XGBoost (Bayesiano (TPE))</td>
+      <td>0.3144</td>
+      <td>0.0000</td>
+      <td>0.9858</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.3143</td>
+      <td>XGBoost (Genético (DEAP))</td>
+      <td>0.3143</td>
+      <td>-0.0001</td>
+      <td>0.8913</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.3143</td>
+      <td>Random Forest (Grid)</td>
+      <td>0.3199</td>
+      <td>0.0035</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.3143</td>
+      <td>Random Forest (Random)</td>
+      <td>0.3155</td>
+      <td>0.0007</td>
+      <td>0.0011</td>
+      <td>0.0074</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.3143</td>
+      <td>Random Forest (Bayesiano (TPE))</td>
+      <td>0.3155</td>
+      <td>0.0007</td>
+      <td>0.0256</td>
+      <td>0.1278</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.3143</td>
+      <td>Random Forest (Genético (DEAP))</td>
+      <td>0.3160</td>
+      <td>0.0011</td>
+      <td>0.0012</td>
+      <td>0.0075</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.3143</td>
+      <td>KNN (Random)</td>
+      <td>0.3210</td>
+      <td>0.0042</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.3143</td>
+      <td>Ridge (Genético (DEAP))</td>
+      <td>0.3297</td>
+      <td>0.0099</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.3143</td>
+      <td>Núcleo ZINB (propio)</td>
+      <td>0.3260</td>
+      <td>0.0075</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0.3143</td>
+      <td>B: boosting ZINB (propio)</td>
+      <td>0.3210</td>
+      <td>0.0042</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0.3143</td>
+      <td>Persistencia</td>
+      <td>0.4115</td>
+      <td>0.0705</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0.3143</td>
+      <td>Ingenuo estacional</td>
+      <td>0.4420</td>
+      <td>0.0965</td>
+      <td>0.0000</td>
+      <td>0.0000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de la validación previa</span>
+<span class="n">mejor_m</span> <span class="o">=</span> <span class="n">VP</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"RMSLE_miembro"</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">peores</span> <span class="o">=</span> <span class="n">VP</span><span class="p">[</span><span class="n">VP</span><span class="o">.</span><span class="n">dif</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"En la validación previa (</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="mf">0.2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">]))))</span><span class="si">}</span><span class="s2"> meses al final del entrenamiento) A+B v2 obtuvo RMSLE "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">VP</span><span class="o">.</span><span class="n">RMSLE_AB</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">; el mejor miembro fue </span><span class="si">{</span><span class="n">mejor_m</span><span class="o">.</span><span class="n">miembro</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">mejor_m</span><span class="o">.</span><span class="n">RMSLE_miembro</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">). "</span>
+   <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"A+B v2 quedó **por debajo** de </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">peores</span><span class="p">)</span><span class="si">}</span><span class="s2"> miembro(s) (</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">peores</span><span class="o">.</span><span class="n">miembro</span><span class="p">)</span><span class="si">}</span><span class="s2">), aunque sin diferencia significativa tras "</span>
+      <span class="sa">f</span><span class="s2">"Holm (p Holm ≥ </span><span class="si">{</span><span class="n">peores</span><span class="o">.</span><span class="n">p_holm</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">). Es decir, en ese tramo el modelo propuesto quedó al nivel del mejor XGBoost; se reporta tal cual."</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">peores</span><span class="p">)</span> <span class="k">else</span>
+      <span class="s2">"A+B v2 no quedó por debajo de ningún miembro."</span><span class="p">)</span> <span class="o">+</span>
+   <span class="sa">f</span><span class="s2">" Frente a los miembros más débiles (KNN, Ridge, núcleo ZINB, B solo y las líneas base) la mejora sí es significativa."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p>En la validación previa (38 meses al final del entrenamiento) A+B v2 obtuvo RMSLE 0.3143; el mejor miembro fue XGBoost (Grid) (0.3137). A+B v2 quedó <strong>por debajo</strong> de 3 miembro(s) (XGBoost (Grid), XGBoost (Random), XGBoost (Genético (DEAP))), aunque sin diferencia significativa tras Holm (p Holm ≥ 1.00). Es decir, en ese tramo el modelo propuesto quedó al nivel del mejor XGBoost; se reporta tal cual. Frente a los miembros más débiles (KNN, Ridge, núcleo ZINB, B solo y las líneas base) la mejora sí es significativa.</p>
+</div>
+</div>
+</section>
+<section id="comparacion-directa-contra-el-campeon-de-cada-modelo">
+<h3>Comparación directa contra el campeón de cada modelo<a class="headerlink" href="#comparacion-directa-contra-el-campeon-de-cada-modelo" title="Link to this heading">#</a></h3>
+<p>La comparación central del modelo propio es contra <strong>un representante por familia</strong>: el campeón de cada uno
+de los 7 modelos de regresión, elegido con la validación interna <strong>anterior a 2016</strong> (la misma búsqueda que fijó
+sus hiperparámetros, cap. 13.11). Así la corrección de Holm se hace sobre 7 comparaciones y no sobre 28 casi
+redundantes (es el diseño fijado para reducir el costo computacional, cap. 13.12), y ningún mes evaluado
+interviene en la elección del rival.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A+B v2 frente al campeón de cada familia: Diebold-Mariano con Holm y d de Cohen</span>
+<span class="n">ver</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">,</span> <span class="n">dif</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">p</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">dif</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"A+B v2 gana"</span><span class="p">,</span> <span class="s2">"A+B v2 pierde"</span><span class="p">),</span> <span class="s2">"empate"</span><span class="p">)</span>  <span class="c1"># noqa: E731</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">comparar</span><span class="p">(</span><span class="n">etiquetas</span><span class="p">,</span> <span class="n">yv</span><span class="p">,</span> <span class="n">preds</span><span class="p">,</span> <span class="n">tmv</span><span class="p">,</span> <span class="n">p_ab</span><span class="p">):</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">La</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">perdida_mensual</span><span class="p">(</span><span class="n">yv</span><span class="p">,</span> <span class="n">p_ab</span><span class="p">,</span> <span class="n">tmv</span><span class="p">)</span>
+    <span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">etq</span> <span class="ow">in</span> <span class="n">etiquetas</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">preds</span><span class="p">[</span><span class="n">etq</span><span class="p">];</span> <span class="n">_</span><span class="p">,</span> <span class="n">Lr</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">perdida_mensual</span><span class="p">(</span><span class="n">yv</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">tmv</span><span class="p">);</span> <span class="n">d</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">diebold_mariano</span><span class="p">(</span><span class="n">Lr</span><span class="p">,</span> <span class="n">La</span><span class="p">)</span>
+        <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"campeón"</span><span class="p">:</span> <span class="n">etq</span><span class="p">,</span> <span class="s2">"RMSLE campeón"</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">yv</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span> <span class="s2">"RMSLE A+B v2"</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">yv</span><span class="p">,</span> <span class="n">p_ab</span><span class="p">),</span>
+                      <span class="s2">"mejora %"</span><span class="p">:</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">yv</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="o">-</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">yv</span><span class="p">,</span> <span class="n">p_ab</span><span class="p">))</span> <span class="o">/</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">yv</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
+                      <span class="s2">"DM-HLN"</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">"DM_HLN"</span><span class="p">],</span> <span class="s2">"p crudo"</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">"p"</span><span class="p">],</span> <span class="s2">"d de Cohen"</span><span class="p">:</span> <span class="n">est</span><span class="o">.</span><span class="n">cohen_d_pareado</span><span class="p">(</span><span class="n">Lr</span><span class="p">,</span> <span class="n">La</span><span class="p">),</span> <span class="s2">"_dif"</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">"dif_media"</span><span class="p">]})</span>
+    <span class="n">T_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+    <span class="n">T_</span><span class="p">[</span><span class="s2">"p Holm"</span><span class="p">]</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">holm</span><span class="p">(</span><span class="n">T_</span><span class="p">[</span><span class="s2">"p crudo"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">T_</span><span class="p">[</span><span class="s2">"magnitud d"</span><span class="p">]</span> <span class="o">=</span> <span class="n">T_</span><span class="p">[</span><span class="s2">"d de Cohen"</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">magnitud_cohen</span><span class="p">)</span>
+    <span class="n">T_</span><span class="p">[</span><span class="s2">"veredicto"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ver</span><span class="p">(</span><span class="n">T_</span><span class="p">[</span><span class="s2">"p Holm"</span><span class="p">],</span> <span class="n">T_</span><span class="p">[</span><span class="s2">"_dif"</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">T_</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"_dif"</span><span class="p">)</span>
+
+<span class="n">CR</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">campeones_om</span><span class="p">(</span><span class="s2">"reg"</span><span class="p">)</span>
+<span class="n">camp_om</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">CR</span><span class="o">.</span><span class="n">etiqueta</span><span class="p">)</span>
+<span class="n">CMP</span> <span class="o">=</span> <span class="n">comparar</span><span class="p">(</span><span class="n">camp_om</span><span class="p">,</span> <span class="n">yo</span><span class="p">,</span> <span class="n">O</span><span class="p">,</span> <span class="n">tmo</span><span class="p">,</span> <span class="n">O</span><span class="p">[</span><span class="s2">"A+B v2"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">CMP</span><span class="p">,</span> <span class="s2">"e2_ab_vs_campeones.csv"</span><span class="p">)</span>
+<span class="n">CR</span><span class="p">[[</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"variante"</span><span class="p">,</span> <span class="s2">"validación &lt; 2016"</span><span class="p">]]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">"variante"</span><span class="p">:</span> <span class="s2">"optimizador"</span><span class="p">,</span> <span class="s2">"validación &lt; 2016"</span><span class="p">:</span> <span class="s2">"RMSLE validación &lt; 2016"</span><span class="p">})</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>optimizador</th>
+      <th>RMSLE validación &lt; 2016</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Random Forest</td>
+      <td>Genético (DEAP)</td>
+      <td>0.3859</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>XGBoost</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.3866</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>KNN</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.3940</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>SVR</td>
+      <td>Genético (DEAP)</td>
+      <td>0.3948</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Árbol de decisión</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.3971</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Ridge</td>
+      <td>Grid</td>
+      <td>0.4012</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Lasso</td>
+      <td>Grid</td>
+      <td>0.4012</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CMP</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>campeón</th>
+      <th>RMSLE campeón</th>
+      <th>RMSLE A+B v2</th>
+      <th>mejora %</th>
+      <th>DM-HLN</th>
+      <th>p crudo</th>
+      <th>d de Cohen</th>
+      <th>p Holm</th>
+      <th>magnitud d</th>
+      <th>veredicto</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Random Forest · AG</td>
+      <td>0.3279</td>
+      <td>0.326</td>
+      <td>0.5965</td>
+      <td>3.3261</td>
+      <td>0.0014</td>
+      <td>0.4115</td>
+      <td>0.0028</td>
+      <td>pequeño</td>
+      <td>A+B v2 gana</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>XGBoost · TPE</td>
+      <td>0.3270</td>
+      <td>0.326</td>
+      <td>0.3203</td>
+      <td>3.2724</td>
+      <td>0.0017</td>
+      <td>0.3636</td>
+      <td>0.0028</td>
+      <td>pequeño</td>
+      <td>A+B v2 gana</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>KNN · TPE</td>
+      <td>0.3345</td>
+      <td>0.326</td>
+      <td>2.5368</td>
+      <td>5.4782</td>
+      <td>0.0000</td>
+      <td>0.7460</td>
+      <td>0.0000</td>
+      <td>mediano</td>
+      <td>A+B v2 gana</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>SVR · AG</td>
+      <td>0.3547</td>
+      <td>0.326</td>
+      <td>8.1078</td>
+      <td>26.2497</td>
+      <td>0.0000</td>
+      <td>3.4080</td>
+      <td>0.0000</td>
+      <td>grande</td>
+      <td>A+B v2 gana</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Árbol de decisión · TPE</td>
+      <td>0.3308</td>
+      <td>0.326</td>
+      <td>1.4543</td>
+      <td>3.6828</td>
+      <td>0.0005</td>
+      <td>0.6094</td>
+      <td>0.0014</td>
+      <td>mediano</td>
+      <td>A+B v2 gana</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Ridge · Grid</td>
+      <td>0.3463</td>
+      <td>0.326</td>
+      <td>5.8836</td>
+      <td>15.6323</td>
+      <td>0.0000</td>
+      <td>1.9245</td>
+      <td>0.0000</td>
+      <td>grande</td>
+      <td>A+B v2 gana</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Lasso · Grid</td>
+      <td>0.3463</td>
+      <td>0.326</td>
+      <td>5.8836</td>
+      <td>15.6458</td>
+      <td>0.0000</td>
+      <td>1.9253</td>
+      <td>0.0000</td>
+      <td>grande</td>
+      <td>A+B v2 gana</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de la comparación con los campeones</span>
+<span class="n">g</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">CMP</span><span class="o">.</span><span class="n">veredicto</span> <span class="o">==</span> <span class="s2">"A+B v2 gana"</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">());</span> <span class="n">e</span> <span class="o">=</span> <span class="n">CMP</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">CMP</span><span class="o">.</span><span class="n">veredicto</span> <span class="o">==</span> <span class="s2">"empate"</span><span class="p">]</span>
+<span class="n">fmt_e</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">e_</span><span class="p">:</span> <span class="s2">"; "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">campeón</span><span class="si">}</span><span class="s2"> (p Holm = </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">'p Holm'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, d = </span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">'d de Cohen'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)"</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">e_</span><span class="o">.</span><span class="n">iterrows</span><span class="p">())</span>  <span class="c1"># noqa: E731</span>
+<span class="n">xg</span> <span class="o">=</span> <span class="n">CMP</span><span class="p">[</span><span class="n">CMP</span><span class="o">.</span><span class="n">campeón</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"XGBoost"</span><span class="p">)]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- A+B v2 tiene menor RMSLE que los 7 campeones y gana con significancia (Holm, 7 comparaciones) a **</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2"> de 7**"</span>
+   <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"; empata con </span><span class="si">{</span><span class="n">fmt_e</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">", incluido el de XGBoost (</span><span class="si">{</span><span class="n">xg</span><span class="o">.</span><span class="n">campeón</span><span class="si">}</span><span class="s2">: p Holm = </span><span class="si">{</span><span class="n">xg</span><span class="p">[</span><span class="s1">'p Holm'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, d de Cohen = "</span>
+      <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">xg</span><span class="p">[</span><span class="s1">'d de Cohen'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">xg</span><span class="p">[</span><span class="s1">'magnitud d'</span><span class="p">]</span><span class="si">}</span><span class="s2">)."</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Tamaño de la mejora.** Frente al campeón de XGBoost, </span><span class="si">{</span><span class="n">xg</span><span class="p">[</span><span class="s1">'mejora %'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> % de RMSLE; frente a Random Forest, "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">CMP</span><span class="p">[</span><span class="n">CMP</span><span class="o">.</span><span class="n">campeón</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'Random Forest'</span><span class="p">)][</span><span class="s1">'mejora %'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> %; frente a KNN, árbol, SVR y los lineales, de "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">CMP</span><span class="p">[</span><span class="o">~</span><span class="n">CMP</span><span class="o">.</span><span class="n">campeón</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">'XGBoost'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Random Forest'</span><span class="p">))][</span><span class="s1">'mejora %'</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> % a "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">CMP</span><span class="p">[</span><span class="o">~</span><span class="n">CMP</span><span class="o">.</span><span class="n">campeón</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s1">'XGBoost'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Random Forest'</span><span class="p">))][</span><span class="s1">'mejora %'</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> %.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Lectura.** El modelo propio supera al mejor modelo de cada familia; frente a XGBoost la ventaja es pequeña en magnitud."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p>A+B v2 tiene menor RMSLE que los 7 campeones y gana con significancia (Holm, 7 comparaciones) a <strong>7 de 7</strong>, incluido el de XGBoost (XGBoost · TPE: p Holm = 0.003, d de Cohen = 0.36, pequeño).</p></li>
+<li><p><strong>Tamaño de la mejora.</strong> Frente al campeón de XGBoost, 0.3 % de RMSLE; frente a Random Forest, 0.6 %; frente a KNN, árbol, SVR y los lineales, de 1.5 % a 8.1 %.</p></li>
+<li><p><strong>Lectura.</strong> El modelo propio supera al mejor modelo de cada familia; frente a XGBoost la ventaja es pequeña en magnitud.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="ablacion-cuanto-aporta-cada-componente">
+<h3>Ablación: cuánto aporta cada componente<a class="headerlink" href="#ablacion-cuanto-aporta-cada-componente" title="Link to this heading">#</a></h3>
+<p>En cada origen anual, junto con A+B v2, se ajustaron dos versiones reducidas con los mismos miembros, la misma
+regla del combinador y la misma calibración final: sin B, y sin B ni núcleo ZINB (<code class="docutils literal notranslate"><span class="pre">scripts/origen_movil_final.py</span></code>).
+B solo y el núcleo ZINB solo son los miembros propios tal como entran al combinador. La métrica principal es RMSLE; RMSE, MAE y R²
+son complementarias (R² en conteos; R² log en la escala log1p que optimizan los modelos). La columna DM compara
+cada fila con A+B v2 completo (positivo = A+B v2 mejor).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ablación: B solo, núcleo ZINB solo, A sin B y A+B completo</span>
+<span class="n">AB_</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">ablacion_om</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">AB_</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">],</span> <span class="n">tmo</span><span class="p">)</span>
+<span class="n">abl</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"B solo (boosting ZINB propio)"</span><span class="p">:</span> <span class="n">AB_</span><span class="p">[</span><span class="s2">"B_solo"</span><span class="p">],</span> <span class="s2">"Núcleo ZINB solo"</span><span class="p">:</span> <span class="n">AB_</span><span class="p">[</span><span class="s2">"ZINB_solo"</span><span class="p">],</span>
+       <span class="s2">"A sin B ni núcleo ZINB (solo benchmarks)"</span><span class="p">:</span> <span class="n">AB_</span><span class="p">[</span><span class="s2">"A_sin_B_ni_ZINB"</span><span class="p">],</span> <span class="s2">"A sin B"</span><span class="p">:</span> <span class="n">AB_</span><span class="p">[</span><span class="s2">"A_sin_B"</span><span class="p">],</span> <span class="s2">"A+B v2 completo"</span><span class="p">:</span> <span class="n">AB_</span><span class="p">[</span><span class="s2">"AmasB_v2"</span><span class="p">]}</span>
+<span class="n">abl</span><span class="p">[</span><span class="sa">f</span><span class="s2">"Referencia: campeón de XGBoost (</span><span class="si">{</span><span class="n">xg</span><span class="o">.</span><span class="n">campeón</span><span class="si">}</span><span class="s2">)"</span><span class="p">]</span> <span class="o">=</span> <span class="n">O</span><span class="p">[</span><span class="n">xg</span><span class="o">.</span><span class="n">campeón</span><span class="p">]</span>
+<span class="n">_</span><span class="p">,</span> <span class="n">L_full</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">perdida_mensual</span><span class="p">(</span><span class="n">yo</span><span class="p">,</span> <span class="n">AB_</span><span class="p">[</span><span class="s2">"AmasB_v2"</span><span class="p">],</span> <span class="n">tmo</span><span class="p">)</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">abl</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">metricas_regresion</span><span class="p">(</span><span class="n">yo</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="n">fila</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"variante"</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span> <span class="s2">"RMSLE (principal)"</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s2">"RMSLE"</span><span class="p">],</span> <span class="s2">"RMSE"</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s2">"RMSE"</span><span class="p">],</span> <span class="s2">"MAE"</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s2">"MAE"</span><span class="p">],</span> <span class="s2">"R²"</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s2">"R2"</span><span class="p">],</span> <span class="s2">"R² log"</span><span class="p">:</span> <span class="n">m</span><span class="p">[</span><span class="s2">"R2_log"</span><span class="p">]}</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="s2">"A+B v2 completo"</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">Lp</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">perdida_mensual</span><span class="p">(</span><span class="n">yo</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">tmo</span><span class="p">);</span> <span class="n">d</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">diebold_mariano</span><span class="p">(</span><span class="n">Lp</span><span class="p">,</span> <span class="n">L_full</span><span class="p">)</span>
+        <span class="n">fila</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"dif. pérdida vs A+B v2"</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">"dif_media"</span><span class="p">],</span> <span class="s2">"p DM"</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]})</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fila</span><span class="p">)</span>
+<span class="n">ABL</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">ABL</span><span class="p">,</span> <span class="s2">"e2_ab_ablacion.csv"</span><span class="p">)</span>
+<span class="n">ABL</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>variante</th>
+      <th>RMSLE (principal)</th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>R²</th>
+      <th>R² log</th>
+      <th>dif. pérdida vs A+B v2</th>
+      <th>p DM</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>B solo (boosting ZINB propio)</td>
+      <td>0.3342</td>
+      <td>7.4857</td>
+      <td>0.6436</td>
+      <td>0.3362</td>
+      <td>0.5820</td>
+      <td>0.0054</td>
+      <td>0.0000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Núcleo ZINB solo</td>
+      <td>0.3374</td>
+      <td>7.2287</td>
+      <td>0.6161</td>
+      <td>0.3810</td>
+      <td>0.5741</td>
+      <td>0.0075</td>
+      <td>0.0000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>A sin B ni núcleo ZINB (solo benchmarks)</td>
+      <td>0.3267</td>
+      <td>6.9943</td>
+      <td>0.5132</td>
+      <td>0.4205</td>
+      <td>0.6006</td>
+      <td>0.0005</td>
+      <td>0.0012</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>A sin B</td>
+      <td>0.3267</td>
+      <td>7.0297</td>
+      <td>0.5294</td>
+      <td>0.4146</td>
+      <td>0.6008</td>
+      <td>0.0004</td>
+      <td>0.0010</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>A+B v2 completo</td>
+      <td>0.3260</td>
+      <td>7.0489</td>
+      <td>0.5331</td>
+      <td>0.4114</td>
+      <td>0.6024</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Referencia: campeón de XGBoost (XGBoost · TPE)</td>
+      <td>0.3270</td>
+      <td>6.9647</td>
+      <td>0.5086</td>
+      <td>0.4254</td>
+      <td>0.5999</td>
+      <td>0.0007</td>
+      <td>0.0017</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de la ablación</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">ABL</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"variante"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- **B solo** obtiene RMSLE </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">'RMSLE (principal)'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: como modelo individual es peor que el campeón de XGBoost "</span>
+   <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">'RMSLE (principal)'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">). Su valor no está en ganar solo, sino en **equivocarse distinto**: es uno de los miembros con "</span>
+   <span class="sa">f</span><span class="s2">"más peso en el combinador (19.4).</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **A sin B ni núcleo ZINB** (el combinador solo con los benchmarks) da </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="s1">'RMSLE (principal)'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">; agregar el núcleo ZINB lo "</span>
+   <span class="sa">f</span><span class="s2">"deja en </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="s1">'RMSLE (principal)'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> y agregar B lo baja a **</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'A+B v2 completo'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE (principal)'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">**.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- La diferencia entre A sin B y A+B v2 tiene p DM = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'A sin B'</span><span class="p">,</span><span class="w"> </span><span class="s1">'p DM'</span><span class="p">])</span><span class="si">}</span><span class="s2">"</span>
+   <span class="o">+</span> <span class="p">(</span><span class="s2">": **B aporta una mejora significativa**."</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'A sin B'</span><span class="p">,</span> <span class="s1">'p DM'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s2">": la mejora que aporta B no es significativa por sí sola."</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Calibración final.** La pendiente c₁ estimada en cada origen (tabla siguiente) es mayor que 1 en todos los años: el combinador "</span>
+   <span class="sa">f</span><span class="s2">"encoge los pronósticos y la recta los devuelve a su escala. Al ser solo dos parámetros por origen, estimados con el entrenamiento, "</span>
+   <span class="sa">f</span><span class="s2">"es un ajuste estable entre años."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p><strong>B solo</strong> obtiene RMSLE 0.3342: como modelo individual es peor que el campeón de XGBoost (0.3270). Su valor no está en ganar solo, sino en <strong>equivocarse distinto</strong>: es uno de los miembros con más peso en el combinador (19.4).</p></li>
+<li><p><strong>A sin B ni núcleo ZINB</strong> (el combinador solo con los benchmarks) da 0.3267; agregar el núcleo ZINB lo deja en 0.3267 y agregar B lo baja a <strong>0.3260</strong>.</p></li>
+<li><p>La diferencia entre A sin B y A+B v2 tiene p DM = &lt; 0,001: <strong>B aporta una mejora significativa</strong>.</p></li>
+<li><p><strong>Calibración final.</strong> La pendiente c₁ estimada en cada origen (tabla siguiente) es mayor que 1 en todos los años: el combinador encoge los pronósticos y la recta los devuelve a su escala. Al ser solo dos parámetros por origen, estimados con el entrenamiento, es un ajuste estable entre años.</p></li>
+</ul>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">AB_</span><span class="p">[</span><span class="s2">"c"</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>año</th>
+      <th>c0</th>
+      <th>c1</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2021</td>
+      <td>-0.0303</td>
+      <td>1.0679</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2022</td>
+      <td>-0.0228</td>
+      <td>1.0640</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2023</td>
+      <td>-0.0162</td>
+      <td>1.0563</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2024</td>
+      <td>-0.0063</td>
+      <td>1.0704</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2025</td>
+      <td>-0.0022</td>
+      <td>1.0695</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2026</td>
+      <td>0.0081</td>
+      <td>1.0401</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+<section id="resultados-ano-por-ano-y-pesos-del-combinador">
+<h2>22.5 Resultados año por año y pesos del combinador<a class="headerlink" href="#resultados-ano-por-ano-y-pesos-del-combinador" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># RMSLE por año de A+B v2 frente a los dos mejores campeones</span>
+<span class="n">anios</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2021</span><span class="p">,</span> <span class="mi">2027</span><span class="p">)</span>
+<span class="n">por_anio</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">an</span> <span class="ow">in</span> <span class="n">anios</span><span class="p">:</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">tmo</span> <span class="o">&gt;=</span> <span class="n">datos</span><span class="o">.</span><span class="n">indice_mes</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">an</span><span class="si">}</span><span class="s2">-01-01"</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">tmo</span> <span class="o">&lt;</span> <span class="n">datos</span><span class="o">.</span><span class="n">indice_mes</span><span class="p">([</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">an</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">-01-01"</span><span class="p">])[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">fila</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"año"</span><span class="p">:</span> <span class="n">an</span><span class="p">,</span> <span class="s2">"A+B v2"</span><span class="p">:</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">yo</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">O</span><span class="p">[</span><span class="s2">"A+B v2"</span><span class="p">][</span><span class="n">m</span><span class="p">])}</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">camp_om</span><span class="p">[:</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="n">fila</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">yo</span><span class="p">[</span><span class="n">m</span><span class="p">],</span> <span class="n">O</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">m</span><span class="p">])</span>
+    <span class="n">por_anio</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fila</span><span class="p">)</span>
+<span class="n">PA</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">por_anio</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">PA</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="p">(</span><span class="s2">"#d62728"</span><span class="p">,</span> <span class="s2">"#1f77b4"</span><span class="p">,</span> <span class="s2">"#2ca02c"</span><span class="p">)):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">PA</span><span class="p">[</span><span class="s2">"año"</span><span class="p">],</span> <span class="n">PA</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s2">"A+B v2"</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">k</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"RMSLE del año"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Origen móvil 2021–2026: A+B v2 frente a los dos campeones más fuertes"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"e2_ab2_origen_movil.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gana_anio</span> <span class="o">=</span> <span class="n">PA</span><span class="p">[</span><span class="s2">"A+B v2"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">PA</span><span class="p">[</span><span class="n">camp_om</span><span class="p">[:</span><span class="mi">2</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Año por año, A+B v2 tiene menor RMSLE que </span><span class="si">{</span><span class="n">camp_om</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> en </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">gana_anio</span><span class="p">[:,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> de 6 años y que </span><span class="si">{</span><span class="n">camp_om</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> en "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">gana_anio</span><span class="p">[:,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">: la ventaja no depende de un año en particular."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f9f01fa41dfe3292400bf2319570a9d5efa2783a51742ff7bfb2ab1d233e9952.png" src="../_images/f9f01fa41dfe3292400bf2319570a9d5efa2783a51742ff7bfb2ab1d233e9952.png" />
+<p>Año por año, A+B v2 tiene menor RMSLE que Random Forest · AG en 5 de 6 años y que XGBoost · TPE en 5: la ventaja no depende de un año en particular.</p>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pesos medios de cada miembro en el combinador</span>
+<span class="n">_m</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">OM</span> <span class="o">/</span> <span class="s2">"pesos_v2.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">miembro</span><span class="o">.</span><span class="n">values</span>   <span class="c1"># orden de las columnas de pesos</span>
+<span class="n">_P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">OM</span> <span class="o">/</span> <span class="s2">"final"</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"origen_</span><span class="si">{</span><span class="n">an</span><span class="si">}</span><span class="s2">.npz"</span><span class="p">)[</span><span class="s2">"pesos"</span><span class="p">]</span> <span class="k">for</span> <span class="n">an</span> <span class="ow">in</span> <span class="n">anios</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"miembro"</span><span class="p">:</span> <span class="n">_m</span><span class="p">,</span> <span class="s2">"peso medio 2021–2026"</span><span class="p">:</span> <span class="n">_P</span><span class="p">})</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"peso medio 2021–2026"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="s2">"e2_ab2_pesos.csv"</span><span class="p">)</span>
+<span class="n">W</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>miembro</th>
+      <th>peso medio 2021–2026</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>11</th>
+      <td>B</td>
+      <td>0.362</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>XGBoost · Genético (DEAP)</td>
+      <td>0.360</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Random Forest · Genético (DEAP)</td>
+      <td>0.251</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Persistencia</td>
+      <td>0.010</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Estacional</td>
+      <td>0.008</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>XGBoost · Random</td>
+      <td>0.003</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Random Forest · Random</td>
+      <td>0.002</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>XGBoost · Bayesiano (TPE)</td>
+      <td>0.002</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Random Forest · Bayesiano (TPE)</td>
+      <td>0.001</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>XGBoost · Grid</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Ridge · Grid</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>KNN · Bayesiano (TPE)</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Random Forest · Grid</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Núcleo ZINB</td>
+      <td>0.000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de los pesos</span>
+<span class="n">wi</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"miembro"</span><span class="p">)[</span><span class="s2">"peso medio 2021–2026"</span><span class="p">]</span>
+<span class="n">kb</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">wi</span><span class="o">.</span><span class="n">index</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"B"</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"El **modelo propio B** recibe </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">wi</span><span class="p">[</span><span class="n">kb</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> % del peso en promedio. Entre los benchmark, el combinador concentra el peso en pocas "</span>
+   <span class="sa">f</span><span class="s2">"versiones de XGBoost y Random Forest (</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">v</span><span class="si">:</span><span class="s1">.0f</span><span class="si">}</span><span class="s1"> %'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">wi</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">kb</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span><span class="si">}</span><span class="s2">) y deja las demás "</span>
+   <span class="sa">f</span><span class="s2">"casi en cero, porque son muy parecidas entre sí: la elección quedó en manos del combinador, no del analista."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p>El <strong>modelo propio B</strong> recibe 36 % del peso en promedio. Entre los benchmark, el combinador concentra el peso en pocas versiones de XGBoost y Random Forest (XGBoost · Genético (DEAP) 36 %, Random Forest · Genético (DEAP) 25 %) y deja las demás casi en cero, porque son muy parecidas entre sí: la elección quedó en manos del combinador, no del analista.</p>
+</div>
+</div>
+</section>
+<section id="uso-del-modelo-propuesto-en-la-tarea-de-clasificacion">
+<h2>22.6 Uso del modelo propuesto en la tarea de clasificación<a class="headerlink" href="#uso-del-modelo-propuesto-en-la-tarea-de-clasificacion" title="Link to this heading">#</a></h2>
+<p>A+B v2 predice un conteo, pero ese conteo también ordena las celdas por riesgo de tener al menos un sismo. Se
+compara su AUC (usando la predicción como puntaje) con el del campeón de clasificación (elegido con la
+validación anterior a 2016), con DeLong, en el origen móvil 2021–2026.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># A+B v2 como puntaje de clasificación: AUC frente al mejor clasificador (DeLong)</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">origen_movil_clf</span><span class="p">()</span>
+<span class="n">yb</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span>
+<span class="n">cc1</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">campeones_om</span><span class="p">(</span><span class="s2">"clf"</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">delong</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">O</span><span class="p">[</span><span class="s2">"A+B v2"</span><span class="p">],</span> <span class="n">C</span><span class="p">[</span><span class="s2">"combos"</span><span class="p">][</span><span class="n">cc1</span><span class="o">.</span><span class="n">etiqueta</span><span class="p">])</span>
+<span class="n">bs</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">bootstrap_auc_meses</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">O</span><span class="p">[</span><span class="s2">"A+B v2"</span><span class="p">],</span> <span class="n">C</span><span class="p">[</span><span class="s2">"combos"</span><span class="p">][</span><span class="n">cc1</span><span class="o">.</span><span class="n">etiqueta</span><span class="p">],</span> <span class="n">tmo</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">supera</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">O</span><span class="p">[</span><span class="s2">"A+B v2"</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">yb</span><span class="p">,</span> <span class="n">s_</span><span class="p">)</span> <span class="k">for</span> <span class="n">s_</span> <span class="ow">in</span> <span class="n">C</span><span class="p">[</span><span class="s2">"combos"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"AUC de A+B v2 como puntaje: **</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">'AUC_1'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">**; campeón de clasificación (</span><span class="si">{</span><span class="n">cc1</span><span class="o">.</span><span class="n">etiqueta</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">'AUC_2'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">. Diferencia "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">'dif'</span><span class="p">]</span><span class="si">:</span><span class="s2">+.4f</span><span class="si">}</span><span class="s2">, IC 95 % DeLong [</span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">'IC_inf'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">d</span><span class="p">[</span><span class="s1">'IC_sup'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">], bootstrap de meses [</span><span class="si">{</span><span class="n">bs</span><span class="p">[</span><span class="s1">'IC_boot_inf'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bs</span><span class="p">[</span><span class="s1">'IC_boot_sup'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">], "</span>
+   <span class="sa">f</span><span class="s2">"p = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s1">'p'</span><span class="p">])</span><span class="si">}</span><span class="s2">. A+B v2 tiene mayor AUC que </span><span class="si">{</span><span class="n">supera</span><span class="si">}</span><span class="s2"> de las </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="s1">'combos'</span><span class="p">])</span><span class="si">}</span><span class="s2"> combinaciones de clasificación, sin haber sido "</span>
+   <span class="sa">f</span><span class="s2">"entrenado para esa tarea. "</span> <span class="o">+</span> <span class="p">(</span><span class="s2">"La diferencia con el mejor clasificador es significativa."</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s2">"p"</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span>
+                                    <span class="s2">"La diferencia con el mejor clasificador no es significativa: en clasificación A+B v2 es tan bueno como el mejor."</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p>AUC de A+B v2 como puntaje: <strong>0.8070</strong>; campeón de clasificación (XGBoost · c_weight): 0.8096. Diferencia -0.0026, IC 95 % DeLong [-0.0053, 0.0001], bootstrap de meses [-0.0054, 0.0002], p = 0,059. A+B v2 tiene mayor AUC que 23 de las 26 combinaciones de clasificación, sin haber sido entrenado para esa tarea. La diferencia con el mejor clasificador no es significativa: en clasificación A+B v2 es tan bueno como el mejor.</p>
+</div>
+</div>
+</section>
+<section id="costo-computacional-y-limitaciones">
+<h2>22.7 Costo computacional y limitaciones<a class="headerlink" href="#costo-computacional-y-limitaciones" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Costo.</strong> Entrenar A+B v2 exige entrenar cada miembro 5 veces (4 bloques cronológicos + 1 final), más B y el
+núcleo ZINB: varios minutos por origen anual con 2 núcleos. XGBoost solo tarda segundos.</p></li>
+<li><p><strong>Tamaño del efecto.</strong> La ventaja de A+B v2 sobre los mejores benchmark es de milésimas de RMSLE; no cambia
+cualitativamente lo que se puede anticipar y sigue sin prever el inicio de los enjambres (cap. 18 y 19).</p></li>
+<li><p><strong>Interpretabilidad.</strong> Es más compleja que la de un solo XGBoost, aunque se explica por sus pesos por miembro
+y por el SHAP de cada miembro (cap. 19.4).</p></li>
+<li><p><strong>Dependencia de los benchmark.</strong> A+B v2 usa como insumos los modelos optimizados; su aporte está en
+combinarlos según el contexto y en el modelo B.</p></li>
+</ul>
+</section>
+<section id="conclusion">
+<h2>22.8 Conclusión<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"A+B v2 es un modelo original (boosting ZINB y combinador contextual propios) que obtiene el **menor RMSLE de todos** los modelos "</span>
+   <span class="sa">f</span><span class="s2">"en la evaluación definitiva en origen móvil 2021–2026 (</span><span class="si">{</span><span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">yo</span><span class="p">,</span><span class="w"> </span><span class="n">O</span><span class="p">[</span><span class="s1">'A+B v2'</span><span class="p">])</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">). En esa evaluación:</span><span class="se">\n\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- supera con significancia al campeón de **</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2"> de 7** familias"</span> <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">" y empata con </span><span class="si">{</span><span class="n">fmt_e</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">else</span> <span class="s2">", incluido XGBoost"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">";</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"- en la ablación, quitar el componente propio B sube el RMSLE a </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'A sin B'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE (principal)'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span>
+      <span class="o">+</span> <span class="p">(</span><span class="s2">" (diferencia significativa).</span><span class="se">\n\n</span><span class="s2">"</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'A sin B'</span><span class="p">,</span> <span class="s1">'p DM'</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span>
+         <span class="sa">f</span><span class="s2">"; el aporte de B es consistente pero, por sí solo, no significativo (p = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'A sin B'</span><span class="p">,</span><span class="w"> </span><span class="s1">'p DM'</span><span class="p">])</span><span class="si">}</span><span class="s2">).</span><span class="se">\n\n</span><span class="s2">"</span><span class="p">))</span>
+   <span class="o">+</span> <span class="s2">"La superioridad sobre Random Forest, KNN, árbol, SVR, Ridge y Lasso es clara. Frente a XGBoost la ventaja es significativa pero "</span>
+   <span class="s2">"pequeña. Se concluye que A+B v2 es el mejor modelo evaluado, con una ventaja pequeña sobre el mejor modelo tradicional."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p>A+B v2 es un modelo original (boosting ZINB y combinador contextual propios) que obtiene el <strong>menor RMSLE de todos</strong> los modelos en la evaluación definitiva en origen móvil 2021–2026 (0.3260). En esa evaluación:</p>
+<ul class="simple">
+<li><p>supera con significancia al campeón de <strong>7 de 7</strong> familias, incluido XGBoost;</p></li>
+<li><p>en la ablación, quitar el componente propio B sube el RMSLE a 0.3267 (diferencia significativa).</p></li>
+</ul>
+<p>La superioridad sobre Random Forest, KNN, árbol, SVR, Ridge y Lasso es clara. Frente a XGBoost la ventaja es significativa pero pequeña. Se concluye que A+B v2 es el mejor modelo evaluado, con una ventaja pequeña sobre el mejor modelo tradicional.</p>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="21_comparacion_estadistica.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">21. Comparación estadística de modelos</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="23_conclusiones_e2.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">23. Conclusiones del Entregable 2 y matriz de trazabilidad</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#idea-y-componentes">22.1 Idea y componentes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#protocolo-seleccion-ajuste-y-evaluacion-separados">22.2 Protocolo: selección, ajuste y evaluación separados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datos-usados-en-cada-etapa">22.3 Datos usados en cada etapa</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resultados-en-el-origen-movil-20212026">22.4 Resultados en el origen móvil 2021–2026</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#validacion-previa-20-final-del-entrenamiento-sin-tocar-los-meses-evaluados">Validación previa (20 % final del entrenamiento, sin tocar los meses evaluados)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-directa-contra-el-campeon-de-cada-modelo">Comparación directa contra el campeón de cada modelo</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ablacion-cuanto-aporta-cada-componente">Ablación: cuánto aporta cada componente</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resultados-ano-por-ano-y-pesos-del-combinador">22.5 Resultados año por año y pesos del combinador</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uso-del-modelo-propuesto-en-la-tarea-de-clasificacion">22.6 Uso del modelo propuesto en la tarea de clasificación</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#costo-computacional-y-limitaciones">22.7 Costo computacional y limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">22.8 Conclusión</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

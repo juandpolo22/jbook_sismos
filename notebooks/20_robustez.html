@@ -1,0 +1,1294 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>20. Robustez y estabilidad de las métricas &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/20_robustez';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="21. Comparación estadística de modelos" href="21_comparacion_estadistica.html" />
+    <link rel="prev" title="19. Interpretabilidad global y local: SHAP y LIME" href="19_interpretabilidad.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/20_robustez.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>20. Robustez y estabilidad de las métricas</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#media-desviacion-en-el-bucle-externo">20.1 Media ± desviación en el bucle externo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensibilidad-a-la-semilla-de-inicializacion">20.2 Sensibilidad a la semilla de inicialización</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intervalos-de-confianza-bca-en-el-origen-movil-20212026">20.3 Intervalos de confianza BCa en el origen móvil 2021–2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#las-diferencias-entre-modelos-superan-la-variabilidad-intrinseca">20.4 ¿Las diferencias entre modelos superan la variabilidad intrínseca?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-del-capitulo">20.5 Conclusiones del capítulo</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="robustez-y-estabilidad-de-las-metricas">
+<h1>20. Robustez y estabilidad de las métricas<a class="headerlink" href="#robustez-y-estabilidad-de-las-metricas" title="Link to this heading">#</a></h1>
+<p>Un solo número («AUC = 0,81») esconde tres fuentes de variabilidad que la sección 5.4 del enunciado pide hacer
+visibles:</p>
+<ol class="arabic simple">
+<li><p><strong>Entre periodos:</strong> la métrica cambia según el año evaluado → media ± desviación de los 3 bloques del
+bucle externo (20.1).</p></li>
+<li><p><strong>Entre semillas:</strong> los algoritmos aleatorios (Random Forest, XGBoost, SVM con submuestra, AG) dan
+resultados distintos con otra semilla → 6 semillas por modelo (20.2; la semilla de los optimizadores está
+en el cap. 14.6).</p></li>
+<li><p><strong>Muestral:</strong> la evaluación en origen móvil 2021–2026 es una muestra finita de meses → intervalos de
+confianza BCa remuestreando meses (20.3).</p></li>
+</ol>
+<p>La pregunta final (20.4) es si las diferencias entre modelos son mayores que esa variabilidad intrínseca,
+lo que motiva las pruebas formales del cap. 21.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Resultados de la validación anidada y del origen móvil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">roc_auc_score</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">resultados_e2</span> <span class="k">as</span> <span class="n">r2</span><span class="p">,</span> <span class="n">estadistica</span> <span class="k">as</span> <span class="n">est</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_completo</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">);</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]</span>
+<span class="n">REG</span><span class="p">,</span> <span class="n">CLF</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">cargar</span><span class="p">(</span><span class="s2">"reg"</span><span class="p">),</span> <span class="n">r2</span><span class="o">.</span><span class="n">cargar</span><span class="p">(</span><span class="s2">"clf"</span><span class="p">)</span>          <span class="c1"># validación anidada (20.1)</span>
+<span class="n">O</span><span class="p">,</span> <span class="n">C</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">origen_movil</span><span class="p">(),</span> <span class="n">r2</span><span class="o">.</span><span class="n">origen_movil_clf</span><span class="p">()</span>          <span class="c1"># evaluación definitiva en origen móvil (20.3)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="media-desviacion-en-el-bucle-externo">
+<h2>20.1 Media ± desviación en el bucle externo<a class="headerlink" href="#media-desviacion-en-el-bucle-externo" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Media ± desviación del bucle externo de cada combinación</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">combos</span><span class="p">,</span> <span class="n">met</span><span class="p">,</span> <span class="n">tit</span><span class="p">,</span> <span class="n">asc</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axs</span><span class="p">,</span> <span class="p">((</span><span class="n">REG</span><span class="p">,</span> <span class="s2">"RMSLE"</span><span class="p">,</span> <span class="s2">"Regresión: RMSLE externo (28)"</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="p">(</span><span class="n">CLF</span><span class="p">,</span> <span class="s2">"ROC_AUC"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"Clasificación: AUC externo (25 mejores de </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">CLF</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="kc">False</span><span class="p">))):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">"etiqueta"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"etiqueta"</span><span class="p">],</span> <span class="s2">"media"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"externo_media"</span><span class="p">],</span> <span class="s2">"desv"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"externo_desv"</span><span class="p">],</span> <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">"b</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"externo"</span><span class="p">][</span><span class="n">met</span><span class="p">])}}</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">combos</span><span class="p">])</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"media"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">asc</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">28</span> <span class="k">if</span> <span class="n">combos</span> <span class="ow">is</span> <span class="n">REG</span> <span class="k">else</span> <span class="mi">25</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">media</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">xerr</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">desv</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">"0.6"</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="s2">"#1f77b4"</span><span class="p">,</span> <span class="s2">"#ff7f0e"</span><span class="p">,</span> <span class="s2">"#2ca02c"</span><span class="p">)):</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="sa">f</span><span class="s2">"b</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span> <span class="n">yy</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"bloque </span><span class="si">{</span><span class="n">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="p">[</span><span class="s1">'dic17–nov18'</span><span class="p">,</span><span class="w"> </span><span class="s1">'dic18–nov19'</span><span class="p">,</span><span class="w"> </span><span class="s1">'dic19–nov20'</span><span class="p">][</span><span class="n">k</span><span class="p">]</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">yy</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">etiqueta</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">6</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">tit</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"e2_robustez_externo.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a7cf940724dc50ce7b3ac9d450f70071ed1f592e634558d078f766d6043e8876.png" src="../_images/a7cf940724dc50ce7b3ac9d450f70071ed1f592e634558d078f766d6043e8876.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Variabilidad entre bloques frente a diferencias entre modelos</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">variabilidad</span><span class="p">(</span><span class="n">combos</span><span class="p">,</span> <span class="n">met</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">"etiqueta"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"etiqueta"</span><span class="p">],</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">],</span> <span class="s2">"media"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"externo_media"</span><span class="p">],</span> <span class="s2">"desv"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"externo_desv"</span><span class="p">],</span>
+                       <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">"b</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"externo"</span><span class="p">][</span><span class="n">met</span><span class="p">])}}</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">combos</span><span class="p">])</span>
+    <span class="n">rango_modelos</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">media</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">d</span><span class="o">.</span><span class="n">media</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">d</span><span class="p">[[</span><span class="s2">"b0"</span><span class="p">,</span> <span class="s2">"b1"</span><span class="p">,</span> <span class="s2">"b2"</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">entre_bloques</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">B</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">B</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">orden_bloques</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">B</span><span class="p">)</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"spearman"</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">rango_modelos</span><span class="p">,</span> <span class="n">entre_bloques</span><span class="p">,</span> <span class="n">orden_bloques</span>
+
+<span class="n">dR</span><span class="p">,</span> <span class="n">rmR</span><span class="p">,</span> <span class="n">ebR</span><span class="p">,</span> <span class="n">obR</span> <span class="o">=</span> <span class="n">variabilidad</span><span class="p">(</span><span class="n">REG</span><span class="p">,</span> <span class="s2">"RMSLE"</span><span class="p">)</span>
+<span class="n">dC</span><span class="p">,</span> <span class="n">rmC</span><span class="p">,</span> <span class="n">ebC</span><span class="p">,</span> <span class="n">obC</span> <span class="o">=</span> <span class="n">variabilidad</span><span class="p">(</span><span class="n">CLF</span><span class="p">,</span> <span class="s2">"ROC_AUC"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- **Regresión.** El rango de la media externa entre las 28 combinaciones es </span><span class="si">{</span><span class="n">rmR</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">; la diferencia típica entre el mejor y el peor "</span>
+   <span class="sa">f</span><span class="s2">"bloque de **una misma** combinación es </span><span class="si">{</span><span class="n">ebR</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">. El año evaluado mueve el RMSLE "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'más'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">ebR</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">rmR</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'menos'</span><span class="si">}</span><span class="s2"> que el cambio de modelo. Aun así, el **orden** de las combinaciones se conserva entre bloques "</span>
+   <span class="sa">f</span><span class="s2">"(Spearman medio entre bloques = </span><span class="si">{</span><span class="n">obR</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">): todos los modelos suben y bajan juntos según lo difícil que sea el año.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Clasificación.** Rango entre las </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">CLF</span><span class="p">)</span><span class="si">}</span><span class="s2"> combinaciones: </span><span class="si">{</span><span class="n">rmC</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">; variación entre bloques de una combinación: </span><span class="si">{</span><span class="n">ebC</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">; Spearman "</span>
+   <span class="sa">f</span><span class="s2">"medio entre bloques = </span><span class="si">{</span><span class="n">obC</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- Por eso las comparaciones deben ser **pareadas** (mismo bloque o mismo mes para los dos modelos): la variación común entre periodos "</span>
+   <span class="sa">f</span><span class="s2">"se cancela y queda la diferencia real entre modelos. Es lo que hacen Friedman (bloques), DeLong (mismas observaciones) y "</span>
+   <span class="sa">f</span><span class="s2">"Diebold-Mariano (mismos meses) en el cap. 21."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p><strong>Regresión.</strong> El rango de la media externa entre las 28 combinaciones es 0.0466; la diferencia típica entre el mejor y el peor bloque de <strong>una misma</strong> combinación es 0.0552. El año evaluado mueve el RMSLE más que el cambio de modelo. Aun así, el <strong>orden</strong> de las combinaciones se conserva entre bloques (Spearman medio entre bloques = 0.81): todos los modelos suben y bajan juntos según lo difícil que sea el año.</p></li>
+<li><p><strong>Clasificación.</strong> Rango entre las 112 combinaciones: 0.1003; variación entre bloques de una combinación: 0.0650; Spearman medio entre bloques = 0.59.</p></li>
+<li><p>Por eso las comparaciones deben ser <strong>pareadas</strong> (mismo bloque o mismo mes para los dos modelos): la variación común entre periodos se cancela y queda la diferencia real entre modelos. Es lo que hacen Friedman (bloques), DeLong (mismas observaciones) y Diebold-Mariano (mismos meses) en el cap. 21.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="sensibilidad-a-la-semilla-de-inicializacion">
+<h2>20.2 Sensibilidad a la semilla de inicialización<a class="headerlink" href="#sensibilidad-a-la-semilla-de-inicializacion" title="Link to this heading">#</a></h2>
+<p>Para el campeón de cada modelo aleatorio en el origen móvil (y KNN como referencia determinista), se reentrenó
+el modelo del primer origen (datos hasta 2020) con sus hiperparámetros fijos y <strong>6 semillas</strong> (1–5 y 42), y se
+evaluó en los 12 meses de 2021 que ese origen pronostica (<code class="docutils literal notranslate"><span class="pre">scripts/semillas_origen_movil.py</span></code>). Esto aísla el
+azar del propio algoritmo (bootstrap y submuestreo de columnas en RF, submuestreo en XGBoost, submuestra de
+4 000 filas en la SVM); el azar del optimizador se midió en el cap. 14.6.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Robustez ante la semilla: métrica de los campeones con varias semillas</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">E2</span> <span class="o">/</span> <span class="s2">"semillas_modelos_om.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">({</span><span class="s2">"balanceo"</span><span class="p">:</span> <span class="s2">"—"</span><span class="p">})</span>
+<span class="n">SS</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">,</span> <span class="s2">"metrica"</span><span class="p">])</span><span class="o">.</span><span class="n">valor</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"std"</span><span class="p">,</span> <span class="s2">"min"</span><span class="p">,</span> <span class="s2">"max"</span><span class="p">])</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">SS</span><span class="p">[</span><span class="s2">"rango"</span><span class="p">]</span> <span class="o">=</span> <span class="n">SS</span><span class="p">[</span><span class="s2">"max"</span><span class="p">]</span> <span class="o">-</span> <span class="n">SS</span><span class="p">[</span><span class="s2">"min"</span><span class="p">]</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">SS</span><span class="p">,</span> <span class="s2">"e2_robustez_semillas.csv"</span><span class="p">)</span>
+<span class="n">SS</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>tarea</th>
+      <th>modelo</th>
+      <th>balanceo</th>
+      <th>optimizador</th>
+      <th>metrica</th>
+      <th>mean</th>
+      <th>std</th>
+      <th>min</th>
+      <th>max</th>
+      <th>rango</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>clf</td>
+      <td>Random Forest</td>
+      <td>sin balanceo</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.81148</td>
+      <td>0.00131</td>
+      <td>0.80950</td>
+      <td>0.81341</td>
+      <td>0.00391</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>clf</td>
+      <td>SVM</td>
+      <td>ADASYN</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.79798</td>
+      <td>0.00408</td>
+      <td>0.79187</td>
+      <td>0.80262</td>
+      <td>0.01075</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>clf</td>
+      <td>XGBoost</td>
+      <td>class_weight</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.81274</td>
+      <td>0.00056</td>
+      <td>0.81210</td>
+      <td>0.81338</td>
+      <td>0.00128</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>clf</td>
+      <td>Árbol de decisión</td>
+      <td>sin balanceo</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.80017</td>
+      <td>0.00000</td>
+      <td>0.80017</td>
+      <td>0.80017</td>
+      <td>0.00000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>reg</td>
+      <td>KNN</td>
+      <td>—</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.32331</td>
+      <td>0.00000</td>
+      <td>0.32331</td>
+      <td>0.32331</td>
+      <td>0.00000</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>reg</td>
+      <td>Random Forest</td>
+      <td>—</td>
+      <td>Genético (DEAP)</td>
+      <td>RMSLE</td>
+      <td>0.31507</td>
+      <td>0.00039</td>
+      <td>0.31443</td>
+      <td>0.31544</td>
+      <td>0.00101</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>reg</td>
+      <td>XGBoost</td>
+      <td>—</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.31516</td>
+      <td>0.00019</td>
+      <td>0.31489</td>
+      <td>0.31545</td>
+      <td>0.00056</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>reg</td>
+      <td>Árbol de decisión</td>
+      <td>—</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.31465</td>
+      <td>0.00000</td>
+      <td>0.31465</td>
+      <td>0.31465</td>
+      <td>0.00000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de la robustez ante semillas</span>
+<span class="n">sr</span> <span class="o">=</span> <span class="n">SS</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">])</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- **Regresión.** La desviación del RMSLE entre semillas es </span><span class="si">{</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'reg'</span><span class="p">,</span><span class="w"> </span><span class="s1">'XGBoost'</span><span class="p">),</span><span class="w"> </span><span class="s1">'std'</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> en XGBoost y "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'reg'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Random Forest'</span><span class="p">),</span><span class="w"> </span><span class="s1">'std'</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> en Random Forest; KNN es determinista (desviación </span><span class="si">{</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'reg'</span><span class="p">,</span><span class="w"> </span><span class="s1">'KNN'</span><span class="p">),</span><span class="w"> </span><span class="s1">'std'</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2">). "</span>
+   <span class="o">+</span> <span class="p">(</span><span class="k">lambda</span> <span class="n">dif</span><span class="p">,</span> <span class="n">sd</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"La diferencia entre XGBoost y Random Forest en 2021 (</span><span class="si">{</span><span class="n">dif</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">) es ≈ </span><span class="si">{</span><span class="n">dif</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">sd</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> veces la desviación entre semillas: "</span>
+      <span class="o">+</span> <span class="p">(</span><span class="s2">"la semilla no cambia el orden entre esos dos modelos.</span><span class="se">\n</span><span class="s2">"</span> <span class="k">if</span> <span class="n">dif</span> <span class="o">/</span> <span class="n">sd</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="k">else</span>
+         <span class="s2">"no supera la variación por semilla, así que en ese año los dos modelos no se distinguen y la semilla puede invertir su orden.</span><span class="se">\n</span><span class="s2">"</span><span class="p">))(</span>
+       <span class="nb">abs</span><span class="p">(</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'reg'</span><span class="p">,</span> <span class="s1">'Random Forest'</span><span class="p">),</span> <span class="s1">'mean'</span><span class="p">]</span> <span class="o">-</span> <span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'reg'</span><span class="p">,</span> <span class="s1">'XGBoost'</span><span class="p">),</span> <span class="s1">'mean'</span><span class="p">]),</span>
+       <span class="nb">max</span><span class="p">(</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'reg'</span><span class="p">,</span> <span class="s1">'XGBoost'</span><span class="p">),</span> <span class="s1">'std'</span><span class="p">],</span> <span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'reg'</span><span class="p">,</span> <span class="s1">'Random Forest'</span><span class="p">),</span> <span class="s1">'std'</span><span class="p">]))</span>
+   <span class="o">+</span> <span class="sa">f</span><span class="s2">"- **Clasificación.** La SVM es la más sensible (desviación del AUC </span><span class="si">{</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'clf'</span><span class="p">,</span><span class="w"> </span><span class="s1">'SVM'</span><span class="p">),</span><span class="w"> </span><span class="s1">'std'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, rango </span><span class="si">{</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'clf'</span><span class="p">,</span><span class="w"> </span><span class="s1">'SVM'</span><span class="p">),</span><span class="w"> </span><span class="s1">'rango'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">), "</span>
+   <span class="sa">f</span><span class="s2">"porque cada semilla toma una submuestra distinta de 4 000 filas; XGBoost (</span><span class="si">{</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'clf'</span><span class="p">,</span><span class="w"> </span><span class="s1">'XGBoost'</span><span class="p">),</span><span class="w"> </span><span class="s1">'std'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">) y Random Forest "</span>
+   <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">sr</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="s1">'clf'</span><span class="p">,</span><span class="w"> </span><span class="s1">'Random Forest'</span><span class="p">),</span><span class="w"> </span><span class="s1">'std'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">) son muy estables. El árbol de decisión es determinista con estos datos (sin empates "</span>
+   <span class="sa">f</span><span class="s2">"en los cortes).</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Conclusión.** La variabilidad por semilla es dos o más órdenes de magnitud menor que la variabilidad entre periodos (20.1). "</span>
+   <span class="sa">f</span><span class="s2">"Reportar una sola semilla es aceptable aquí, salvo para la SVM con submuestra."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p><strong>Regresión.</strong> La desviación del RMSLE entre semillas es 0.00019 en XGBoost y 0.00039 en Random Forest; KNN es determinista (desviación 0.00000). La diferencia entre XGBoost y Random Forest en 2021 (0.0001) es ≈ 0.2 veces la desviación entre semillas: no supera la variación por semilla, así que en ese año los dos modelos no se distinguen y la semilla puede invertir su orden.</p></li>
+<li><p><strong>Clasificación.</strong> La SVM es la más sensible (desviación del AUC 0.0041, rango 0.0108), porque cada semilla toma una submuestra distinta de 4 000 filas; XGBoost (0.0006) y Random Forest (0.0013) son muy estables. El árbol de decisión es determinista con estos datos (sin empates en los cortes).</p></li>
+<li><p><strong>Conclusión.</strong> La variabilidad por semilla es dos o más órdenes de magnitud menor que la variabilidad entre periodos (20.1). Reportar una sola semilla es aceptable aquí, salvo para la SVM con submuestra.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="intervalos-de-confianza-bca-en-el-origen-movil-20212026">
+<h2>20.3 Intervalos de confianza BCa en el origen móvil 2021–2026<a class="headerlink" href="#intervalos-de-confianza-bca-en-el-origen-movil-20212026" title="Link to this heading">#</a></h2>
+<p>Bootstrap de <strong>bloques de meses</strong> (las celdas de un mismo mes se remuestrean juntas porque no son
+independientes, cap. 18.3), 1 000 réplicas, con corrección de sesgo y aceleración (BCa, Efron, 1987): la
+distribución de RMSLE y AUC es asimétrica (unos pocos meses de enjambre pesan mucho) y el intervalo
+percentil simple quedaría mal centrado.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># IC 95 % BCa del RMSLE por bootstrap de meses (regresión)</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">pred_reg</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">O</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="s2">" · "</span> <span class="ow">in</span> <span class="n">k</span><span class="p">}</span>
+<span class="n">pred_reg</span><span class="p">[</span><span class="s2">"A+B v2 (propuesto)"</span><span class="p">]</span> <span class="o">=</span> <span class="n">O</span><span class="p">[</span><span class="s2">"A+B v2"</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">nom</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pred_reg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">bootstrap_meses</span><span class="p">(</span><span class="n">O</span><span class="p">[</span><span class="s2">"y"</span><span class="p">],</span> <span class="n">p</span><span class="p">,</span> <span class="n">O</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">],</span> <span class="n">B</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"métrica"</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s2">"RMSLE"</span><span class="p">]</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"modelo"</span><span class="p">:</span> <span class="n">nom</span><span class="p">,</span> <span class="s2">"RMSLE"</span><span class="p">:</span> <span class="n">f</span><span class="p">[</span><span class="s2">"valor"</span><span class="p">],</span> <span class="s2">"IC95 BCa inf"</span><span class="p">:</span> <span class="n">f</span><span class="p">[</span><span class="s2">"IC_BCa_inf"</span><span class="p">],</span> <span class="s2">"IC95 BCa sup"</span><span class="p">:</span> <span class="n">f</span><span class="p">[</span><span class="s2">"IC_BCa_sup"</span><span class="p">],</span>
+                  <span class="s2">"IC95 perc. inf"</span><span class="p">:</span> <span class="n">f</span><span class="p">[</span><span class="s2">"IC_perc_inf"</span><span class="p">],</span> <span class="s2">"IC95 perc. sup"</span><span class="p">:</span> <span class="n">f</span><span class="p">[</span><span class="s2">"IC_perc_sup"</span><span class="p">]})</span>
+<span class="n">ICR</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"RMSLE"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">ICR</span><span class="p">,</span> <span class="s2">"e2_robustez_ic_reg.csv"</span><span class="p">)</span>
+<span class="n">ICR</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>RMSLE</th>
+      <th>IC95 BCa inf</th>
+      <th>IC95 BCa sup</th>
+      <th>IC95 perc. inf</th>
+      <th>IC95 perc. sup</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>28</th>
+      <td>A+B v2 (propuesto)</td>
+      <td>0.3260</td>
+      <td>0.3122</td>
+      <td>0.3502</td>
+      <td>0.3094</td>
+      <td>0.3455</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>XGBoost · AG</td>
+      <td>0.3263</td>
+      <td>0.3125</td>
+      <td>0.3505</td>
+      <td>0.3097</td>
+      <td>0.3458</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>XGBoost · TPE</td>
+      <td>0.3270</td>
+      <td>0.3132</td>
+      <td>0.3513</td>
+      <td>0.3104</td>
+      <td>0.3466</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>XGBoost · Random</td>
+      <td>0.3272</td>
+      <td>0.3134</td>
+      <td>0.3515</td>
+      <td>0.3106</td>
+      <td>0.3469</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>Random Forest · TPE</td>
+      <td>0.3279</td>
+      <td>0.3141</td>
+      <td>0.3523</td>
+      <td>0.3109</td>
+      <td>0.3478</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>Random Forest · AG</td>
+      <td>0.3279</td>
+      <td>0.3140</td>
+      <td>0.3526</td>
+      <td>0.3108</td>
+      <td>0.3479</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>XGBoost · Grid</td>
+      <td>0.3285</td>
+      <td>0.3145</td>
+      <td>0.3532</td>
+      <td>0.3114</td>
+      <td>0.3484</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>Random Forest · Random</td>
+      <td>0.3291</td>
+      <td>0.3153</td>
+      <td>0.3541</td>
+      <td>0.3122</td>
+      <td>0.3490</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Árbol de decisión · Grid</td>
+      <td>0.3297</td>
+      <td>0.3163</td>
+      <td>0.3529</td>
+      <td>0.3135</td>
+      <td>0.3486</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Árbol de decisión · TPE</td>
+      <td>0.3308</td>
+      <td>0.3168</td>
+      <td>0.3557</td>
+      <td>0.3135</td>
+      <td>0.3510</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Árbol de decisión · Random</td>
+      <td>0.3313</td>
+      <td>0.3182</td>
+      <td>0.3545</td>
+      <td>0.3152</td>
+      <td>0.3496</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Random Forest · Grid</td>
+      <td>0.3318</td>
+      <td>0.3179</td>
+      <td>0.3566</td>
+      <td>0.3148</td>
+      <td>0.3518</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>KNN · AG</td>
+      <td>0.3344</td>
+      <td>0.3197</td>
+      <td>0.3602</td>
+      <td>0.3164</td>
+      <td>0.3551</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>KNN · Random</td>
+      <td>0.3344</td>
+      <td>0.3197</td>
+      <td>0.3602</td>
+      <td>0.3164</td>
+      <td>0.3551</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>KNN · Grid</td>
+      <td>0.3344</td>
+      <td>0.3199</td>
+      <td>0.3599</td>
+      <td>0.3166</td>
+      <td>0.3548</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>KNN · TPE</td>
+      <td>0.3345</td>
+      <td>0.3198</td>
+      <td>0.3601</td>
+      <td>0.3165</td>
+      <td>0.3551</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Árbol de decisión · AG</td>
+      <td>0.3348</td>
+      <td>0.3208</td>
+      <td>0.3590</td>
+      <td>0.3176</td>
+      <td>0.3541</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Lasso · TPE</td>
+      <td>0.3463</td>
+      <td>0.3323</td>
+      <td>0.3717</td>
+      <td>0.3293</td>
+      <td>0.3660</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Lasso · Grid</td>
+      <td>0.3463</td>
+      <td>0.3323</td>
+      <td>0.3717</td>
+      <td>0.3293</td>
+      <td>0.3660</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Lasso · AG</td>
+      <td>0.3463</td>
+      <td>0.3323</td>
+      <td>0.3717</td>
+      <td>0.3293</td>
+      <td>0.3660</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Lasso · Random</td>
+      <td>0.3463</td>
+      <td>0.3323</td>
+      <td>0.3717</td>
+      <td>0.3293</td>
+      <td>0.3660</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Ridge · Grid</td>
+      <td>0.3463</td>
+      <td>0.3323</td>
+      <td>0.3717</td>
+      <td>0.3293</td>
+      <td>0.3660</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Ridge · TPE</td>
+      <td>0.3463</td>
+      <td>0.3323</td>
+      <td>0.3717</td>
+      <td>0.3293</td>
+      <td>0.3660</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Ridge · AG</td>
+      <td>0.3463</td>
+      <td>0.3323</td>
+      <td>0.3717</td>
+      <td>0.3293</td>
+      <td>0.3660</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Ridge · Random</td>
+      <td>0.3463</td>
+      <td>0.3323</td>
+      <td>0.3717</td>
+      <td>0.3293</td>
+      <td>0.3660</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>SVR · TPE</td>
+      <td>0.3514</td>
+      <td>0.3383</td>
+      <td>0.3741</td>
+      <td>0.3358</td>
+      <td>0.3697</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>SVR · AG</td>
+      <td>0.3547</td>
+      <td>0.3424</td>
+      <td>0.3765</td>
+      <td>0.3398</td>
+      <td>0.3726</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>SVR · Random</td>
+      <td>0.3548</td>
+      <td>0.3424</td>
+      <td>0.3765</td>
+      <td>0.3399</td>
+      <td>0.3727</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>SVR · Grid</td>
+      <td>0.3609</td>
+      <td>0.3471</td>
+      <td>0.3846</td>
+      <td>0.3438</td>
+      <td>0.3803</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># IC 95 % BCa del AUC por bootstrap de meses (clasificación)</span>
+<span class="n">yb</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="s2">"y"</span><span class="p">];</span> <span class="n">tmt</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">etq</span> <span class="ow">in</span> <span class="n">r2</span><span class="o">.</span><span class="n">campeones_om</span><span class="p">(</span><span class="s2">"clf"</span><span class="p">)</span><span class="o">.</span><span class="n">etiqueta</span><span class="p">:</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="s2">"combos"</span><span class="p">][</span><span class="n">etq</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">bca_meses</span><span class="p">(</span><span class="k">lambda</span> <span class="n">idx</span><span class="p">:</span> <span class="n">roc_auc_score</span><span class="p">(</span><span class="n">yb</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="n">idx</span><span class="p">]),</span> <span class="n">tmt</span><span class="p">,</span> <span class="n">B</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"modelo"</span><span class="p">:</span> <span class="n">etq</span><span class="p">,</span> <span class="s2">"AUC"</span><span class="p">:</span> <span class="n">b</span><span class="p">[</span><span class="s2">"valor"</span><span class="p">],</span> <span class="s2">"IC95 BCa inf"</span><span class="p">:</span> <span class="n">b</span><span class="p">[</span><span class="s2">"IC_BCa_inf"</span><span class="p">],</span> <span class="s2">"IC95 BCa sup"</span><span class="p">:</span> <span class="n">b</span><span class="p">[</span><span class="s2">"IC_BCa_sup"</span><span class="p">],</span>
+                  <span class="s2">"IC95 perc. inf"</span><span class="p">:</span> <span class="n">b</span><span class="p">[</span><span class="s2">"IC_perc_inf"</span><span class="p">],</span> <span class="s2">"IC95 perc. sup"</span><span class="p">:</span> <span class="n">b</span><span class="p">[</span><span class="s2">"IC_perc_sup"</span><span class="p">]})</span>
+<span class="n">ICC</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"AUC"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">ICC</span><span class="p">,</span> <span class="s2">"e2_robustez_ic_clf.csv"</span><span class="p">)</span>
+<span class="n">ICC</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>AUC</th>
+      <th>IC95 BCa inf</th>
+      <th>IC95 BCa sup</th>
+      <th>IC95 perc. inf</th>
+      <th>IC95 perc. sup</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>XGBoost · c_weight</td>
+      <td>0.8096</td>
+      <td>0.7994</td>
+      <td>0.8177</td>
+      <td>0.8001</td>
+      <td>0.8182</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Random Forest · sin bal.</td>
+      <td>0.8074</td>
+      <td>0.7977</td>
+      <td>0.8157</td>
+      <td>0.7982</td>
+      <td>0.8159</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Regresión logística (L1/L2) · sin bal.</td>
+      <td>0.8008</td>
+      <td>0.7910</td>
+      <td>0.8096</td>
+      <td>0.7912</td>
+      <td>0.8099</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>KNN · sin bal.</td>
+      <td>0.8005</td>
+      <td>0.7899</td>
+      <td>0.8090</td>
+      <td>0.7905</td>
+      <td>0.8094</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Árbol de decisión · sin bal.</td>
+      <td>0.7981</td>
+      <td>0.7884</td>
+      <td>0.8072</td>
+      <td>0.7886</td>
+      <td>0.8073</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>SVM · ADASYN</td>
+      <td>0.7936</td>
+      <td>0.7828</td>
+      <td>0.8033</td>
+      <td>0.7834</td>
+      <td>0.8038</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Naive Bayes · ADASYN</td>
+      <td>0.7889</td>
+      <td>0.7789</td>
+      <td>0.7973</td>
+      <td>0.7794</td>
+      <td>0.7976</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Gráfico de los intervalos de confianza</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">met</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axs</span><span class="p">,</span> <span class="p">((</span><span class="n">ICR</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"RMSLE"</span><span class="p">),</span> <span class="p">(</span><span class="n">ICC</span><span class="o">.</span><span class="n">iloc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"AUC"</span><span class="p">))):</span>
+    <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">met</span><span class="p">],</span> <span class="n">yy</span><span class="p">,</span> <span class="n">xerr</span><span class="o">=</span><span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="n">met</span><span class="p">]</span> <span class="o">-</span> <span class="n">d</span><span class="p">[</span><span class="s2">"IC95 BCa inf"</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="s2">"IC95 BCa sup"</span><span class="p">]</span> <span class="o">-</span> <span class="n">d</span><span class="p">[</span><span class="n">met</span><span class="p">]],</span> <span class="n">fmt</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">ecolor</span><span class="o">=</span><span class="s2">"0.5"</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">yy</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">modelo</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mf">6.5</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">met</span><span class="si">}</span><span class="s2">, origen móvil 2021–2026 (IC 95 % BCa)"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"e2_robustez_ic.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/b68877f0ba687219b550ec338302ab3d5553f0153081318f662f64cefc81059b.png" src="../_images/b68877f0ba687219b550ec338302ab3d5553f0153081318f662f64cefc81059b.png" />
+</div>
+</div>
+</section>
+<section id="las-diferencias-entre-modelos-superan-la-variabilidad-intrinseca">
+<h2>20.4 ¿Las diferencias entre modelos superan la variabilidad intrínseca?<a class="headerlink" href="#las-diferencias-entre-modelos-superan-la-variabilidad-intrinseca" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de los intervalos</span>
+<span class="n">ab</span> <span class="o">=</span> <span class="n">ICR</span><span class="p">[</span><span class="n">ICR</span><span class="o">.</span><span class="n">modelo</span> <span class="o">==</span> <span class="s2">"A+B v2 (propuesto)"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">_cx</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">campeones_om</span><span class="p">(</span><span class="s2">"reg"</span><span class="p">);</span> <span class="n">_cx</span> <span class="o">=</span> <span class="n">_cx</span><span class="p">[</span><span class="n">_cx</span><span class="o">.</span><span class="n">modelo</span> <span class="o">==</span> <span class="s2">"XGBoost"</span><span class="p">]</span><span class="o">.</span><span class="n">etiqueta</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">b2</span> <span class="o">=</span> <span class="n">ICR</span><span class="p">[</span><span class="n">ICR</span><span class="o">.</span><span class="n">modelo</span> <span class="o">==</span> <span class="n">_cx</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">anchoR</span> <span class="o">=</span> <span class="p">(</span><span class="n">ICR</span><span class="p">[</span><span class="s2">"IC95 BCa sup"</span><span class="p">]</span> <span class="o">-</span> <span class="n">ICR</span><span class="p">[</span><span class="s2">"IC95 BCa inf"</span><span class="p">])</span><span class="o">.</span><span class="n">median</span><span class="p">();</span> <span class="n">anchoC</span> <span class="o">=</span> <span class="p">(</span><span class="n">ICC</span><span class="p">[</span><span class="s2">"IC95 BCa sup"</span><span class="p">]</span> <span class="o">-</span> <span class="n">ICC</span><span class="p">[</span><span class="s2">"IC95 BCa inf"</span><span class="p">])</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- El ancho típico del IC 95 % del RMSLE en el origen móvil es </span><span class="si">{</span><span class="n">anchoR</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, mientras que la distancia entre A+B v2 (</span><span class="si">{</span><span class="n">ab</span><span class="o">.</span><span class="n">RMSLE</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">) y el campeón "</span>
+   <span class="sa">f</span><span class="s2">"de XGBoost (</span><span class="si">{</span><span class="n">b2</span><span class="o">.</span><span class="n">modelo</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">b2</span><span class="o">.</span><span class="n">RMSLE</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">) es </span><span class="si">{</span><span class="n">b2</span><span class="o">.</span><span class="n">RMSLE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ab</span><span class="o">.</span><span class="n">RMSLE</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: los intervalos **marginales** se solapan casi por completo. "</span>
+   <span class="sa">f</span><span class="s2">"En clasificación pasa lo mismo: ancho típico </span><span class="si">{</span><span class="n">anchoC</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> frente a una distancia de </span><span class="si">{</span><span class="n">ICC</span><span class="o">.</span><span class="n">AUC</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ICC</span><span class="o">.</span><span class="n">AUC</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> entre los dos "</span>
+   <span class="sa">f</span><span class="s2">"primeros.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- Mirar si los intervalos se solapan sería **engañoso**: cada intervalo incluye la variación común a todos los modelos (meses fáciles y "</span>
+   <span class="sa">f</span><span class="s2">"difíciles para todos), que es la mayor parte de su ancho (20.1). La pregunta correcta es si la **diferencia pareada**, mes a mes, es "</span>
+   <span class="sa">f</span><span class="s2">"distinta de cero, y su variabilidad es mucho menor que la de cada métrica por separado.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- Frente a los modelos más débiles, las diferencias son mucho **mayores** que la variabilidad por semilla (20.2); entre los mejores "</span>
+   <span class="sa">f</span><span class="s2">"(XGBoost, Random Forest y A+B v2) son del mismo orden, así que solo una prueba pareada sobre muchos meses puede separarlos.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- Esto motiva directamente el cap. 21: pruebas formales **pareadas** y con control de comparaciones múltiples (Friedman–Nemenyi, "</span>
+   <span class="sa">f</span><span class="s2">"DeLong, MCS, Diebold-Mariano, SPA), en lugar de juzgar por la superposición de intervalos."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p>El ancho típico del IC 95 % del RMSLE en el origen móvil es 0.0387, mientras que la distancia entre A+B v2 (0.3260) y el campeón de XGBoost (XGBoost · TPE, 0.3270) es 0.0010: los intervalos <strong>marginales</strong> se solapan casi por completo. En clasificación pasa lo mismo: ancho típico 0.0185 frente a una distancia de 0.0022 entre los dos primeros.</p></li>
+<li><p>Mirar si los intervalos se solapan sería <strong>engañoso</strong>: cada intervalo incluye la variación común a todos los modelos (meses fáciles y difíciles para todos), que es la mayor parte de su ancho (20.1). La pregunta correcta es si la <strong>diferencia pareada</strong>, mes a mes, es distinta de cero, y su variabilidad es mucho menor que la de cada métrica por separado.</p></li>
+<li><p>Frente a los modelos más débiles, las diferencias son mucho <strong>mayores</strong> que la variabilidad por semilla (20.2); entre los mejores (XGBoost, Random Forest y A+B v2) son del mismo orden, así que solo una prueba pareada sobre muchos meses puede separarlos.</p></li>
+<li><p>Esto motiva directamente el cap. 21: pruebas formales <strong>pareadas</strong> y con control de comparaciones múltiples (Friedman–Nemenyi, DeLong, MCS, Diebold-Mariano, SPA), en lugar de juzgar por la superposición de intervalos.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="conclusiones-del-capitulo">
+<h2>20.5 Conclusiones del capítulo<a class="headerlink" href="#conclusiones-del-capitulo" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>La métrica de un modelo depende más del <strong>periodo evaluado</strong> que de la semilla o del optimizador; el orden
+entre modelos, en cambio, es estable entre periodos.</p></li>
+<li><p>La semilla importa poco salvo en la SVM con submuestra.</p></li>
+<li><p>Los IC BCa de cada modelo son anchos y se solapan, pero eso no dice nada sobre la diferencia <strong>pareada</strong>;
+esa se prueba formalmente en el cap. 21.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="19_interpretabilidad.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">19. Interpretabilidad global y local: SHAP y LIME</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="21_comparacion_estadistica.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">21. Comparación estadística de modelos</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#media-desviacion-en-el-bucle-externo">20.1 Media ± desviación en el bucle externo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensibilidad-a-la-semilla-de-inicializacion">20.2 Sensibilidad a la semilla de inicialización</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intervalos-de-confianza-bca-en-el-origen-movil-20212026">20.3 Intervalos de confianza BCa en el origen móvil 2021–2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#las-diferencias-entre-modelos-superan-la-variabilidad-intrinseca">20.4 ¿Las diferencias entre modelos superan la variabilidad intrínseca?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-del-capitulo">20.5 Conclusiones del capítulo</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

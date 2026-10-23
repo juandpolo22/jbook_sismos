@@ -1,0 +1,1283 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>9. Auditoría de fuga de datos (2.5) &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/09_data_leakage';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="10. Preprocesamiento y Pipeline (2.9)" href="10_preprocesamiento.html" />
+    <link rel="prev" title="8. Componente espacial (2.7) y espacio-temporal (2.8)" href="08_eda_espacial.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/09_data_leakage.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>9. Auditoría de fuga de datos (2.5)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#disponibilidad-de-cada-variable-en-el-momento-del-pronostico">9.1 Disponibilidad de cada variable en el momento del pronóstico</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variables-derivadas-del-objetivo-y-desempeno-univariado">9.2 Variables derivadas del objetivo y desempeño univariado</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demostracion-modelo-con-fuga-frente-a-sin-fuga">9.3 Demostración: modelo <strong>con fuga</strong> frente a <strong>sin fuga</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#duplicados-y-entidades-entre-particiones-fuga-temporal-y-espacial">9.4 Duplicados y entidades entre particiones; fuga temporal y espacial</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fuga-por-preprocesamiento">9.5 Fuga por preprocesamiento</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-de-la-auditoria">9.6 Conclusión de la auditoría</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="auditoria-de-fuga-de-datos-2-5">
+<h1>9. Auditoría de fuga de datos (2.5)<a class="headerlink" href="#auditoria-de-fuga-de-datos-2-5" title="Link to this heading">#</a></h1>
+<p>Una variable «fuga» cuando contiene información que <strong>no estaría disponible en el momento de
+pronosticar</strong>, es decir, al cierre del mes <em>t</em>. Se audita en seis frentes:</p>
+<ol class="arabic simple">
+<li><p>disponibilidad de cada variable;</p></li>
+<li><p>variables derivadas del objetivo, identificadores y proxies;</p></li>
+<li><p>desempeño univariado sospechoso;</p></li>
+<li><p>demostración de qué pasaría con una variable con fuga;</p></li>
+<li><p>duplicados y entidades entre particiones, y fuga temporal o espacial por vecindad;</p></li>
+<li><p>fuga por preprocesamiento.</p></li>
+</ol>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Datos y herramientas para la auditoría de fuga</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.tree</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionTreeRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ridge</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_pipeline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.impute</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">r2_score</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_completo</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"y"</span><span class="p">];</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">y</span><span class="p">);</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="disponibilidad-de-cada-variable-en-el-momento-del-pronostico">
+<h2>9.1 Disponibilidad de cada variable en el momento del pronóstico<a class="headerlink" href="#disponibilidad-de-cada-variable-en-el-momento-del-pronostico" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Disponibilidad temporal de cada variable: ¿se conoce al cierre del mes t?</span>
+<span class="n">disp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"n_1m, n_3m, n_6m, n_12m"</span><span class="p">,</span> <span class="s2">"sismos de la celda en ventanas que terminan en t"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"conservada"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"n35_3m, n35_12m"</span><span class="p">,</span> <span class="s2">"sismos M ≥ 3,5 en ventanas que terminan en t"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"conservada"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"mag_media_*, mag_max_*"</span><span class="p">,</span> <span class="s2">"magnitudes de los sismos de la ventana (hasta t)"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"conservada"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"prof_media_hist"</span><span class="p">,</span> <span class="s2">"profundidad media desde 2004 hasta t"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"en observación (acumulativa: deriva lenta)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"vec_1m, vec_3m"</span><span class="p">,</span> <span class="s2">"sismos de las 8 celdas vecinas hasta t (mismo mes, nunca t+1)"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"conservada"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"n_mismo_mes_anio_prev"</span><span class="p">,</span> <span class="s2">"sismos de la celda en t−11 (mismo mes del año anterior que t+1)"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"conservada"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"sen_mes, cos_mes"</span><span class="p">,</span> <span class="s2">"mes calendario de t+1 (conocido de antemano)"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"conservada"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"lat, lon"</span><span class="p">,</span> <span class="s2">"centro de la celda (identificador espacial)"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"en observación: válidas para pronosticar en las mismas celdas, no para zonas nuevas"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"depto"</span><span class="p">,</span> <span class="s2">"departamento del sismo"</span><span class="p">,</span> <span class="s2">"solo para eventos ya ocurridos"</span><span class="p">,</span> <span class="s2">"descartada (no se usa como predictora)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"sismos del mes t+1 (cualquier resumen)"</span><span class="p">,</span> <span class="s2">"es el objetivo o parte de él"</span><span class="p">,</span> <span class="s2">"NO"</span><span class="p">,</span> <span class="s2">"descartada: fuga directa"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"sismos del mes t+1 en celdas vecinas"</span><span class="p">,</span> <span class="s2">"ocurren en el mismo mes que el objetivo"</span><span class="p">,</span> <span class="s2">"NO"</span><span class="p">,</span> <span class="s2">"descartada: fuga espacio-temporal"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"estado / errores de localización del sismo"</span><span class="p">,</span> <span class="s2">"se conocen después de revisar el sismo (días o semanas)"</span><span class="p">,</span> <span class="s2">"no siempre a tiempo"</span><span class="p">,</span> <span class="s2">"descartadas (solo calidad)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"selección de celdas activas"</span><span class="p">,</span> <span class="s2">"≥ 20 sismos ANTES del corte de prueba"</span><span class="p">,</span> <span class="s2">"sí"</span><span class="p">,</span> <span class="s2">"decisión tomada solo con entrenamiento"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"variable"</span><span class="p">,</span> <span class="s2">"qué contiene"</span><span class="p">,</span> <span class="s2">"¿disponible al cierre de t?"</span><span class="p">,</span> <span class="s2">"decisión"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">disp</span><span class="p">,</span> <span class="s2">"auditoria_disponibilidad.csv"</span><span class="p">)</span>
+<span class="n">disp</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>variable</th>
+      <th>qué contiene</th>
+      <th>¿disponible al cierre de t?</th>
+      <th>decisión</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>n_1m, n_3m, n_6m, n_12m</td>
+      <td>sismos de la celda en ventanas que terminan en t</td>
+      <td>sí</td>
+      <td>conservada</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>n35_3m, n35_12m</td>
+      <td>sismos M ≥ 3,5 en ventanas que terminan en t</td>
+      <td>sí</td>
+      <td>conservada</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>mag_media_*, mag_max_*</td>
+      <td>magnitudes de los sismos de la ventana (hasta t)</td>
+      <td>sí</td>
+      <td>conservada</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>prof_media_hist</td>
+      <td>profundidad media desde 2004 hasta t</td>
+      <td>sí</td>
+      <td>en observación (acumulativa: deriva lenta)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>vec_1m, vec_3m</td>
+      <td>sismos de las 8 celdas vecinas hasta t (mismo ...</td>
+      <td>sí</td>
+      <td>conservada</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>n_mismo_mes_anio_prev</td>
+      <td>sismos de la celda en t−11 (mismo mes del año ...</td>
+      <td>sí</td>
+      <td>conservada</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>sen_mes, cos_mes</td>
+      <td>mes calendario de t+1 (conocido de antemano)</td>
+      <td>sí</td>
+      <td>conservada</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>lat, lon</td>
+      <td>centro de la celda (identificador espacial)</td>
+      <td>sí</td>
+      <td>en observación: válidas para pronosticar en la...</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>depto</td>
+      <td>departamento del sismo</td>
+      <td>solo para eventos ya ocurridos</td>
+      <td>descartada (no se usa como predictora)</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>sismos del mes t+1 (cualquier resumen)</td>
+      <td>es el objetivo o parte de él</td>
+      <td>NO</td>
+      <td>descartada: fuga directa</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>sismos del mes t+1 en celdas vecinas</td>
+      <td>ocurren en el mismo mes que el objetivo</td>
+      <td>NO</td>
+      <td>descartada: fuga espacio-temporal</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>estado / errores de localización del sismo</td>
+      <td>se conocen después de revisar el sismo (días o...</td>
+      <td>no siempre a tiempo</td>
+      <td>descartadas (solo calidad)</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>selección de celdas activas</td>
+      <td>≥ 20 sismos ANTES del corte de prueba</td>
+      <td>sí</td>
+      <td>decisión tomada solo con entrenamiento</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="variables-derivadas-del-objetivo-y-desempeno-univariado">
+<h2>9.2 Variables derivadas del objetivo y desempeño univariado<a class="headerlink" href="#variables-derivadas-del-objetivo-y-desempeno-univariado" title="Link to this heading">#</a></h2>
+<p>Para cada predictora se ajusta un árbol de regresión de profundidad 4 <strong>con esa única variable</strong> y se
+mide su R² en escala log (fuera de pliegue, validación temporal). Un R² univariado cercano a 1 sería
+una alarma de fuga o de proxy del objetivo.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Poder predictivo individual de cada variable (R² con un árbol en CV temporal): un R² sospechosamente alto delataría fuga</span>
+<span class="n">pl</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">pliegues_temporales</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">pred</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pl</span><span class="p">:</span>
+        <span class="n">m_</span> <span class="o">=</span> <span class="n">DecisionTreeRegressor</span><span class="p">(</span><span class="n">max_depth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">ly</span><span class="p">[</span><span class="n">tr</span><span class="p">][</span><span class="n">a</span><span class="p">])</span>
+        <span class="n">pred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">v</span><span class="p">]));</span> <span class="n">obs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ly</span><span class="p">[</span><span class="n">tr</span><span class="p">][</span><span class="n">v</span><span class="p">])</span>
+    <span class="n">pred</span><span class="p">,</span> <span class="n">obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">pred</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"variable"</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span> <span class="s2">"R2_univariado_log_OOF"</span><span class="p">:</span> <span class="n">r2_score</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">pred</span><span class="p">),</span>
+                  <span class="s2">"corr_Pearson_log"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()[</span><span class="n">tr</span><span class="p">],</span> <span class="n">nan</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span> <span class="n">ly</span><span class="p">[</span><span class="n">tr</span><span class="p">])[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]})</span>
+<span class="n">uni</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"R2_univariado_log_OOF"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">uni</span><span class="p">,</span> <span class="s2">"auditoria_univariado.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">barplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">uni</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">"variable"</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">"R2_univariado_log_OOF"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#4299e1"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"r"</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"R² univariado fuera de pliegue (línea roja = umbral de alarma 0,8)"</span><span class="p">);</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"09_univariado.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">uni</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/220c32a09800ffa25a6e5a78a18509ef600bc78a74504a5adeb1052bcad12f10.png" src="../_images/220c32a09800ffa25a6e5a78a18509ef600bc78a74504a5adeb1052bcad12f10.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>variable</th>
+      <th>R2_univariado_log_OOF</th>
+      <th>corr_Pearson_log</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>n_12m</td>
+      <td>0.481</td>
+      <td>0.643</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>n_6m</td>
+      <td>0.481</td>
+      <td>0.646</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>n_3m</td>
+      <td>0.461</td>
+      <td>0.645</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>n_1m</td>
+      <td>0.420</td>
+      <td>0.634</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>n35_12m</td>
+      <td>0.399</td>
+      <td>0.625</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>n35_3m</td>
+      <td>0.387</td>
+      <td>0.612</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>n_mismo_mes_anio_prev</td>
+      <td>0.377</td>
+      <td>0.605</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>prof_media_hist</td>
+      <td>0.322</td>
+      <td>0.299</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>mag_max_3m</td>
+      <td>0.176</td>
+      <td>0.280</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>mag_media_3m</td>
+      <td>0.127</td>
+      <td>0.220</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>mag_max_12m</td>
+      <td>0.111</td>
+      <td>0.226</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>mag_media_12m</td>
+      <td>0.079</td>
+      <td>0.122</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>lat</td>
+      <td>0.045</td>
+      <td>0.002</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>lon</td>
+      <td>0.043</td>
+      <td>0.092</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>vec_3m</td>
+      <td>0.008</td>
+      <td>0.147</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>cos_mes</td>
+      <td>-0.002</td>
+      <td>-0.001</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>sen_mes</td>
+      <td>-0.002</td>
+      <td>-0.001</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>vec_1m</td>
+      <td>-0.011</td>
+      <td>0.145</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Ninguna variable se acerca a la alarma.** El R² univariado más alto es </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">uni</span><span class="o">.</span><span class="n">R2_univariado_log_OOF</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> (`</span><span class="si">{</span><span class="n">uni</span><span class="o">.</span><span class="n">variable</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">`), lejos de 0,8. Es</span>
+<span class="s2">  alto para una sola variable porque separa las celdas activas de las inactivas, pero no lo bastante para sugerir un proxy del objetivo.</span>
+<span class="s2">- **No hay proxies del objetivo.** Ninguna variable lo «contiene». Todas son resúmenes del **pasado** de la celda o de su vecindad, y lo que</span>
+<span class="s2">  aportan es el mismo tipo de información (persistencia), que el EDA ya mostró moderada.</span>
+<span class="s2">- **Identificadores.** No se usa el número de celda como predictora. Latitud y longitud cumplen ese papel de forma continua y quedan</span>
+<span class="s2">  **en observación**: son legítimas para pronosticar en las mismas celdas, pero inflarían el desempeño si se evaluara en zonas nuevas.</span>
+<span class="s2">  Por eso la validación espacial del capítulo 11 se reporta aparte."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Ninguna variable se acerca a la alarma.</strong> El R² univariado más alto es 0,481 (<code class="docutils literal notranslate"><span class="pre">n_12m</span></code>), lejos de 0,8. Es
+alto para una sola variable porque separa las celdas activas de las inactivas, pero no lo bastante para sugerir un proxy del objetivo.</p></li>
+<li><p><strong>No hay proxies del objetivo.</strong> Ninguna variable lo «contiene». Todas son resúmenes del <strong>pasado</strong> de la celda o de su vecindad, y lo que
+aportan es el mismo tipo de información (persistencia), que el EDA ya mostró moderada.</p></li>
+<li><p><strong>Identificadores.</strong> No se usa el número de celda como predictora. Latitud y longitud cumplen ese papel de forma continua y quedan
+<strong>en observación</strong>: son legítimas para pronosticar en las mismas celdas, pero inflarían el desempeño si se evaluara en zonas nuevas.
+Por eso la validación espacial del capítulo 11 se reporta aparte.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="demostracion-modelo-con-fuga-frente-a-sin-fuga">
+<h2>9.3 Demostración: modelo <strong>con fuga</strong> frente a <strong>sin fuga</strong><a class="headerlink" href="#demostracion-modelo-con-fuga-frente-a-sin-fuga" title="Link to this heading">#</a></h2>
+<p>Para dimensionar el riesgo se construyen tres variables con fuga deliberada y se comparan con el modelo
+sin fuga. Se usa una regresión Ridge sobre log(1 + y) con las 18 variables, entrenada con el
+entrenamiento y evaluada en la prueba:</p>
+<ul class="simple">
+<li><p><strong>A. Fuga directa parcial:</strong> sismos de la celda en la <strong>primera semana</strong> del mes objetivo.</p></li>
+<li><p><strong>B. Fuga por vecindad:</strong> sismos de las 8 celdas vecinas <strong>en el mes objetivo</strong>.</p></li>
+<li><p><strong>C. Fuga por selección:</strong> se eligen las celdas activas usando <strong>todo</strong> el periodo (incluida la
+prueba). Se mide cuántas celdas más entrarían.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Experimento de fuga: agregar la primera semana del mes objetivo y medir cuánto «mejora» el modelo</span>
+<span class="n">semana1</span> <span class="o">=</span> <span class="n">ev_</span><span class="p">[</span><span class="n">ev_</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">]</span>
+<span class="n">S1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"C"</span><span class="p">]);</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">S1</span><span class="p">,</span> <span class="p">(</span><span class="n">semana1</span><span class="o">.</span><span class="n">celda</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">semana1</span><span class="o">.</span><span class="n">mes</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()),</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">fuga_a</span> <span class="o">=</span> <span class="n">S1</span><span class="p">[</span><span class="n">info</span><span class="p">[</span><span class="s2">"cc"</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]]</span>
+<span class="n">fuga_b</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">vecindad</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"C"</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">"n_lat"</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">"n_lon"</span><span class="p">])[</span><span class="n">info</span><span class="p">[</span><span class="s2">"cc"</span><span class="p">],</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]]</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ridge_r2</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">extra</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Z</span><span class="p">[</span><span class="s2">"fuga"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">extra</span><span class="p">)</span>
+    <span class="n">m_</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">"median"</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">(),</span> <span class="n">Ridge</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">10.0</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">],</span> <span class="n">ly</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">m_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">Z</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">te</span><span class="p">]))</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">met</span> <span class="o">=</span> <span class="n">ev</span><span class="o">.</span><span class="n">metricas_regresion</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">te</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">met</span><span class="p">[</span><span class="s2">"RMSLE"</span><span class="p">],</span> <span class="n">met</span><span class="p">[</span><span class="s2">"R2_log"</span><span class="p">],</span> <span class="n">met</span><span class="p">[</span><span class="s2">"R2"</span><span class="p">]</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"sin fuga (18 variables)"</span><span class="p">,</span> <span class="o">*</span><span class="n">ridge_r2</span><span class="p">()),</span> <span class="p">(</span><span class="s2">"A: + sismos de la 1.ª semana del mes objetivo"</span><span class="p">,</span> <span class="o">*</span><span class="n">ridge_r2</span><span class="p">(</span><span class="n">fuga_a</span><span class="p">)),</span>
+         <span class="p">(</span><span class="s2">"B: + sismos vecinos del mes objetivo"</span><span class="p">,</span> <span class="o">*</span><span class="n">ridge_r2</span><span class="p">(</span><span class="n">fuga_b</span><span class="p">))]</span>
+<span class="n">demo</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"RMSLE"</span><span class="p">,</span> <span class="s2">"R² (log)"</span><span class="p">,</span> <span class="s2">"R² (conteos)"</span><span class="p">])</span>
+<span class="n">celdas_todo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"C"</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">MIN_EVENTOS_CELDA</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">demo</span><span class="p">,</span> <span class="s2">"con_fuga_vs_sin_fuga.csv"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">demo</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Fuga directa (A).** Una semana del mes objetivo basta para bajar el RMSLE de </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">demo</span><span class="o">.</span><span class="n">RMSLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">demo</span><span class="o">.</span><span class="n">RMSLE</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> y subir el R² en log de</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">demo</span><span class="p">[</span><span class="s1">'R² (log)'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">demo</span><span class="p">[</span><span class="s1">'R² (log)'</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">- **Fuga por vecindad (B).** La mejora es pequeña (R² log = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">demo</span><span class="p">[</span><span class="s1">'R² (log)'</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">), porque la actividad de las vecinas en el mismo mes está</span>
+<span class="s2">  poco correlacionada con la de la celda (capítulo 8). Aun así sería una mejora **falsa**.</span>
+<span class="s2">- **Lectura.** Esas variables no existen al cierre del mes *t*. La fuga directa (A) dispara el desempeño de forma notoria con solo una semana de</span>
+<span class="s2">  información. Que el modelo sin fuga quede lejos de esos valores es coherente con un diseño limpio.</span>
+<span class="s2">- **Fuga por selección (C).** Si las celdas activas se eligieran con todo el periodo, entrarían **</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">celdas_todo</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'celdas'</span><span class="p">])</span><span class="si">}</span><span class="s2"> celdas más**:</span>
+<span class="s2">  celdas que solo se activaron después de 2020. El modelo se evaluaría justamente donde «sabemos» que va a haber sismos. Por eso el criterio</span>
+<span class="s2">  usa solo los meses anteriores al corte."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>RMSLE</th>
+      <th>R² (log)</th>
+      <th>R² (conteos)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>sin fuga (18 variables)</td>
+      <td>0.374</td>
+      <td>0.495</td>
+      <td>-6.615</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>A: + sismos de la 1.ª semana del mes objetivo</td>
+      <td>0.316</td>
+      <td>0.638</td>
+      <td>-0.703</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>B: + sismos vecinos del mes objetivo</td>
+      <td>0.370</td>
+      <td>0.505</td>
+      <td>-7.338</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Fuga directa (A).</strong> Una semana del mes objetivo basta para bajar el RMSLE de 0,374 a 0,316 y subir el R² en log de
+0,49 a 0,64.</p></li>
+<li><p><strong>Fuga por vecindad (B).</strong> La mejora es pequeña (R² log = 0,50), porque la actividad de las vecinas en el mismo mes está
+poco correlacionada con la de la celda (capítulo 8). Aun así sería una mejora <strong>falsa</strong>.</p></li>
+<li><p><strong>Lectura.</strong> Esas variables no existen al cierre del mes <em>t</em>. La fuga directa (A) dispara el desempeño de forma notoria con solo una semana de
+información. Que el modelo sin fuga quede lejos de esos valores es coherente con un diseño limpio.</p></li>
+<li><p><strong>Fuga por selección (C).</strong> Si las celdas activas se eligieran con todo el periodo, entrarían <strong>24 celdas más</strong>:
+celdas que solo se activaron después de 2020. El modelo se evaluaría justamente donde «sabemos» que va a haber sismos. Por eso el criterio
+usa solo los meses anteriores al corte.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="duplicados-y-entidades-entre-particiones-fuga-temporal-y-espacial">
+<h2>9.4 Duplicados y entidades entre particiones; fuga temporal y espacial<a class="headerlink" href="#duplicados-y-entidades-entre-particiones-fuga-temporal-y-espacial" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Chequeos de la partición: sin filas repetidas y prueba estrictamente posterior al entrenamiento</span>
+<span class="n">m_test</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"m_test"</span><span class="p">]</span>
+<span class="n">tm_tr_max</span><span class="p">,</span> <span class="n">tm_te_min</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()),</span> <span class="nb">int</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+<span class="n">chequeo</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"Filas (celda, mes objetivo) repetidas entre entrenamiento y prueba"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'cc'</span><span class="p">][</span><span class="n">tr</span><span class="p">],</span> <span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">]))</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'cc'</span><span class="p">][</span><span class="n">te</span><span class="p">],</span> <span class="n">tm</span><span class="p">[</span><span class="n">te</span><span class="p">]))))),</span>
+    <span class="p">(</span><span class="s2">"Último mes objetivo de entrenamiento"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">tm_tr_max</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">%Y-%m</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Primer mes objetivo de prueba"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">tm_te_min</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">%Y-%m</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Meses de separación (gap) entre objetivos"</span><span class="p">,</span> <span class="n">tm_te_min</span> <span class="o">-</span> <span class="n">tm_tr_max</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"¿Algún sismo es objetivo en prueba y predictora o objetivo en entrenamiento?"</span><span class="p">,</span> <span class="s2">"no"</span> <span class="k">if</span> <span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'tt'</span><span class="p">][</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">tm_te_min</span> <span class="ow">and</span> <span class="n">tm_tr_max</span> <span class="o">&lt;</span> <span class="n">tm_te_min</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"SÍ"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Mes más reciente usado por una variable de entrenamiento"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'tt'</span><span class="p">][</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">%Y-%m</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Celdas presentes en ambas particiones (entidades repetidas)"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'cc'</span><span class="p">][</span><span class="n">tr</span><span class="p">])</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'cc'</span><span class="p">][</span><span class="n">te</span><span class="p">]))</span><span class="si">}</span><span class="s2"> de </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">'celdas'</span><span class="p">])</span><span class="si">}</span><span class="s2"> (por diseño)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Rezago espacial: mes de los vecinos"</span><span class="p">,</span> <span class="s2">"t (igual que la celda), nunca t+1"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"chequeo"</span><span class="p">,</span> <span class="s2">"resultado"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">chequeo</span><span class="p">,</span> <span class="s2">"auditoria_particiones.csv"</span><span class="p">)</span>
+<span class="n">chequeo</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>chequeo</th>
+      <th>resultado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Filas (celda, mes objetivo) repetidas entre en...</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Último mes objetivo de entrenamiento</td>
+      <td>2020-11</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Primer mes objetivo de prueba</td>
+      <td>2021-01</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Meses de separación (gap) entre objetivos</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>¿Algún sismo es objetivo en prueba y predictor...</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Mes más reciente usado por una variable de ent...</td>
+      <td>2020-10</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Celdas presentes en ambas particiones (entidad...</td>
+      <td>163 de 163 (por diseño)</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Rezago espacial: mes de los vecinos</td>
+      <td>t (igual que la celda), nunca t+1</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Particiones disjuntas.** No hay filas repetidas entre entrenamiento y prueba, y ningún sismo que sea objetivo de la prueba aparece en el</span>
+<span class="s2">  entrenamiento, ni como objetivo ni como predictora.</span>
+<span class="s2">- **Entidades repetidas por diseño.** Las mismas celdas aparecen en ambas particiones. No es fuga: el problema es pronosticar el **futuro** de</span>
+<span class="s2">  zonas conocidas, igual que un pronóstico del tiempo usa las mismas estaciones. Lo que no puede compartirse es **tiempo**, y la partición</span>
+<span class="s2">  cronológica con gap lo garantiza.</span>
+<span class="s2">- **Uso legítimo del pasado.** Las variables de la prueba sí usan sismos de 2020, que en el entrenamiento fueron objetivo. Eso es legítimo:</span>
+<span class="s2">  al pronosticar enero de 2021, los sismos de 2020 ya ocurrieron y se conocen.</span>
+<span class="s2">- **Fuga espacial.** El rezago espacial usa los vecinos en el mismo mes *t* que la celda, así que no introduce información del mes objetivo.</span>
+<span class="s2">  La variante con fuga (B) se descartó."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Particiones disjuntas.</strong> No hay filas repetidas entre entrenamiento y prueba, y ningún sismo que sea objetivo de la prueba aparece en el
+entrenamiento, ni como objetivo ni como predictora.</p></li>
+<li><p><strong>Entidades repetidas por diseño.</strong> Las mismas celdas aparecen en ambas particiones. No es fuga: el problema es pronosticar el <strong>futuro</strong> de
+zonas conocidas, igual que un pronóstico del tiempo usa las mismas estaciones. Lo que no puede compartirse es <strong>tiempo</strong>, y la partición
+cronológica con gap lo garantiza.</p></li>
+<li><p><strong>Uso legítimo del pasado.</strong> Las variables de la prueba sí usan sismos de 2020, que en el entrenamiento fueron objetivo. Eso es legítimo:
+al pronosticar enero de 2021, los sismos de 2020 ya ocurrieron y se conocen.</p></li>
+<li><p><strong>Fuga espacial.</strong> El rezago espacial usa los vecinos en el mismo mes <em>t</em> que la celda, así que no introduce información del mes objetivo.
+La variante con fuga (B) se descartó.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="fuga-por-preprocesamiento">
+<h2>9.5 Fuga por preprocesamiento<a class="headerlink" href="#fuga-por-preprocesamiento" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Qué se aprende de los datos y con qué se ajusta.</strong> La imputación (medianas), el escalado (medias y
+desviaciones), la transformación y los hiperparámetros se aprenden <strong>dentro de un <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></strong> que se
+ajusta solo con el entrenamiento, o solo con la parte de ajuste de cada pliegue.</p></li>
+<li><p><strong>Comprobación.</strong> Se ajusta el Pipeline con el entrenamiento y se verifica que sus parámetros
+coinciden con estadísticos calculados solo con entrenamiento y no con todo el panel.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># El preprocesamiento usa solo estadísticas del entrenamiento (mediana, media del escalador)</span>
+<span class="n">pipe</span> <span class="o">=</span> <span class="n">make_pipeline</span><span class="p">(</span><span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">"median"</span><span class="p">),</span> <span class="n">StandardScaler</span><span class="p">())</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">med_tr</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">med_todo</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">media_tr</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">())</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">pp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"variable"</span><span class="p">:</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s2">"mediana_imputador"</span><span class="p">:</span> <span class="n">pipe</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">statistics_</span><span class="p">,</span> <span class="s2">"mediana_train"</span><span class="p">:</span> <span class="n">med_tr</span><span class="p">,</span> <span class="s2">"mediana_todo"</span><span class="p">:</span> <span class="n">med_todo</span><span class="p">,</span>
+                   <span class="s2">"media_escalador"</span><span class="p">:</span> <span class="n">pipe</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span> <span class="s2">"media_train"</span><span class="p">:</span> <span class="n">media_tr</span><span class="p">})</span>
+<span class="n">ok</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">mediana_imputador</span><span class="p">,</span> <span class="n">pp</span><span class="o">.</span><span class="n">mediana_train</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">media_escalador</span><span class="p">,</span> <span class="n">pp</span><span class="o">.</span><span class="n">media_train</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="s2">"auditoria_preprocesamiento.csv"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""Los parámetros del Pipeline **</span><span class="si">{</span><span class="s1">'coinciden'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">ok</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'NO coinciden'</span><span class="si">}</span><span class="s2">** con los estadísticos de entrenamiento. En</span>
+<span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">mediana_train</span><span class="p">,</span><span class="w"> </span><span class="n">pp</span><span class="o">.</span><span class="n">mediana_todo</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> variables la mediana de todo el panel difiere de la del entrenamiento: si se hubiera ajustado con todo,</span>
+<span class="s2">habría habido fuga. Otras decisiones aprendidas de los datos:</span>
+<span class="s2">- la normalización de las variables de excitación (Entregable 2) usa solo meses anteriores al corte (`src/datos.py::ExcitacionMensual.energia`);</span>
+<span class="s2">- la selección de celdas activas usa solo meses anteriores al corte (sección 9.3)."""</span><span class="p">)</span>
+<span class="n">pp</span><span class="p">[</span><span class="n">pp</span><span class="o">.</span><span class="n">variable</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s2">"n_12m"</span><span class="p">,</span> <span class="s2">"vec_3m"</span><span class="p">,</span> <span class="s2">"mag_media_3m"</span><span class="p">,</span> <span class="s2">"prof_media_hist"</span><span class="p">])]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p>Los parámetros del Pipeline <strong>coinciden</strong> con los estadísticos de entrenamiento. En
+4 variables la mediana de todo el panel difiere de la del entrenamiento: si se hubiera ajustado con todo,
+habría habido fuga. Otras decisiones aprendidas de los datos:</p>
+<ul class="simple">
+<li><p>la normalización de las variables de excitación (Entregable 2) usa solo meses anteriores al corte (<code class="docutils literal notranslate"><span class="pre">src/datos.py::ExcitacionMensual.energia</span></code>);</p></li>
+<li><p>la selección de celdas activas usa solo meses anteriores al corte (sección 9.3).</p></li>
+</ul>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>variable</th>
+      <th>mediana_imputador</th>
+      <th>mediana_train</th>
+      <th>mediana_todo</th>
+      <th>media_escalador</th>
+      <th>media_train</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>n_12m</td>
+      <td>3.000</td>
+      <td>3.000</td>
+      <td>2.000</td>
+      <td>9.896</td>
+      <td>9.896</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>mag_media_3m</td>
+      <td>2.843</td>
+      <td>2.843</td>
+      <td>2.833</td>
+      <td>2.882</td>
+      <td>2.882</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>prof_media_hist</td>
+      <td>27.827</td>
+      <td>27.827</td>
+      <td>27.776</td>
+      <td>38.442</td>
+      <td>38.442</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>vec_3m</td>
+      <td>5.000</td>
+      <td>5.000</td>
+      <td>5.000</td>
+      <td>17.484</td>
+      <td>17.484</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="conclusion-de-la-auditoria">
+<h2>9.6 Conclusión de la auditoría<a class="headerlink" href="#conclusion-de-la-auditoria" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable o decisión</p></th>
+<th class="head"><p>Estado</p></th>
+<th class="head"><p>Justificación</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>18 predictoras del modelo base</p></td>
+<td><p><strong>conservadas</strong></p></td>
+<td><p>Disponibles al cierre de <em>t</em>; R² univariado ≤ 0,5 (lejos de la alarma de 0,8); sin proxies del objetivo</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lat</span></code>, <code class="docutils literal notranslate"><span class="pre">lon</span></code></p></td>
+<td><p><strong>en observación</strong></p></td>
+<td><p>Válidas para pronosticar en las mismas celdas; se reporta aparte la validación espacial</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">prof_media_hist</span></code></p></td>
+<td><p><strong>en observación</strong></p></td>
+<td><p>Acumulativa: es la que más deriva (cap. 7), pero sin fuga</p></td>
+</tr>
+<tr class="row-odd"><td><p>sismos del mes objetivo (cualquier resumen)</p></td>
+<td><p><strong>descartadas</strong></p></td>
+<td><p>Fuga directa (demostración A)</p></td>
+</tr>
+<tr class="row-even"><td><p>sismos vecinos del mes objetivo</p></td>
+<td><p><strong>descartadas</strong></p></td>
+<td><p>Fuga espacio-temporal (demostración B)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">depto</span></code>, errores de localización, estado</p></td>
+<td><p><strong>descartadas como predictoras</strong></p></td>
+<td><p>No aportan al pronóstico o no están a tiempo</p></td>
+</tr>
+<tr class="row-even"><td><p>celdas activas y normalizaciones</p></td>
+<td><p><strong>calculadas solo con entrenamiento</strong></p></td>
+<td><p>Evita la fuga por selección (C) y por preprocesamiento</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Veredicto.</strong> La auditoría está <strong>limpia</strong>. El desempeño que se reporte desde el capítulo 11 es una
+estimación honesta del pronóstico real.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="08_eda_espacial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">8. Componente espacial (2.7) y espacio-temporal (2.8)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="10_preprocesamiento.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">10. Preprocesamiento y Pipeline (2.9)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#disponibilidad-de-cada-variable-en-el-momento-del-pronostico">9.1 Disponibilidad de cada variable en el momento del pronóstico</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variables-derivadas-del-objetivo-y-desempeno-univariado">9.2 Variables derivadas del objetivo y desempeño univariado</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demostracion-modelo-con-fuga-frente-a-sin-fuga">9.3 Demostración: modelo <strong>con fuga</strong> frente a <strong>sin fuga</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#duplicados-y-entidades-entre-particiones-fuga-temporal-y-espacial">9.4 Duplicados y entidades entre particiones; fuga temporal y espacial</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#fuga-por-preprocesamiento">9.5 Fuga por preprocesamiento</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion-de-la-auditoria">9.6 Conclusión de la auditoría</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

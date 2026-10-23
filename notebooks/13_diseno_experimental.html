@@ -1,0 +1,3077 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/13_diseno_experimental';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="14. Optimización de hiperparámetros: resultados de la validación anidada" href="14_optimizacion_hiperparametros.html" />
+    <link rel="prev" title="12. Conclusiones del Entregable 1, limitaciones y checklist" href="12_conclusiones.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/13_diseno_experimental.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#las-dos-tareas-sobre-el-mismo-panel">13.1 Las dos tareas sobre el mismo panel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validacion-anidada-temporal-y-presupuesto">13.2 Validación anidada temporal y presupuesto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#espacios-de-busqueda">13.3 Espacios de búsqueda</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complejidad-teorica-antes-de-medir">13.4 Complejidad teórica (antes de medir)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#piloto-de-costos-medido-no-supuesto">13.5 Piloto de costos (medido, no supuesto)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reduccion-1-combinaciones-equivalentes-demostradas-no-se-corren">13.6 Reducción 1: combinaciones equivalentes demostradas (no se corren)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reduccion-2-tamizaje-de-baja-fidelidad-multi-fidelidad-sobre-combinaciones">13.7 Reducción 2: tamizaje de baja fidelidad (multi-fidelidad sobre combinaciones)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lista-de-combinaciones-a-ejecutar">13.8 Lista de combinaciones a ejecutar</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#como-se-ejecuta-reproducible-con-puntos-de-control">13.9 Cómo se ejecuta (reproducible, con puntos de control)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-posterior-se-ejecutaron-las-140-combinaciones">13.10 Decisión posterior: se ejecutaron las 140 combinaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluacion-final-origen-movil-20212026">13.11 Evaluación final: origen móvil 2021–2026</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#por-que-no-un-unico-corte">Por qué no un único corte</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#como-funciona-el-origen-movil-rolling-origin-ventana-creciente">Cómo funciona el origen móvil (<em>rolling origin</em>, ventana creciente)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#respaldo-en-la-literatura">Respaldo en la literatura</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combinaciones-evaluadas-en-el-origen-movil">13.12 Combinaciones evaluadas en el origen móvil</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="diseno-experimental-del-entregable-2-y-reduccion-justificada-de-combinaciones">
+<h1>13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones<a class="headerlink" href="#diseno-experimental-del-entregable-2-y-reduccion-justificada-de-combinaciones" title="Link to this heading">#</a></h1>
+<p>El Entregable 2 plantea un pipeline combinatorio:</p>
+<ul class="simple">
+<li><p><strong>Clasificación:</strong> 7 modelos × 4 técnicas de balanceo × 4 optimizadores = <strong>112</strong> combinaciones.</p></li>
+<li><p><strong>Regresión:</strong> 7 modelos × 4 optimizadores = <strong>28</strong> combinaciones.</p></li>
+<li><p><strong>Total:</strong> <strong>140</strong> combinaciones.</p></li>
+</ul>
+<p>La misma guía advierte que <em>«no todas las combinaciones son igual de relevantes: el estudiante debe usar
+criterio para reportar de forma exhaustiva las combinaciones más informativas, sin sacrificar el rigor
+comparativo»</em> y que es <em>«indispensable priorizar las técnicas de optimización computacional»</em>.</p>
+<p>Este capítulo:</p>
+<ol class="arabic simple">
+<li><p>define el diseño (tareas, validación anidada, presupuesto, espacios de búsqueda);</p></li>
+<li><p>estima su costo <strong>antes</strong> de ejecutarlo, con la complejidad teórica y un piloto medido;</p></li>
+<li><p>justifica qué combinaciones <strong>no</strong> se corren completas y por qué;</p></li>
+<li><p>deja la <strong>lista exacta</strong> de lo que se ejecuta y cómo.</p></li>
+</ol>
+<p>Las reglas de reducción se fijan aquí <strong>antes</strong> de ver los resultados de la fase completa
+(preregistro), para que la reducción no favorezca a ningún modelo.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Módulos del benchmark, script de experimentos y datos</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">benchmark</span> <span class="k">as</span> <span class="n">bm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib.util</span>
+<span class="n">spec</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">spec_from_file_location</span><span class="p">(</span><span class="s2">"corredor"</span><span class="p">,</span> <span class="n">raiz</span> <span class="o">/</span> <span class="s2">"scripts"</span> <span class="o">/</span> <span class="s2">"correr_experimentos.py"</span><span class="p">)</span>
+<span class="n">corredor</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">module_from_spec</span><span class="p">(</span><span class="n">spec</span><span class="p">);</span> <span class="n">spec</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">exec_module</span><span class="p">(</span><span class="n">corredor</span><span class="p">)</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_completo</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"y"</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">);</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]</span>
+<span class="n">BENCH</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">RESULTADOS</span> <span class="o">/</span> <span class="s2">"benchmark"</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="las-dos-tareas-sobre-el-mismo-panel">
+<h2>13.1 Las dos tareas sobre el mismo panel<a class="headerlink" href="#las-dos-tareas-sobre-el-mismo-panel" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tarea</p></th>
+<th class="head"><p>Objetivo</p></th>
+<th class="head"><p>Métrica principal</p></th>
+<th class="head"><p>Por qué</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Regresión</strong></p></td>
+<td><p>número de sismos M ≥ 2,5 en la celda el mes siguiente</p></td>
+<td><p><strong>RMSLE</strong></p></td>
+<td><p>Es el problema del Entregable 1 (cap. 1 y 3)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Clasificación</strong></p></td>
+<td><p>¿habrá al menos un sismo M ≥ 2,5 en la celda el mes siguiente? (1 = sí)</p></td>
+<td><p><strong>ROC-AUC</strong></p></td>
+<td><p>Clase positiva minoritaria (≈ 21–24 %); ver abajo</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Las dos tareas usan <strong>las mismas 18 predictoras, la misma partición cronológica con gap y el mismo
+Pipeline</strong> del capítulo 10, así que todo lo dicho sobre fuga en el capítulo 9 vale para ambas.</p>
+<p><strong>Métrica principal de clasificación.</strong></p>
+<ul class="simple">
+<li><p><strong>Por qué no accuracy.</strong> Un clasificador que siempre dice «no habrá sismo» acierta ≈ 79 % de las
+veces, así que el accuracy confunde. Se elige <strong>ROC-AUC</strong> porque mide la capacidad de <strong>ordenar</strong> las
+celdas por riesgo, que es el uso previsto (priorizar zonas), sin depender de un umbral.</p></li>
+<li><p><strong>Métricas complementarias.</strong></p>
+<ul>
+<li><p>El <strong>recall</strong> de la clase positiva mide los falsos negativos, que son el error más costoso: no
+anticipar actividad en una celda que sí la tuvo.</p></li>
+<li><p>La <strong>precisión</strong> mide el costo de las falsas alarmas.</p></li>
+<li><p><strong>F1</strong>, Average Precision y Brier completan el cuadro (capítulo 17).</p></li>
+</ul>
+</li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Prevalencia de la clase positiva (≥ 1 sismo) en entrenamiento y evaluación</span>
+<span class="n">yb</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">prev</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([(</span><span class="s2">"entrenamiento"</span><span class="p">,</span> <span class="n">yb</span><span class="p">[</span><span class="n">tr</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="n">tr</span><span class="p">)),</span> <span class="p">(</span><span class="s2">"evaluación 2021–2026"</span><span class="p">,</span> <span class="n">yb</span><span class="p">[</span><span class="n">te</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="n">te</span><span class="p">))],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"conjunto"</span><span class="p">,</span> <span class="s2">"prevalencia clase 1"</span><span class="p">,</span> <span class="s2">"filas"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="s2">"clasificacion_prevalencia.csv"</span><span class="p">)</span>
+<span class="n">prev</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>conjunto</th>
+      <th>prevalencia clase 1</th>
+      <th>filas</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>entrenamiento</td>
+      <td>0.237</td>
+      <td>30970</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>evaluación 2021–2026</td>
+      <td>0.208</td>
+      <td>11247</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="validacion-anidada-temporal-y-presupuesto">
+<h2>13.2 Validación anidada temporal y presupuesto<a class="headerlink" href="#validacion-anidada-temporal-y-presupuesto" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Bucle externo</strong> (estima la generalización): los <strong>últimos 36 meses</strong> del entrenamiento se dividen en
+<strong>3 bloques de 12 meses</strong> (dic-2017 a nov-2020). Cada bloque se evalúa con un modelo entrenado solo
+con los meses anteriores, menos un mes de gap.</p>
+<ul>
+<li><p>Se reportan <strong>media ± desviación de los 3 bloques externos</strong>.</p></li>
+<li><p><strong>Por qué 3 bloques.</strong> Cada uno abarca un año completo, de modo que el ciclo anual y los enjambres
+quedan dentro de un mismo bloque. Con 5 bloques de unos 7 meses las métricas serían más ruidosas y el
+costo aumentaría 5/3.</p></li>
+</ul>
+</li>
+<li><p><strong>Bucle interno</strong> (solo búsqueda de hiperparámetros): dentro de la parte de entrenamiento de cada
+pliegue externo, <strong>3 pliegues temporales</strong> de ventana creciente con gap. El Pipeline completo
+(preprocesamiento + balanceo + modelo) se ajusta en cada pliegue interno solo con su parte de ajuste.</p></li>
+<li><p><strong>Presupuesto igual para los 4 optimizadores:</strong> <strong>15 evaluaciones</strong> del objetivo por búsqueda. Una
+evaluación es la media de los 3 pliegues internos.</p>
+<ul>
+<li><p><strong>Grid:</strong> rejilla de hasta 15 puntos.</p></li>
+<li><p><strong>Random:</strong> 15 muestras.</p></li>
+<li><p><strong>Bayesiano (Optuna, TPE):</strong> 4 de arranque aleatorio y 11 guiadas.</p></li>
+<li><p><strong>Genético (DEAP):</strong> población de 4 a 5 individuos y varias generaciones, hasta completar 15
+evaluaciones distintas.</p></li>
+</ul>
+</li>
+<li><p><strong>Hiperparámetros finales.</strong> Tras el bucle externo, el optimizador repite la búsqueda con <strong>todo</strong> el
+entrenamiento; esos son los hiperparámetros finales de la tabla maestra. La evaluación de los pronósticos
+en meses no vistos se hace con origen móvil 2021–2026 (13.11).</p></li>
+</ul>
+<p><strong>Costo por combinación:</strong> 4 búsquedas (3 externas + 1 final) × 15 evaluaciones × 3 pliegues + 4 reajustes
+= <strong>184 ajustes del Pipeline</strong>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pliegues externos de la validación anidada (cronológicos, con gap)</span>
+<span class="n">ext</span> <span class="o">=</span> <span class="n">bm</span><span class="o">.</span><span class="n">pliegues_externos</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ext</span><span class="p">):</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"pliegue externo"</span><span class="p">:</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"entrenamiento hasta"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">][</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">%Y-%m</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                  <span class="s2">"validación"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">%Y-%m</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">][</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">%Y-%m</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                  <span class="s2">"filas entrenamiento"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="s2">"filas validación"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)})</span>
+<span class="n">pl_ext</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">pl_ext</span><span class="p">,</span> <span class="s2">"pliegues_externos.csv"</span><span class="p">)</span>
+<span class="n">pl_ext</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>pliegue externo</th>
+      <th>entrenamiento hasta</th>
+      <th>validación</th>
+      <th>filas entrenamiento</th>
+      <th>filas validación</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>2017-10</td>
+      <td>2017-12 a 2018-11</td>
+      <td>24939</td>
+      <td>1956</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>2018-10</td>
+      <td>2018-12 a 2019-11</td>
+      <td>26895</td>
+      <td>1956</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>2019-10</td>
+      <td>2019-12 a 2020-11</td>
+      <td>28851</td>
+      <td>1956</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="espacios-de-busqueda">
+<h2>13.3 Espacios de búsqueda<a class="headerlink" href="#espacios-de-busqueda" title="Link to this heading">#</a></h2>
+<p>Los rangos se eligieron por la escala del problema, no de forma arbitraria. Los hiperparámetros
+multiplicativos (C, α, tasa de aprendizaje, <code class="docutils literal notranslate"><span class="pre">min_child_weight</span></code>, número de vecinos, hoja mínima) se
+exploran en <strong>escala logarítmica</strong>.</p>
+<ul class="simple">
+<li><p><strong>KNN:</strong> <code class="docutils literal notranslate"><span class="pre">k</span></code> entre 5 y 200. Con 76 % de ceros, valores pequeños sobreajustan el ruido; el límite
+superior (200 ≈ 1 % del entrenamiento) mantiene la localidad.</p></li>
+<li><p><strong>Ridge, α</strong> entre 10⁻³ y 10⁴; <strong>Lasso, α</strong> entre 10⁻⁵ y 10⁻¹. Lasso anula todas las variables
+estandarizadas por encima de ≈ 0,1.</p></li>
+<li><p><strong>Árbol de decisión:</strong> profundidad 2–20 y hoja mínima 5–500 filas, del orden de 3 meses de una celda
+(163 celdas por mes).</p></li>
+<li><p><strong>Random Forest:</strong> 50–250 árboles; profundidad 4–20; hoja mínima 1–50; fracción de variables por
+división 0,2–1.</p></li>
+<li><p><strong>XGBoost:</strong> 100–600 árboles; profundidad 2–8; tasa de aprendizaje 0,01–0,3; submuestreo de filas y
+columnas 0,5–1; <code class="docutils literal notranslate"><span class="pre">min_child_weight</span></code> 1–50.</p></li>
+<li><p><strong>SVR y SVM (núcleo RBF):</strong> C entre 0,01 y 30; γ entre 10⁻³ y 1, sobre entradas estandarizadas; ε del
+SVR entre 0,01 y 0,5 en escala log1p.</p></li>
+<li><p><strong>Regresión logística:</strong> C entre 10⁻³ y 10²; penalización <strong>L1 o L2</strong> como hiperparámetro categórico
+(la familia «L1/L2» del enunciado), con solver SAGA, que admite ambas.</p></li>
+<li><p><strong>Naive Bayes gaussiano:</strong> <code class="docutils literal notranslate"><span class="pre">var_smoothing</span></code> entre 10⁻¹² y 10⁻¹.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Espacios de búsqueda de hiperparámetros por modelo y puntos de la rejilla</span>
+<span class="n">esp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="s2">"regresión"</span> <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="s2">"reg"</span> <span class="k">else</span> <span class="s2">"clasificación"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span> <span class="s2">"hiperparámetro"</span><span class="p">:</span> <span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="s2">"tipo"</span><span class="p">:</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"rango"</span><span class="p">:</span> <span class="p">(</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span> <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"cat"</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> – </span><span class="si">{</span><span class="n">q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+                     <span class="s2">"escala"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"—"</span> <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"cat"</span> <span class="k">else</span> <span class="p">(</span><span class="s2">"log"</span> <span class="k">if</span> <span class="n">q</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="k">else</span> <span class="s2">"lineal"</span><span class="p">)),</span>
+                     <span class="s2">"puntos en Grid"</span><span class="p">:</span> <span class="nb">len</span><span class="p">({</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="n">q</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">rejilla</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="mi">15</span><span class="p">)})}</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="n">qs</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">ESPACIOS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">qs</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">esp</span><span class="p">,</span> <span class="s2">"espacios_busqueda.csv"</span><span class="p">)</span>
+<span class="n">esp</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>tarea</th>
+      <th>modelo</th>
+      <th>hiperparámetro</th>
+      <th>tipo</th>
+      <th>rango</th>
+      <th>escala</th>
+      <th>puntos en Grid</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>regresión</td>
+      <td>KNN</td>
+      <td>n_neighbors</td>
+      <td>int</td>
+      <td>5 – 200</td>
+      <td>log</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>regresión</td>
+      <td>KNN</td>
+      <td>weights</td>
+      <td>cat</td>
+      <td>uniform, distance</td>
+      <td>—</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>regresión</td>
+      <td>Ridge</td>
+      <td>alpha</td>
+      <td>float</td>
+      <td>0.001 – 10000.0</td>
+      <td>log</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>regresión</td>
+      <td>Lasso</td>
+      <td>alpha</td>
+      <td>float</td>
+      <td>1e-05 – 0.1</td>
+      <td>log</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>regresión</td>
+      <td>Árbol de decisión</td>
+      <td>max_depth</td>
+      <td>int</td>
+      <td>2 – 20</td>
+      <td>lineal</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>regresión</td>
+      <td>Árbol de decisión</td>
+      <td>min_samples_leaf</td>
+      <td>int</td>
+      <td>5 – 500</td>
+      <td>log</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>regresión</td>
+      <td>Random Forest</td>
+      <td>n_estimators</td>
+      <td>int</td>
+      <td>50 – 250</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>regresión</td>
+      <td>Random Forest</td>
+      <td>max_depth</td>
+      <td>int</td>
+      <td>4 – 20</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>regresión</td>
+      <td>Random Forest</td>
+      <td>min_samples_leaf</td>
+      <td>int</td>
+      <td>1 – 50</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>regresión</td>
+      <td>Random Forest</td>
+      <td>max_features</td>
+      <td>float</td>
+      <td>0.2 – 1.0</td>
+      <td>lineal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>regresión</td>
+      <td>XGBoost</td>
+      <td>n_estimators</td>
+      <td>int</td>
+      <td>100 – 600</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>regresión</td>
+      <td>XGBoost</td>
+      <td>max_depth</td>
+      <td>int</td>
+      <td>2 – 8</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>regresión</td>
+      <td>XGBoost</td>
+      <td>learning_rate</td>
+      <td>float</td>
+      <td>0.01 – 0.3</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>regresión</td>
+      <td>XGBoost</td>
+      <td>subsample</td>
+      <td>float</td>
+      <td>0.5 – 1.0</td>
+      <td>lineal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>regresión</td>
+      <td>XGBoost</td>
+      <td>colsample_bytree</td>
+      <td>float</td>
+      <td>0.5 – 1.0</td>
+      <td>lineal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>regresión</td>
+      <td>XGBoost</td>
+      <td>min_child_weight</td>
+      <td>float</td>
+      <td>1 – 50</td>
+      <td>log</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>regresión</td>
+      <td>SVR</td>
+      <td>C</td>
+      <td>float</td>
+      <td>0.01 – 30</td>
+      <td>log</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>regresión</td>
+      <td>SVR</td>
+      <td>epsilon</td>
+      <td>float</td>
+      <td>0.01 – 0.5</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>regresión</td>
+      <td>SVR</td>
+      <td>gamma</td>
+      <td>float</td>
+      <td>0.001 – 1</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>regresión</td>
+      <td>LightGBM</td>
+      <td>n_estimators</td>
+      <td>int</td>
+      <td>100 – 600</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>regresión</td>
+      <td>LightGBM</td>
+      <td>num_leaves</td>
+      <td>int</td>
+      <td>8 – 128</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>regresión</td>
+      <td>LightGBM</td>
+      <td>learning_rate</td>
+      <td>float</td>
+      <td>0.01 – 0.3</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>regresión</td>
+      <td>LightGBM</td>
+      <td>subsample</td>
+      <td>float</td>
+      <td>0.5 – 1.0</td>
+      <td>lineal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>regresión</td>
+      <td>LightGBM</td>
+      <td>colsample_bytree</td>
+      <td>float</td>
+      <td>0.5 – 1.0</td>
+      <td>lineal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>regresión</td>
+      <td>LightGBM</td>
+      <td>min_child_samples</td>
+      <td>int</td>
+      <td>5 – 200</td>
+      <td>log</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>regresión</td>
+      <td>CatBoost</td>
+      <td>iterations</td>
+      <td>int</td>
+      <td>200 – 800</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>regresión</td>
+      <td>CatBoost</td>
+      <td>depth</td>
+      <td>int</td>
+      <td>3 – 8</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>regresión</td>
+      <td>CatBoost</td>
+      <td>learning_rate</td>
+      <td>float</td>
+      <td>0.01 – 0.3</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>regresión</td>
+      <td>CatBoost</td>
+      <td>l2_leaf_reg</td>
+      <td>float</td>
+      <td>1 – 30</td>
+      <td>log</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>n_neighbors</td>
+      <td>int</td>
+      <td>5 – 200</td>
+      <td>log</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>weights</td>
+      <td>cat</td>
+      <td>uniform, distance</td>
+      <td>—</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>clasificación</td>
+      <td>Naive Bayes</td>
+      <td>var_smoothing</td>
+      <td>float</td>
+      <td>1e-12 – 0.1</td>
+      <td>log</td>
+      <td>15</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>clasificación</td>
+      <td>Regresión logística (L1/L2)</td>
+      <td>C</td>
+      <td>float</td>
+      <td>0.001 – 100.0</td>
+      <td>log</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>clasificación</td>
+      <td>Regresión logística (L1/L2)</td>
+      <td>penalty</td>
+      <td>cat</td>
+      <td>l1, l2</td>
+      <td>—</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>clasificación</td>
+      <td>Árbol de decisión</td>
+      <td>max_depth</td>
+      <td>int</td>
+      <td>2 – 20</td>
+      <td>lineal</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>clasificación</td>
+      <td>Árbol de decisión</td>
+      <td>min_samples_leaf</td>
+      <td>int</td>
+      <td>5 – 500</td>
+      <td>log</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>clasificación</td>
+      <td>Random Forest</td>
+      <td>n_estimators</td>
+      <td>int</td>
+      <td>50 – 250</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>clasificación</td>
+      <td>Random Forest</td>
+      <td>max_depth</td>
+      <td>int</td>
+      <td>4 – 20</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>clasificación</td>
+      <td>Random Forest</td>
+      <td>min_samples_leaf</td>
+      <td>int</td>
+      <td>1 – 50</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>clasificación</td>
+      <td>Random Forest</td>
+      <td>max_features</td>
+      <td>float</td>
+      <td>0.2 – 1.0</td>
+      <td>lineal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>clasificación</td>
+      <td>XGBoost</td>
+      <td>n_estimators</td>
+      <td>int</td>
+      <td>100 – 600</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>clasificación</td>
+      <td>XGBoost</td>
+      <td>max_depth</td>
+      <td>int</td>
+      <td>2 – 8</td>
+      <td>lineal</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>clasificación</td>
+      <td>XGBoost</td>
+      <td>learning_rate</td>
+      <td>float</td>
+      <td>0.01 – 0.3</td>
+      <td>log</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>clasificación</td>
+      <td>XGBoost</td>
+      <td>subsample</td>
+      <td>float</td>
+      <td>0.5 – 1.0</td>
+      <td>lineal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>clasificación</td>
+      <td>XGBoost</td>
+      <td>colsample_bytree</td>
+      <td>float</td>
+      <td>0.5 – 1.0</td>
+      <td>lineal</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>clasificación</td>
+      <td>XGBoost</td>
+      <td>min_child_weight</td>
+      <td>float</td>
+      <td>1 – 50</td>
+      <td>log</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>46</th>
+      <td>clasificación</td>
+      <td>SVM</td>
+      <td>C</td>
+      <td>float</td>
+      <td>0.01 – 30</td>
+      <td>log</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>47</th>
+      <td>clasificación</td>
+      <td>SVM</td>
+      <td>gamma</td>
+      <td>float</td>
+      <td>0.001 – 1</td>
+      <td>log</td>
+      <td>3</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="s2">"""**Limitación de Grid Search, visible en la tabla.** Con 15 evaluaciones, la rejilla solo puede explorar 2 niveles de los</span>
+<span class="s2">primeros hiperparámetros de Random Forest y XGBoost; los demás quedan fijos en el centro de su rango («puntos en Grid» = 1). No es un</span>
+<span class="s2">error del diseño: es justamente la debilidad de Grid Search en alta dimensión (la maldición de la dimensionalidad) que la comparación de</span>
+<span class="s2">optimizadores debe mostrar con evidencia."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Limitación de Grid Search, visible en la tabla.</strong> Con 15 evaluaciones, la rejilla solo puede explorar 2 niveles de los
+primeros hiperparámetros de Random Forest y XGBoost; los demás quedan fijos en el centro de su rango («puntos en Grid» = 1). No es un
+error del diseño: es justamente la debilidad de Grid Search en alta dimensión (la maldición de la dimensionalidad) que la comparación de
+optimizadores debe mostrar con evidencia.</p>
+</div>
+</div>
+</section>
+<section id="complejidad-teorica-antes-de-medir">
+<h2>13.4 Complejidad teórica (antes de medir)<a class="headerlink" href="#complejidad-teorica-antes-de-medir" title="Link to this heading">#</a></h2>
+<p>n = filas de entrenamiento (≈ 20.000 por pliegue), p = 18 variables, T = árboles, d = profundidad,
+k = vecinos, m = filas de validación, s = submuestra de los métodos de núcleo.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Complejidad teórica de entrenamiento e inferencia de cada familia</span>
+<span class="n">compl</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"Ridge"</span><span class="p">,</span> <span class="s2">"O(n·p² + p³)"</span><span class="p">,</span> <span class="s2">"O(m·p)"</span><span class="p">,</span> <span class="s2">"solver cholesky/auto"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Lasso"</span><span class="p">,</span> <span class="s2">"O(iter · n·p)"</span><span class="p">,</span> <span class="s2">"O(m·p)"</span><span class="p">,</span> <span class="s2">"descenso coordenado"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Regresión logística (SAGA)"</span><span class="p">,</span> <span class="s2">"O(iter · n·p)"</span><span class="p">,</span> <span class="s2">"O(m·p)"</span><span class="p">,</span> <span class="s2">"lineal en n y p por época"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Naive Bayes gaussiano"</span><span class="p">,</span> <span class="s2">"O(n·p)"</span><span class="p">,</span> <span class="s2">"O(m·p)"</span><span class="p">,</span> <span class="s2">"medias y varianzas por clase"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"KNN (fuerza bruta)"</span><span class="p">,</span> <span class="s2">"O(1) (almacena)"</span><span class="p">,</span> <span class="s2">"O(m·n·p)"</span><span class="p">,</span> <span class="s2">"el costo está en predecir"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Árbol de decisión"</span><span class="p">,</span> <span class="s2">"O(p · n log n)"</span><span class="p">,</span> <span class="s2">"O(m·d)"</span><span class="p">,</span> <span class="s2">""</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Random Forest"</span><span class="p">,</span> <span class="s2">"O(T · p' · n' log n')"</span><span class="p">,</span> <span class="s2">"O(m·T·d)"</span><span class="p">,</span> <span class="s2">"n' = 0,5 n (max_samples), p' = fracción de variables"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"XGBoost (hist)"</span><span class="p">,</span> <span class="s2">"O(T · (n·p + bins·hojas))"</span><span class="p">,</span> <span class="s2">"O(m·T·d)"</span><span class="p">,</span> <span class="s2">"histogramas de 256 cubetas"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"SVR / SVM RBF"</span><span class="p">,</span> <span class="s2">"O(s² a s³) con s = 4.000"</span><span class="p">,</span> <span class="s2">"O(m · vectores soporte · p)"</span><span class="p">,</span> <span class="s2">"núcleo completo: O(n²–n³) con n = 20.000 sería inviable"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"SMOTE / ADASYN"</span><span class="p">,</span> <span class="s2">"O(n_min · k · p) vecinos + filas sintéticas"</span><span class="p">,</span> <span class="s2">"—"</span><span class="p">,</span> <span class="s2">"aumenta n hasta ≈ 1,6 n (iguala clases)"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"componente"</span><span class="p">,</span> <span class="s2">"entrenamiento"</span><span class="p">,</span> <span class="s2">"inferencia"</span><span class="p">,</span> <span class="s2">"nota"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">compl</span><span class="p">,</span> <span class="s2">"complejidad_teorica.csv"</span><span class="p">)</span>
+<span class="n">compl</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>componente</th>
+      <th>entrenamiento</th>
+      <th>inferencia</th>
+      <th>nota</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Ridge</td>
+      <td>O(n·p² + p³)</td>
+      <td>O(m·p)</td>
+      <td>solver cholesky/auto</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Lasso</td>
+      <td>O(iter · n·p)</td>
+      <td>O(m·p)</td>
+      <td>descenso coordenado</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Regresión logística (SAGA)</td>
+      <td>O(iter · n·p)</td>
+      <td>O(m·p)</td>
+      <td>lineal en n y p por época</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Naive Bayes gaussiano</td>
+      <td>O(n·p)</td>
+      <td>O(m·p)</td>
+      <td>medias y varianzas por clase</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>KNN (fuerza bruta)</td>
+      <td>O(1) (almacena)</td>
+      <td>O(m·n·p)</td>
+      <td>el costo está en predecir</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Árbol de decisión</td>
+      <td>O(p · n log n)</td>
+      <td>O(m·d)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Random Forest</td>
+      <td>O(T · p' · n' log n')</td>
+      <td>O(m·T·d)</td>
+      <td>n' = 0,5 n (max_samples), p' = fracción de var...</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>XGBoost (hist)</td>
+      <td>O(T · (n·p + bins·hojas))</td>
+      <td>O(m·T·d)</td>
+      <td>histogramas de 256 cubetas</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>SVR / SVM RBF</td>
+      <td>O(s² a s³) con s = 4.000</td>
+      <td>O(m · vectores soporte · p)</td>
+      <td>núcleo completo: O(n²–n³) con n = 20.000 sería...</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>SMOTE / ADASYN</td>
+      <td>O(n_min · k · p) vecinos + filas sintéticas</td>
+      <td>—</td>
+      <td>aumenta n hasta ≈ 1,6 n (iguala clases)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="piloto-de-costos-medido-no-supuesto">
+<h2>13.5 Piloto de costos (medido, no supuesto)<a class="headerlink" href="#piloto-de-costos-medido-no-supuesto" title="Link to this heading">#</a></h2>
+<p>Un ajuste y una predicción de cada modelo con cada balanceo, en el pliegue interno más grande (20.701
+filas de ajuste y 4.075 de validación). Lo genera <code class="docutils literal notranslate"><span class="pre">herramientas/piloto.py</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Costo estimado por combinación (piloto) frente al costo real medido</span>
+<span class="n">piloto</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">BENCH</span> <span class="o">/</span> <span class="s2">"piloto_costos.csv"</span><span class="p">)</span>
+<span class="n">piloto</span><span class="p">[</span><span class="s2">"ajustes_por_combinación"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">184</span>
+<span class="n">piloto</span><span class="p">[</span><span class="s2">"costo_estimado_min"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">piloto</span><span class="o">.</span><span class="n">t_ajuste_s</span> <span class="o">+</span> <span class="n">piloto</span><span class="o">.</span><span class="n">t_pred_s</span><span class="p">)</span> <span class="o">*</span> <span class="mi">184</span> <span class="o">*</span> <span class="mf">0.75</span> <span class="o">/</span> <span class="mi">60</span>   <span class="c1"># 0,75: tamaño medio de los pliegues frente al mayor</span>
+<span class="n">hechos</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">f_</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">((</span><span class="n">BENCH</span> <span class="o">/</span> <span class="s2">"combos"</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"reg__*.pkl"</span><span class="p">)):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="n">f_</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estado"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"completado"</span><span class="p">:</span>
+        <span class="n">hechos</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"modelo"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">],</span> <span class="s2">"optimizador"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"optimizador"</span><span class="p">],</span> <span class="s2">"t_real_min"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"t_total_s"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">60</span><span class="p">})</span>
+<span class="n">hechos</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">hechos</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">piloto</span><span class="p">[</span><span class="n">piloto</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"clf"</span><span class="p">]</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"balanceo"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"costo_estimado_min"</span><span class="p">)</span>
+<span class="n">d</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">barh</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"minutos estimados por combinación (un solo proceso)"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Costo estimado por combinación de clasificación (piloto)"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"13_costos_piloto.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">tot_clf</span> <span class="o">=</span> <span class="n">piloto</span><span class="p">[</span><span class="n">piloto</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"clf"</span><span class="p">]</span><span class="o">.</span><span class="n">costo_estimado_min</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mi">4</span>
+<span class="n">tot_reg</span> <span class="o">=</span> <span class="n">piloto</span><span class="p">[</span><span class="n">piloto</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span><span class="p">]</span><span class="o">.</span><span class="n">costo_estimado_min</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mi">4</span>
+<span class="n">display</span><span class="p">(</span><span class="n">piloto</span><span class="p">[[</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">,</span> <span class="s2">"t_ajuste_s"</span><span class="p">,</span> <span class="s2">"t_pred_s"</span><span class="p">,</span> <span class="s2">"mem_pico_MB"</span><span class="p">,</span> <span class="s2">"costo_estimado_min"</span><span class="p">]]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Lectura del piloto.**</span>
+<span class="s2">- **Costo total estimado** (un solo proceso): **regresión ≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">tot_reg</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> h** y **clasificación ≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">tot_clf</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> h**.</span>
+<span class="s2">- **Random Forest** domina el costo, sobre todo con SMOTE/ADASYN, que casi duplican las filas. Le siguen XGBoost con</span>
+<span class="s2">  sobremuestreo y SVM/SVR. Los modelos lineales, Naive Bayes y el árbol son casi gratis.</span>
+<span class="s2">- **Memoria.** El pico fue de </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">piloto</span><span class="o">.</span><span class="n">mem_pico_MB</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> MB por ajuste: la memoria no es la restricción, el tiempo sí.</span>
+<span class="s2">- **Medida con Random Forest.** Se fijó `max_samples = 0,5` (cada árbol ve la mitad de las filas), que reduce su tiempo a la mitad</span>
+<span class="s2">  sin cambiar la familia del modelo.</span>
+<span class="s2">"""</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hechos</span><span class="p">):</span>
+    <span class="n">est_</span> <span class="o">=</span> <span class="n">piloto</span><span class="p">[</span><span class="n">piloto</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span><span class="p">]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span><span class="o">.</span><span class="n">costo_estimado_min</span>
+    <span class="n">hechos</span><span class="p">[</span><span class="s2">"t_estimado_min"</span><span class="p">]</span> <span class="o">=</span> <span class="n">hechos</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">est_</span><span class="p">)</span>
+    <span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Calibración con lo ya ejecutado.** </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">hechos</span><span class="p">)</span><span class="si">}</span><span class="s2"> combinación(es) de regresión completada(s) en este entorno tardaron</span>
+<span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">hechos</span><span class="o">.</span><span class="n">t_real_min</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> min en total, frente a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">hechos</span><span class="o">.</span><span class="n">t_estimado_min</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> min estimados (razón real/estimado =</span>
+<span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">hechos</span><span class="o">.</span><span class="n">t_real_min</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">hechos</span><span class="o">.</span><span class="n">t_estimado_min</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">). El piloto se midió en el pliegue más grande y antes de fijar</span>
+<span class="s2">`max_samples = 0,5` en Random Forest, así que **las estimaciones son conservadoras** (cotas superiores)."""</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">hechos</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/fa5de61166e7bc63e57dfea96a9908941e0ff6cd864fdb09ec735bda3e257614.png" src="../_images/fa5de61166e7bc63e57dfea96a9908941e0ff6cd864fdb09ec735bda3e257614.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>tarea</th>
+      <th>modelo</th>
+      <th>balanceo</th>
+      <th>t_ajuste_s</th>
+      <th>t_pred_s</th>
+      <th>mem_pico_MB</th>
+      <th>costo_estimado_min</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>reg</td>
+      <td>KNN</td>
+      <td>—</td>
+      <td>0.07</td>
+      <td>0.28</td>
+      <td>12.00</td>
+      <td>0.81</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>reg</td>
+      <td>Ridge</td>
+      <td>—</td>
+      <td>0.05</td>
+      <td>0.01</td>
+      <td>11.83</td>
+      <td>0.15</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>reg</td>
+      <td>Lasso</td>
+      <td>—</td>
+      <td>0.09</td>
+      <td>0.02</td>
+      <td>12.72</td>
+      <td>0.25</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>reg</td>
+      <td>Árbol de decisión</td>
+      <td>—</td>
+      <td>0.15</td>
+      <td>0.02</td>
+      <td>11.82</td>
+      <td>0.37</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>reg</td>
+      <td>Random Forest</td>
+      <td>—</td>
+      <td>7.22</td>
+      <td>0.07</td>
+      <td>11.82</td>
+      <td>16.78</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>reg</td>
+      <td>XGBoost</td>
+      <td>—</td>
+      <td>0.53</td>
+      <td>0.03</td>
+      <td>11.82</td>
+      <td>1.30</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>reg</td>
+      <td>SVR</td>
+      <td>—</td>
+      <td>0.59</td>
+      <td>0.40</td>
+      <td>11.83</td>
+      <td>2.29</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>clf</td>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>0.05</td>
+      <td>0.24</td>
+      <td>11.66</td>
+      <td>0.67</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>clf</td>
+      <td>KNN</td>
+      <td>SMOTE</td>
+      <td>0.13</td>
+      <td>0.35</td>
+      <td>16.55</td>
+      <td>1.11</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>clf</td>
+      <td>KNN</td>
+      <td>ADASYN</td>
+      <td>0.34</td>
+      <td>0.35</td>
+      <td>18.13</td>
+      <td>1.59</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>clf</td>
+      <td>KNN</td>
+      <td>class_weight</td>
+      <td>0.05</td>
+      <td>0.23</td>
+      <td>11.64</td>
+      <td>0.63</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>clf</td>
+      <td>Naive Bayes</td>
+      <td>sin balanceo</td>
+      <td>0.05</td>
+      <td>0.01</td>
+      <td>11.64</td>
+      <td>0.14</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>clf</td>
+      <td>Naive Bayes</td>
+      <td>SMOTE</td>
+      <td>0.12</td>
+      <td>0.02</td>
+      <td>16.54</td>
+      <td>0.31</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>clf</td>
+      <td>Naive Bayes</td>
+      <td>ADASYN</td>
+      <td>0.39</td>
+      <td>0.02</td>
+      <td>18.11</td>
+      <td>0.93</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>clf</td>
+      <td>Naive Bayes</td>
+      <td>class_weight</td>
+      <td>0.05</td>
+      <td>0.02</td>
+      <td>11.64</td>
+      <td>0.15</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>clf</td>
+      <td>Regresión logística (L1/L2)</td>
+      <td>sin balanceo</td>
+      <td>0.20</td>
+      <td>0.02</td>
+      <td>11.64</td>
+      <td>0.50</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>clf</td>
+      <td>Regresión logística (L1/L2)</td>
+      <td>SMOTE</td>
+      <td>0.35</td>
+      <td>0.01</td>
+      <td>16.54</td>
+      <td>0.85</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>clf</td>
+      <td>Regresión logística (L1/L2)</td>
+      <td>ADASYN</td>
+      <td>0.58</td>
+      <td>0.01</td>
+      <td>18.11</td>
+      <td>1.37</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>clf</td>
+      <td>Regresión logística (L1/L2)</td>
+      <td>class_weight</td>
+      <td>0.17</td>
+      <td>0.02</td>
+      <td>11.64</td>
+      <td>0.42</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>clf</td>
+      <td>Árbol de decisión</td>
+      <td>sin balanceo</td>
+      <td>0.12</td>
+      <td>0.01</td>
+      <td>11.65</td>
+      <td>0.31</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>clf</td>
+      <td>Árbol de decisión</td>
+      <td>SMOTE</td>
+      <td>0.30</td>
+      <td>0.02</td>
+      <td>16.54</td>
+      <td>0.74</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>clf</td>
+      <td>Árbol de decisión</td>
+      <td>ADASYN</td>
+      <td>0.57</td>
+      <td>0.02</td>
+      <td>18.11</td>
+      <td>1.36</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>clf</td>
+      <td>Árbol de decisión</td>
+      <td>class_weight</td>
+      <td>0.15</td>
+      <td>0.01</td>
+      <td>11.64</td>
+      <td>0.38</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>clf</td>
+      <td>Random Forest</td>
+      <td>sin balanceo</td>
+      <td>7.41</td>
+      <td>0.08</td>
+      <td>11.64</td>
+      <td>17.23</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>clf</td>
+      <td>Random Forest</td>
+      <td>SMOTE</td>
+      <td>15.85</td>
+      <td>0.10</td>
+      <td>16.53</td>
+      <td>36.67</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>clf</td>
+      <td>Random Forest</td>
+      <td>ADASYN</td>
+      <td>15.70</td>
+      <td>0.08</td>
+      <td>18.11</td>
+      <td>36.31</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>clf</td>
+      <td>Random Forest</td>
+      <td>class_weight</td>
+      <td>7.34</td>
+      <td>0.09</td>
+      <td>11.64</td>
+      <td>17.09</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>clf</td>
+      <td>XGBoost</td>
+      <td>sin balanceo</td>
+      <td>0.65</td>
+      <td>0.03</td>
+      <td>11.64</td>
+      <td>1.56</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>clf</td>
+      <td>XGBoost</td>
+      <td>SMOTE</td>
+      <td>0.94</td>
+      <td>0.03</td>
+      <td>16.54</td>
+      <td>2.25</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>clf</td>
+      <td>XGBoost</td>
+      <td>ADASYN</td>
+      <td>1.28</td>
+      <td>0.03</td>
+      <td>18.11</td>
+      <td>3.02</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>clf</td>
+      <td>XGBoost</td>
+      <td>class_weight</td>
+      <td>0.66</td>
+      <td>0.03</td>
+      <td>11.64</td>
+      <td>1.59</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>clf</td>
+      <td>SVM</td>
+      <td>sin balanceo</td>
+      <td>0.35</td>
+      <td>0.37</td>
+      <td>11.64</td>
+      <td>1.65</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>clf</td>
+      <td>SVM</td>
+      <td>SMOTE</td>
+      <td>0.47</td>
+      <td>0.57</td>
+      <td>16.54</td>
+      <td>2.39</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>clf</td>
+      <td>SVM</td>
+      <td>ADASYN</td>
+      <td>0.81</td>
+      <td>0.66</td>
+      <td>18.11</td>
+      <td>3.40</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>clf</td>
+      <td>SVM</td>
+      <td>class_weight</td>
+      <td>0.51</td>
+      <td>0.56</td>
+      <td>11.64</td>
+      <td>2.46</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><p><strong>Lectura del piloto.</strong></p>
+<ul class="simple">
+<li><p><strong>Costo total estimado</strong> (un solo proceso): <strong>regresión ≈ 1,5 h</strong> y <strong>clasificación ≈ 9,1 h</strong>.</p></li>
+<li><p><strong>Random Forest</strong> domina el costo, sobre todo con SMOTE/ADASYN, que casi duplican las filas. Le siguen XGBoost con
+sobremuestreo y SVM/SVR. Los modelos lineales, Naive Bayes y el árbol son casi gratis.</p></li>
+<li><p><strong>Memoria.</strong> El pico fue de 18 MB por ajuste: la memoria no es la restricción, el tiempo sí.</p></li>
+<li><p><strong>Medida con Random Forest.</strong> Se fijó <code class="docutils literal notranslate"><span class="pre">max_samples</span> <span class="pre">=</span> <span class="pre">0,5</span></code> (cada árbol ve la mitad de las filas), que reduce su tiempo a la mitad
+sin cambiar la familia del modelo.</p></li>
+</ul>
+<p><strong>Calibración con lo ya ejecutado.</strong> 28 combinación(es) de regresión completada(s) en este entorno tardaron
+293,9 min en total, frente a 87,8 min estimados (razón real/estimado =
+3,35). El piloto se midió en el pliegue más grande y antes de fijar
+<code class="docutils literal notranslate"><span class="pre">max_samples</span> <span class="pre">=</span> <span class="pre">0,5</span></code> en Random Forest, así que <strong>las estimaciones son conservadoras</strong> (cotas superiores).</p>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>optimizador</th>
+      <th>t_real_min</th>
+      <th>t_estimado_min</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>KNN</td>
+      <td>Bayesiano (TPE)</td>
+      <td>1.23</td>
+      <td>0.81</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>KNN</td>
+      <td>Genético (DEAP)</td>
+      <td>1.16</td>
+      <td>0.81</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>KNN</td>
+      <td>Grid</td>
+      <td>1.09</td>
+      <td>0.81</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>KNN</td>
+      <td>Random</td>
+      <td>1.15</td>
+      <td>0.81</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Lasso</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.15</td>
+      <td>0.25</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Lasso</td>
+      <td>Genético (DEAP)</td>
+      <td>0.14</td>
+      <td>0.25</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Lasso</td>
+      <td>Grid</td>
+      <td>0.12</td>
+      <td>0.25</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Lasso</td>
+      <td>Random</td>
+      <td>0.13</td>
+      <td>0.25</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Random Forest</td>
+      <td>Bayesiano (TPE)</td>
+      <td>56.71</td>
+      <td>16.78</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Random Forest</td>
+      <td>Genético (DEAP)</td>
+      <td>55.36</td>
+      <td>16.78</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Random Forest</td>
+      <td>Grid</td>
+      <td>4.44</td>
+      <td>16.78</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Random Forest</td>
+      <td>Random</td>
+      <td>55.89</td>
+      <td>16.78</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Ridge</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.09</td>
+      <td>0.15</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Ridge</td>
+      <td>Genético (DEAP)</td>
+      <td>0.09</td>
+      <td>0.15</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Ridge</td>
+      <td>Grid</td>
+      <td>0.09</td>
+      <td>0.15</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Ridge</td>
+      <td>Random</td>
+      <td>0.09</td>
+      <td>0.15</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>SVR</td>
+      <td>Bayesiano (TPE)</td>
+      <td>2.98</td>
+      <td>2.29</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>SVR</td>
+      <td>Genético (DEAP)</td>
+      <td>2.66</td>
+      <td>2.29</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>SVR</td>
+      <td>Grid</td>
+      <td>50.33</td>
+      <td>2.29</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>SVR</td>
+      <td>Random</td>
+      <td>51.36</td>
+      <td>2.29</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>XGBoost</td>
+      <td>Bayesiano (TPE)</td>
+      <td>1.97</td>
+      <td>1.30</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>XGBoost</td>
+      <td>Genético (DEAP)</td>
+      <td>2.01</td>
+      <td>1.30</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>XGBoost</td>
+      <td>Grid</td>
+      <td>1.65</td>
+      <td>1.30</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>XGBoost</td>
+      <td>Random</td>
+      <td>2.10</td>
+      <td>1.30</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>Árbol de decisión</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.22</td>
+      <td>0.37</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>Árbol de decisión</td>
+      <td>Genético (DEAP)</td>
+      <td>0.23</td>
+      <td>0.37</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>Árbol de decisión</td>
+      <td>Grid</td>
+      <td>0.20</td>
+      <td>0.37</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>Árbol de decisión</td>
+      <td>Random</td>
+      <td>0.24</td>
+      <td>0.37</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="reduccion-1-combinaciones-equivalentes-demostradas-no-se-corren">
+<h2>13.6 Reducción 1: combinaciones equivalentes demostradas (no se corren)<a class="headerlink" href="#reduccion-1-combinaciones-equivalentes-demostradas-no-se-corren" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>KNN y Naive Bayes no tienen <code class="docutils literal notranslate"><span class="pre">class_weight</span></code>.</strong> Su equivalente es corregir la probabilidad por la
+prevalencia de cada clase.</p>
+<ul>
+<li><p>KNN: dividir la probabilidad por la prevalencia de la clase y renormalizar.</p></li>
+<li><p>Naive Bayes: usar priors iguales (0,5; 0,5).</p></li>
+</ul>
+</li>
+<li><p><strong>Esa corrección no cambia el orden de las predicciones.</strong> En un problema binario el puntaje nuevo es
+p₁/π₁ / (p₁/π₁ + p₀/π₀), una <strong>función monótona creciente</strong> de p₁. Por lo tanto <strong>el orden de las
+predicciones no cambia y la ROC-AUC (métrica principal) es idéntica</strong> a la de «sin balanceo». Solo
+cambia el punto de corte, que equivale a mover el umbral de decisión sin reentrenar.</p></li>
+<li><p><strong>Consecuencia.</strong> Correr esas 2 × 4 = <strong>8 combinaciones</strong> gastaría presupuesto en resultados que ya
+se conocen. Se demuestra con los datos:</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Efecto de class_weight en KNN y Naive Bayes sobre el ordenamiento (AUC)</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">ext</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">ia</span><span class="p">,</span> <span class="n">iv</span> <span class="o">=</span> <span class="n">tr</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">tr</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+<span class="n">dem</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">mo</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"KNN"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"n_neighbors"</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">"weights"</span><span class="p">:</span> <span class="s2">"uniform"</span><span class="p">}),</span> <span class="p">(</span><span class="s2">"Naive Bayes"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"var_smoothing"</span><span class="p">:</span> <span class="mf">1e-9</span><span class="p">})):</span>
+    <span class="n">s0</span> <span class="o">=</span> <span class="n">bm</span><span class="o">.</span><span class="n">puntaje_clf</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">construir</span><span class="p">(</span><span class="s2">"clf"</span><span class="p">,</span> <span class="n">mo</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s2">"sin balanceo"</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ia</span><span class="p">],</span> <span class="n">yb</span><span class="p">[</span><span class="n">ia</span><span class="p">]),</span> <span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">iv</span><span class="p">])</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">bm</span><span class="o">.</span><span class="n">puntaje_clf</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">construir</span><span class="p">(</span><span class="s2">"clf"</span><span class="p">,</span> <span class="n">mo</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s2">"class_weight"</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">ia</span><span class="p">],</span> <span class="n">yb</span><span class="p">[</span><span class="n">ia</span><span class="p">]),</span> <span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">iv</span><span class="p">])</span>
+    <span class="n">dem</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"modelo"</span><span class="p">:</span> <span class="n">mo</span><span class="p">,</span> <span class="s2">"AUC sin balanceo"</span><span class="p">:</span> <span class="n">bm</span><span class="o">.</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">yb</span><span class="p">[</span><span class="n">iv</span><span class="p">],</span> <span class="n">s0</span><span class="p">),</span> <span class="s2">"AUC class_weight (equivalente)"</span><span class="p">:</span> <span class="n">bm</span><span class="o">.</span><span class="n">roc_auc_score</span><span class="p">(</span><span class="n">yb</span><span class="p">[</span><span class="n">iv</span><span class="p">],</span> <span class="n">s1</span><span class="p">),</span>
+                <span class="s2">"Spearman entre puntajes"</span><span class="p">:</span> <span class="n">stats</span><span class="o">.</span><span class="n">spearmanr</span><span class="p">(</span><span class="n">s0</span><span class="p">,</span> <span class="n">s1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">"recall@0,5 sin balanceo"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">s0</span><span class="p">[</span><span class="n">yb</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.5</span><span class="p">),</span> <span class="s2">"recall@0,5 class_weight"</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">s1</span><span class="p">[</span><span class="n">yb</span><span class="p">[</span><span class="n">iv</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">0.5</span><span class="p">)})</span>
+<span class="n">dem</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="s2">"equivalencia_class_weight.csv"</span><span class="p">)</span>
+<span class="n">dem</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>AUC sin balanceo</th>
+      <th>AUC class_weight (equivalente)</th>
+      <th>Spearman entre puntajes</th>
+      <th>recall@0,5 sin balanceo</th>
+      <th>recall@0,5 class_weight</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>KNN</td>
+      <td>0.779243</td>
+      <td>0.779243</td>
+      <td>1.0</td>
+      <td>0.241558</td>
+      <td>0.550649</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Naive Bayes</td>
+      <td>0.785127</td>
+      <td>0.785127</td>
+      <td>1.0</td>
+      <td>0.405195</td>
+      <td>0.436364</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Resultado.**</span>
+<span class="s2">- **ROC-AUC idéntica.** Coincide hasta </span><span class="si">{</span><span class="p">(</span><span class="s1">'la sexta cifra decimal'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">dem</span><span class="p">[</span><span class="s1">'AUC sin balanceo'</span><span class="p">],</span><span class="w"> </span><span class="n">dem</span><span class="p">[</span><span class="s1">'AUC class_weight (equivalente)'</span><span class="p">],</span><span class="w"> </span><span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'tres decimales'</span><span class="p">)</span><span class="si">}</span><span class="s2"> y la correlación de rangos entre puntajes</span>
+<span class="s2">  es </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">dem</span><span class="p">[</span><span class="s1">'Spearman entre puntajes'</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">- **Solo cambia lo que depende del umbral.** El recall con umbral 0,5 sube (por ejemplo, </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">dem</span><span class="p">[</span><span class="s1">'recall@0,5 sin balanceo'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">dem</span><span class="p">[</span><span class="s1">'recall@0,5 class_weight'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">  en KNN), que es exactamente lo que se obtiene moviendo el umbral.</span>
+<span class="s2">- **Decisión.** Se marcan como **«descartada a priori (equivalencia demostrada)»** y sus métricas de umbral se reportan con el umbral</span>
+<span class="s2">  ajustado (capítulos siguientes).</span>
+<span class="s2">- **Por qué no se extiende a los demás modelos.** En la regresión logística, el árbol, Random Forest, XGBoost y SVM, `class_weight`</span>
+<span class="s2">  **cambia la función de pérdida** y por tanto el modelo ajustado, así que no hay equivalencia y se evalúan."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Resultado.</strong></p>
+<ul class="simple">
+<li><p><strong>ROC-AUC idéntica.</strong> Coincide hasta la sexta cifra decimal y la correlación de rangos entre puntajes
+es 1,0000.</p></li>
+<li><p><strong>Solo cambia lo que depende del umbral.</strong> El recall con umbral 0,5 sube (por ejemplo, 0,24 → 0,55
+en KNN), que es exactamente lo que se obtiene moviendo el umbral.</p></li>
+<li><p><strong>Decisión.</strong> Se marcan como <strong>«descartada a priori (equivalencia demostrada)»</strong> y sus métricas de umbral se reportan con el umbral
+ajustado (capítulos siguientes).</p></li>
+<li><p><strong>Por qué no se extiende a los demás modelos.</strong> En la regresión logística, el árbol, Random Forest, XGBoost y SVM, <code class="docutils literal notranslate"><span class="pre">class_weight</span></code>
+<strong>cambia la función de pérdida</strong> y por tanto el modelo ajustado, así que no hay equivalencia y se evalúan.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="reduccion-2-tamizaje-de-baja-fidelidad-multi-fidelidad-sobre-combinaciones">
+<h2>13.7 Reducción 2: tamizaje de baja fidelidad (multi-fidelidad sobre combinaciones)<a class="headerlink" href="#reduccion-2-tamizaje-de-baja-fidelidad-multi-fidelidad-sobre-combinaciones" title="Link to this heading">#</a></h2>
+<p><strong>Qué técnica de balanceo conviene a cada modelo.</strong> No se puede saber sin datos: en el piloto, SMOTE
+empeoró el árbol de decisión y mejoró el SVM. Se aplica la idea de <strong>Successive Halving</strong>
+<span id="id1">[<a class="reference internal" href="12_conclusiones.html#id27" title="Lisha Li, Kevin Jamieson, Giulia DeSalvo, Afshin Rostamizadeh, and Ameet Talwalkar. Hyperband: a novel bandit-based approach to hyperparameter optimization. Journal of Machine Learning Research, 18(185):1–52, 2018.">Li <em>et al.</em>, 2018</a>]</span> a nivel de <strong>pares (modelo, técnica de balanceo)</strong>.</p>
+<ul class="simple">
+<li><p><strong>Fase 1 (baja fidelidad, para los 26 pares restantes).</strong></p>
+<ul>
+<li><p><strong>Fidelidad:</strong> solo el último pliegue externo (12 meses), Random Search con 5 evaluaciones y 2
+pliegues internos.</p></li>
+<li><p><strong>Costo:</strong> 11 ajustes por par en lugar de 184, ≈ <strong>6 %</strong> de una combinación completa.</p></li>
+<li><p><strong>Por qué Random Search.</strong> En el tamizaje el optimizador no es lo que se compara. Random Search es el
+estándar sin sesgo para muestrear el espacio.</p></li>
+</ul>
+</li>
+<li><p><strong>Regla preregistrada para pasar a la fase 2</strong> (<code class="docutils literal notranslate"><span class="pre">src/benchmark.py::seleccionar_fase2</span></code>). Por cada modelo pasan:</p>
+<ol class="arabic simple">
+<li><p><strong>«sin balanceo»</strong>, siempre: es la línea base contra la que la guía pide comparar el balanceo;</p></li>
+<li><p>la técnica de balanceo con <strong>mayor ROC-AUC de tamizaje</strong>;</p></li>
+<li><p>cualquier otra técnica a <strong>menos de 0,005</strong> de AUC de esa mejor (empate práctico; evita descartar por
+el ruido de un solo pliegue).</p></li>
+</ol>
+</li>
+<li><p><strong>Fase 2 (fidelidad completa).</strong> Los pares que pasan se corren con la <strong>validación anidada completa</strong>
+(sección 13.2) y con <strong>los 4 optimizadores</strong>, de modo que la comparación de optimizadores (la pregunta
+central de la guía) queda completa para cada par.</p></li>
+<li><p><strong>Factor de reducción.</strong> De 4 técnicas por modelo pasan ≈ 2: un factor ≈ 2, el mismo de Successive
+Halving con η = 2.</p></li>
+</ul>
+<p><strong>Lo que no se reduce:</strong></p>
+<ul class="simple">
+<li><p>los 7 modelos;</p></li>
+<li><p>los 4 optimizadores;</p></li>
+<li><p>el presupuesto de cada búsqueda;</p></li>
+<li><p>los pliegues;</p></li>
+<li><p>la regresión, cuyas 28 combinaciones se corren completas porque su costo total es moderado (sección 13.5).</p></li>
+</ul>
+<p><strong>Lo que se reporta de lo descartado:</strong> su AUC de tamizaje, su costo medido y el motivo, en la tabla
+maestra (estado «descartada en tamizaje»).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tamizaje de clasificación: qué pares modelo × balanceo pasan a la fase completa</span>
+<span class="n">ruta_t</span> <span class="o">=</span> <span class="n">BENCH</span> <span class="o">/</span> <span class="s2">"tamizaje_clasificacion.csv"</span>
+<span class="k">if</span> <span class="n">ruta_t</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">tam</span> <span class="o">=</span> <span class="n">bm</span><span class="o">.</span><span class="n">seleccionar_fase2</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ruta_t</span><span class="p">))</span>
+    <span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">tam</span><span class="p">,</span> <span class="s2">"tamizaje_clasificacion.csv"</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">tam</span><span class="p">[[</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">,</span> <span class="s2">"AUC_tamizaje"</span><span class="p">,</span> <span class="s2">"AP_tamizaje"</span><span class="p">,</span> <span class="s2">"Recall_tamizaje"</span><span class="p">,</span> <span class="s2">"t_total_s"</span><span class="p">,</span> <span class="s2">"pasa_fase2"</span><span class="p">,</span> <span class="s2">"motivo"</span><span class="p">]]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+    <span class="n">pasan</span> <span class="o">=</span> <span class="n">tam</span><span class="p">[</span><span class="n">tam</span><span class="o">.</span><span class="n">pasa_fase2</span><span class="p">]</span>
+    <span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Resultado del tamizaje:** pasan **</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pasan</span><span class="p">)</span><span class="si">}</span><span class="s2"> pares** → **</span><span class="si">{</span><span class="mi">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">pasan</span><span class="p">)</span><span class="si">}</span><span class="s2"> combinaciones** de clasificación en la fase 2 (de 112)."</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">md</span><span class="p">(</span><span class="s2">"**Tamizaje pendiente.** Se ejecuta con `python scripts/correr_experimentos.py --tarea clf --fase todo` (sección 13.9). Cuando el archivo "</span>
+       <span class="s2">"`resultados/benchmark/tamizaje_clasificacion.csv` exista, esta celda mostrará qué pares pasan a la fase 2."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>balanceo</th>
+      <th>AUC_tamizaje</th>
+      <th>AP_tamizaje</th>
+      <th>Recall_tamizaje</th>
+      <th>t_total_s</th>
+      <th>pasa_fase2</th>
+      <th>motivo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>0.7857</td>
+      <td>0.5661</td>
+      <td>0.2364</td>
+      <td>11.6437</td>
+      <td>True</td>
+      <td>línea base de balanceo (siempre pasa)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>KNN</td>
+      <td>SMOTE</td>
+      <td>0.7830</td>
+      <td>0.5618</td>
+      <td>0.6519</td>
+      <td>14.6828</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>KNN</td>
+      <td>ADASYN</td>
+      <td>0.7784</td>
+      <td>0.5569</td>
+      <td>0.7065</td>
+      <td>18.3524</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Naive Bayes</td>
+      <td>sin balanceo</td>
+      <td>0.7852</td>
+      <td>0.5412</td>
+      <td>0.4052</td>
+      <td>5.5752</td>
+      <td>True</td>
+      <td>línea base de balanceo (siempre pasa)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Naive Bayes</td>
+      <td>SMOTE</td>
+      <td>0.7854</td>
+      <td>0.5432</td>
+      <td>0.4364</td>
+      <td>6.7522</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Naive Bayes</td>
+      <td>ADASYN</td>
+      <td>0.7873</td>
+      <td>0.5426</td>
+      <td>0.5013</td>
+      <td>4.5887</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Random Forest</td>
+      <td>sin balanceo</td>
+      <td>0.7998</td>
+      <td>0.5911</td>
+      <td>0.2701</td>
+      <td>27.8586</td>
+      <td>True</td>
+      <td>línea base de balanceo (siempre pasa)</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Random Forest</td>
+      <td>SMOTE</td>
+      <td>0.7939</td>
+      <td>0.5831</td>
+      <td>0.4364</td>
+      <td>64.8400</td>
+      <td>False</td>
+      <td>dominada: AUC 0.006 por debajo de la mejor téc...</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Random Forest</td>
+      <td>ADASYN</td>
+      <td>0.7888</td>
+      <td>0.5758</td>
+      <td>0.4727</td>
+      <td>65.8515</td>
+      <td>False</td>
+      <td>dominada: AUC 0.011 por debajo de la mejor téc...</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Random Forest</td>
+      <td>class_weight</td>
+      <td>0.7997</td>
+      <td>0.5899</td>
+      <td>0.5636</td>
+      <td>27.9035</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Regresión logística (L1/L2)</td>
+      <td>sin balanceo</td>
+      <td>0.7956</td>
+      <td>0.5850</td>
+      <td>0.2571</td>
+      <td>1.0784</td>
+      <td>True</td>
+      <td>línea base de balanceo (siempre pasa)</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Regresión logística (L1/L2)</td>
+      <td>SMOTE</td>
+      <td>0.7943</td>
+      <td>0.5852</td>
+      <td>0.6026</td>
+      <td>2.3519</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Regresión logística (L1/L2)</td>
+      <td>ADASYN</td>
+      <td>0.7945</td>
+      <td>0.5852</td>
+      <td>0.6494</td>
+      <td>5.8869</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Regresión logística (L1/L2)</td>
+      <td>class_weight</td>
+      <td>0.7954</td>
+      <td>0.5854</td>
+      <td>0.5896</td>
+      <td>1.1316</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>SVM</td>
+      <td>sin balanceo</td>
+      <td>0.6894</td>
+      <td>0.5369</td>
+      <td>0.0182</td>
+      <td>13.3125</td>
+      <td>True</td>
+      <td>línea base de balanceo (siempre pasa)</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>SVM</td>
+      <td>SMOTE</td>
+      <td>0.7764</td>
+      <td>0.5243</td>
+      <td>0.5558</td>
+      <td>16.8733</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>SVM</td>
+      <td>ADASYN</td>
+      <td>0.7786</td>
+      <td>0.4948</td>
+      <td>0.6182</td>
+      <td>19.9553</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>SVM</td>
+      <td>class_weight</td>
+      <td>0.7737</td>
+      <td>0.5357</td>
+      <td>0.5377</td>
+      <td>15.4932</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>XGBoost</td>
+      <td>sin balanceo</td>
+      <td>0.8045</td>
+      <td>0.5952</td>
+      <td>0.2935</td>
+      <td>11.6629</td>
+      <td>True</td>
+      <td>línea base de balanceo (siempre pasa)</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>XGBoost</td>
+      <td>SMOTE</td>
+      <td>0.8007</td>
+      <td>0.5937</td>
+      <td>0.3351</td>
+      <td>17.8968</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>XGBoost</td>
+      <td>ADASYN</td>
+      <td>0.7950</td>
+      <td>0.5904</td>
+      <td>0.3403</td>
+      <td>20.7617</td>
+      <td>False</td>
+      <td>dominada: AUC 0.009 por debajo de la mejor téc...</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>XGBoost</td>
+      <td>class_weight</td>
+      <td>0.8043</td>
+      <td>0.5933</td>
+      <td>0.5740</td>
+      <td>12.2398</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>Árbol de decisión</td>
+      <td>sin balanceo</td>
+      <td>0.7832</td>
+      <td>0.5442</td>
+      <td>0.2364</td>
+      <td>0.8953</td>
+      <td>True</td>
+      <td>línea base de balanceo (siempre pasa)</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>Árbol de decisión</td>
+      <td>SMOTE</td>
+      <td>0.7835</td>
+      <td>0.5288</td>
+      <td>0.4234</td>
+      <td>2.7375</td>
+      <td>False</td>
+      <td>dominada: AUC 0.005 por debajo de la mejor téc...</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>Árbol de decisión</td>
+      <td>ADASYN</td>
+      <td>0.7569</td>
+      <td>0.5179</td>
+      <td>0.3299</td>
+      <td>6.3212</td>
+      <td>False</td>
+      <td>dominada: AUC 0.032 por debajo de la mejor téc...</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>Árbol de decisión</td>
+      <td>class_weight</td>
+      <td>0.7886</td>
+      <td>0.5426</td>
+      <td>0.5351</td>
+      <td>0.9241</td>
+      <td>True</td>
+      <td>mejor técnica de balanceo del modelo (o a &lt; 0,...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><p><strong>Resultado del tamizaje:</strong> pasan <strong>21 pares</strong> → <strong>84 combinaciones</strong> de clasificación en la fase 2 (de 112).</p>
+</div>
+</div>
+</section>
+<section id="lista-de-combinaciones-a-ejecutar">
+<h2>13.8 Lista de combinaciones a ejecutar<a class="headerlink" href="#lista-de-combinaciones-a-ejecutar" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Las 140 combinaciones: tarea, modelo, balanceo, optimizador y fase</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">MODELOS_REG</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">OPTIMIZADORES</span><span class="p">:</span>
+        <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="s2">"regresión"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">:</span> <span class="s2">"—"</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">:</span> <span class="n">o</span><span class="p">,</span> <span class="s2">"fase"</span><span class="p">:</span> <span class="s2">"completa (validación anidada)"</span><span class="p">,</span> <span class="s2">"ajustes"</span><span class="p">:</span> <span class="mi">184</span><span class="p">})</span>
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">MODELOS_CLF</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">BALANCEOS</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">EXCLUIDAS_A_PRIORI</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">OPTIMIZADORES</span><span class="p">:</span>
+                <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="s2">"clasificación"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">:</span> <span class="n">o</span><span class="p">,</span> <span class="s2">"fase"</span><span class="p">:</span> <span class="s2">"no se corre: equivalencia demostrada (13.6)"</span><span class="p">,</span> <span class="s2">"ajustes"</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="s2">"clasificación"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">:</span> <span class="s2">"Random (5 evaluaciones)"</span><span class="p">,</span> <span class="s2">"fase"</span><span class="p">:</span> <span class="s2">"fase 1: tamizaje"</span><span class="p">,</span> <span class="s2">"ajustes"</span><span class="p">:</span> <span class="mi">11</span><span class="p">})</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">OPTIMIZADORES</span><span class="p">:</span>
+                <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="s2">"clasificación"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">m</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">:</span> <span class="n">o</span><span class="p">,</span> <span class="s2">"fase"</span><span class="p">:</span> <span class="s2">"fase 2 si pasa el tamizaje"</span><span class="p">,</span> <span class="s2">"ajustes"</span><span class="p">:</span> <span class="mi">184</span><span class="p">})</span>
+<span class="n">plan</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="s2">"plan_ejecucion.csv"</span><span class="p">)</span>
+<span class="n">resumen_plan</span> <span class="o">=</span> <span class="n">plan</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"fase"</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">combinaciones</span><span class="o">=</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"size"</span><span class="p">),</span> <span class="n">ajustes</span><span class="o">=</span><span class="p">(</span><span class="s2">"ajustes"</span><span class="p">,</span> <span class="s2">"sum"</span><span class="p">))</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">display</span><span class="p">(</span><span class="n">resumen_plan</span><span class="p">)</span>
+<span class="n">costo</span> <span class="o">=</span> <span class="n">piloto</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">costo</span><span class="p">[</span><span class="s2">"par"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">costo</span><span class="o">.</span><span class="n">modelo</span><span class="p">,</span> <span class="n">costo</span><span class="o">.</span><span class="n">balanceo</span><span class="p">))</span>
+<span class="n">c_par</span> <span class="o">=</span> <span class="n">costo</span><span class="o">.</span><span class="n">set_index</span><span class="p">([</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">])</span><span class="o">.</span><span class="n">costo_estimado_min</span>
+<span class="n">fase2_max</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">c_par</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)]</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">MODELOS_CLF</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">BALANCEOS</span> <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">EXCLUIDAS_A_PRIORI</span><span class="p">)</span> <span class="o">/</span> <span class="mi">60</span>
+<span class="n">fase2_esp</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="nb">min</span><span class="p">(</span><span class="n">c_par</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="s2">"sin balanceo"</span><span class="p">)]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">c_par</span><span class="p">[(</span><span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">BALANCEOS</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">EXCLUIDAS_A_PRIORI</span><span class="p">]),</span> <span class="mf">1e9</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">bm</span><span class="o">.</span><span class="n">MODELOS_CLF</span><span class="p">)</span> <span class="o">/</span> <span class="mi">60</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Costo de clasificación (un solo proceso, estimado con el piloto).**</span>
+<span class="s2">- **Diseño completo:** ≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">tot_clf</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> h.</span>
+<span class="s2">- **Sin las 8 combinaciones equivalentes:** ≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">fase2_max</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> h. Ahorran poco tiempo porque KNN y Naive Bayes son baratos; su</span>
+<span class="s2">  justificación es **no producir resultados redundantes**, no el costo.</span>
+<span class="s2">- **Con el tamizaje:** ≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">c_par</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">184</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">60</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> h de fase 1 + ≈ </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">fase2_esp</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> h de fase 2 esperada (dos técnicas por modelo).</span>
+<span class="s2">  Con *P* procesos en paralelo, el tiempo se divide aproximadamente por *P*."""</span><span class="p">)</span>
+<span class="n">plan</span><span class="p">[</span><span class="n">plan</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"clasificación"</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>tarea</th>
+      <th>fase</th>
+      <th>combinaciones</th>
+      <th>ajustes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>clasificación</td>
+      <td>fase 1: tamizaje</td>
+      <td>26</td>
+      <td>286</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>clasificación</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>104</td>
+      <td>19136</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>clasificación</td>
+      <td>no se corre: equivalencia demostrada (13.6)</td>
+      <td>8</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>regresión</td>
+      <td>completa (validación anidada)</td>
+      <td>28</td>
+      <td>5152</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><p><strong>Costo de clasificación (un solo proceso, estimado con el piloto).</strong></p>
+<ul class="simple">
+<li><p><strong>Diseño completo:</strong> ≈ 9,14 h.</p></li>
+<li><p><strong>Sin las 8 combinaciones equivalentes:</strong> ≈ 9,09 h. Ahorran poco tiempo porque KNN y Naive Bayes son baratos; su
+justificación es <strong>no producir resultados redundantes</strong>, no el costo.</p></li>
+<li><p><strong>Con el tamizaje:</strong> ≈ 0,16 h de fase 1 + ≈ 4,1 h de fase 2 esperada (dos técnicas por modelo).
+Con <em>P</em> procesos en paralelo, el tiempo se divide aproximadamente por <em>P</em>.</p></li>
+</ul>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>tarea</th>
+      <th>modelo</th>
+      <th>balanceo</th>
+      <th>optimizador</th>
+      <th>fase</th>
+      <th>ajustes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>28</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>Random (5 evaluaciones)</td>
+      <td>fase 1: tamizaje</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>Grid</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>Random</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>Bayesiano (TPE)</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>Genético (DEAP)</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>SMOTE</td>
+      <td>Random (5 evaluaciones)</td>
+      <td>fase 1: tamizaje</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>SMOTE</td>
+      <td>Grid</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>SMOTE</td>
+      <td>Random</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>SMOTE</td>
+      <td>Bayesiano (TPE)</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>SMOTE</td>
+      <td>Genético (DEAP)</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>ADASYN</td>
+      <td>Random (5 evaluaciones)</td>
+      <td>fase 1: tamizaje</td>
+      <td>11</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>clasificación</td>
+      <td>KNN</td>
+      <td>ADASYN</td>
+      <td>Grid</td>
+      <td>fase 2 si pasa el tamizaje</td>
+      <td>184</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="como-se-ejecuta-reproducible-con-puntos-de-control">
+<h2>13.9 Cómo se ejecuta (reproducible, con puntos de control)<a class="headerlink" href="#como-se-ejecuta-reproducible-con-puntos-de-control" title="Link to this heading">#</a></h2>
+<p>Desde la raíz del proyecto, con el entorno de <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> (Python 3.9):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Regresión: 28 combinaciones completas</span>
+python<span class="w"> </span>scripts/correr_experimentos.py<span class="w"> </span>--tarea<span class="w"> </span>reg<span class="w"> </span>--trabajos<span class="w"> </span><span class="m">2</span>
+<span class="c1"># Clasificación: tamizaje (fase 1) y, a continuación, fase 2 con la regla preregistrada</span>
+python<span class="w"> </span>scripts/correr_experimentos.py<span class="w"> </span>--tarea<span class="w"> </span>clf<span class="w"> </span>--fase<span class="w"> </span>todo<span class="w"> </span>--trabajos<span class="w"> </span>N
+<span class="c1"># Aceleración por GPU de XGBoost (si hay GPU NVIDIA con CUDA)</span>
+python<span class="w"> </span>scripts/xgboost_gpu.py
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Puntos de control.</strong> Cada combinación se guarda en <code class="docutils literal notranslate"><span class="pre">resultados/benchmark/combos/*.pkl</span></code> y el tamizaje
+en <code class="docutils literal notranslate"><span class="pre">resultados/benchmark/tamizaje_clasificacion.csv</span></code>. Si la ejecución se interrumpe, al volver a
+lanzarla continúa donde iba.</p></li>
+<li><p><strong>Paralelismo.</strong> <code class="docutils literal notranslate"><span class="pre">--trabajos</span> <span class="pre">N</span></code> reparte combinaciones entre N procesos (<code class="docutils literal notranslate"><span class="pre">joblib</span></code>, backend <code class="docutils literal notranslate"><span class="pre">loky</span></code>). Cada
+modelo usa un solo hilo para no anidar paralelismo, y las combinaciones más costosas se lanzan primero
+para equilibrar la carga.</p></li>
+<li><p><strong>Valor de N recomendado.</strong> El número de núcleos físicos menos uno, siempre que haya ≈ 1 GB de RAM
+libre por proceso.</p></li>
+<li><p><strong>Tabla maestra.</strong> <code class="docutils literal notranslate"><span class="pre">resultados/benchmark/experimentos_maestro.csv</span></code> tiene una fila por cada una de las
+140 combinaciones, con estado, hiperparámetros finales, métricas externas (media y desviación),
+tiempos, evaluaciones, semilla y motivo de descarte cuando aplica.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tabla maestra de experimentos (resultados/benchmark/experimentos_maestro.csv)</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">BENCH</span> <span class="o">/</span> <span class="s2">"experimentos_maestro.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">corredor</span><span class="o">.</span><span class="n">tabla_maestra</span><span class="p">()</span>
+    <span class="n">tm_</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">BENCH</span> <span class="o">/</span> <span class="s2">"experimentos_maestro.csv"</span><span class="p">)</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">tm_</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"estado"</span><span class="p">])</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"combinaciones"</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>tarea</th>
+      <th>estado</th>
+      <th>combinaciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>clf</td>
+      <td>completado</td>
+      <td>112</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>reg</td>
+      <td>completado</td>
+      <td>28</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="decision-posterior-se-ejecutaron-las-140-combinaciones">
+<h2>13.10 Decisión posterior: se ejecutaron las 140 combinaciones<a class="headerlink" href="#decision-posterior-se-ejecutaron-las-140-combinaciones" title="Link to this heading">#</a></h2>
+<p>Las reducciones de 13.6 y 13.7 se diseñaron para ahorrar cómputo con reglas fijadas antes de ver los
+resultados. Al revisar el cumplimiento del enunciado (sección 2: <em>«7 × 4 × 4 = 112 modelos entrenados y
+evaluados en clasificación»</em>), se decidió <strong>ejecutar también las 28 combinaciones excluidas</strong>, con exactamente
+el mismo protocolo (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">scripts/correr_experimentos.py</span> <span class="pre">--tarea</span> <span class="pre">clf</span> <span class="pre">--fase</span> <span class="pre">2</span> <span class="pre">--todas</span></code>). Así:</p>
+<ul class="simple">
+<li><p>la tabla maestra tiene las <strong>140 combinaciones completadas</strong>, y la columna <code class="docutils literal notranslate"><span class="pre">decision_previa</span></code> conserva lo que
+las reglas habían decidido para cada una;</p></li>
+<li><p>las reducciones dejan de ser una exclusión y se convierten en un <strong>experimento verificable</strong>: el cap. 14.7
+compara lo que predijeron (equivalencia, bajo desempeño) con lo que pasó en la validación anidada completa;</p></li>
+<li><p>el ahorro de cómputo que habrían logrado se cuantifica con el tiempo real de las 28 combinaciones.</p></li>
+</ul>
+</section>
+<section id="evaluacion-final-origen-movil-20212026">
+<h2>13.11 Evaluación final: origen móvil 2021–2026<a class="headerlink" href="#evaluacion-final-origen-movil-20212026" title="Link to this heading">#</a></h2>
+<p>La validación anidada (13.2) elige hiperparámetros y estima el desempeño <strong>dentro del entrenamiento</strong>. Para
+medir cómo pronostica cada modelo meses que nunca vio se usa una evaluación de <strong>origen móvil</strong> sobre los meses
+de enero de 2021 a septiembre de 2026 (69 meses), con la misma regla de siempre: un pronóstico solo puede usar
+información disponible al cierre del mes anterior.</p>
+<section id="por-que-no-un-unico-corte">
+<h3>Por qué no un único corte<a class="headerlink" href="#por-que-no-un-unico-corte" title="Link to this heading">#</a></h3>
+<p>El Entregable 1 separó los datos con un <strong>corte único</strong>: entrenar una vez con lo anterior a 2021 y evaluar todo
+2021–2026 con ese modelo. Para la evaluación final se descarta ese esquema por tres razones:</p>
+<ul class="simple">
+<li><p><strong>No es como se usaría el modelo.</strong> Un pronóstico sísmico operativo se actualiza a medida que llegan sismos
+nuevos. Con un corte único, el pronóstico de septiembre de 2026 lo haría un modelo que no ha visto nada
+posterior a 2020: casi seis años de catálogo sin usar.</p></li>
+<li><p><strong>La sismicidad no es estacionaria.</strong> La tasa de sismos cambia por enjambres, secuencias de réplicas y
+cambios de régimen, y el propio catálogo cambia con la densificación de la red del SGC (KPSS rechaza la
+estacionariedad en nivel, cap. 7.4). Un modelo congelado no incorpora esos cambios, y su error mezclaría la
+calidad del modelo con lo desactualizado que está.</p></li>
+<li><p><strong>Depende de un único punto de partida.</strong> Toda la comparación heredaría las particularidades de ese corte.</p></li>
+</ul>
+</section>
+<section id="como-funciona-el-origen-movil-rolling-origin-ventana-creciente">
+<h3>Cómo funciona el origen móvil (<em>rolling origin</em>, ventana creciente)<a class="headerlink" href="#como-funciona-el-origen-movil-rolling-origin-ventana-creciente" title="Link to this heading">#</a></h3>
+<p>Para cada año <em>Y</em> de 2021 a 2026:</p>
+<ol class="arabic simple">
+<li><p>se construye el panel con corte en enero de <em>Y</em> (celdas activas y normalizaciones solo con datos
+anteriores);</p></li>
+<li><p>cada modelo se reentrena con <strong>todo</strong> el pasado disponible, con un mes de separación;</p></li>
+<li><p>se pronostican los meses del año <em>Y</em>;</p></li>
+<li><p>el origen avanza un año y se repite.</p></li>
+</ol>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>2021:  entrenar [2005 ............. 2020] → pronosticar 2021
+2022:  entrenar [2005 ............... 2021] → pronosticar 2022
+ ...
+2026:  entrenar [2005 ....................... 2025] → pronosticar 2026 (hasta septiembre)
+</pre></div>
+</div>
+<p>Los hiperparámetros de todos los modelos se fijan <strong>una sola vez</strong> con datos anteriores a 2016 (15 evaluaciones
+con validación temporal interna de 3 pliegues) y no cambian después; el mejor representante de cada familia (su
+«campeón») se elige con esa misma validación. Nada de lo que se evalúa interviene en ninguna elección.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Corte único</p></th>
+<th class="head"><p>Origen móvil</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Reentrenamiento</p></td>
+<td><p>una vez, con datos hasta 2020</p></td>
+<td><p>cada año, con todo el pasado</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pronóstico de 2026 hecho con datos hasta</p></td>
+<td><p>2020</p></td>
+<td><p>2025</p></td>
+</tr>
+<tr class="row-even"><td><p>Parecido al uso real</p></td>
+<td><p>bajo</p></td>
+<td><p>alto</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sensibilidad a la elección del corte</p></td>
+<td><p>alta</p></td>
+<td><p>menor: seis orígenes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="respaldo-en-la-literatura">
+<h3>Respaldo en la literatura<a class="headerlink" href="#respaldo-en-la-literatura" title="Link to this heading">#</a></h3>
+<p>Es la forma estándar de evaluar pronósticos de series de tiempo y de sismos, no un recurso ad hoc:</p>
+<ul class="simple">
+<li><p><span id="id2">[<a class="reference internal" href="12_conclusiones.html#id34" title="Leonard J. Tashman. Out-of-sample tests of forecasting accuracy: an analysis and review. International Journal of Forecasting, 16(4):437–450, 2000. doi:10.1016/S0169-2070(00)00065-0.">Tashman, 2000</a>]</span>, en la revisión de referencia sobre pruebas fuera de muestra, concluye que los
+orígenes móviles, con recalibración de los modelos y varios periodos de prueba, hacen la evaluación <strong>más
+eficiente y confiable</strong> que un único origen fijo.</p></li>
+<li><p><span id="id3">[<a class="reference internal" href="12_conclusiones.html#id35" title="Rob J. Hyndman and George Athanasopoulos. Forecasting: Principles and Practice. OTexts, Melbourne, 3 edition, 2021. Sección 5.10, Time series cross-validation.">Hyndman and Athanasopoulos, 2021</a>]</span> (sección 5.10) la presentan como la validación propia de las series de tiempo:
+<em>evaluación sobre un origen de pronóstico móvil</em>, en la que el entrenamiento solo contiene observaciones
+anteriores a las que se pronostican.</p></li>
+<li><p><span id="id4">[<a class="reference internal" href="12_conclusiones.html#id36" title="Vitor Cerqueira, Luis Torgo, and Igor Mozetič. Evaluating time series forecasting models: an empirical study on performance estimation methods. Machine Learning, 109:1997–2028, 2020. doi:10.1007/s10994-020-05910-7.">Cerqueira <em>et al.</em>, 2020</a>]</span> comparan empíricamente métodos de estimación del desempeño en series reales y
+encuentran que, cuando la serie <strong>no es estacionaria</strong>, los métodos que respetan el orden temporal estiman
+mejor el error que la validación cruzada convencional.</p></li>
+<li><p>En sismología, el Collaboratory for the Study of Earthquake Predictability (CSEP) evalúa los modelos de
+pronóstico de forma <strong>prospectiva</strong>: el modelo se fija con datos del pasado y se juzga con los sismos que
+ocurren después <span id="id5">[<a class="reference internal" href="12_conclusiones.html#id37" title="Danijel Schorlemmer, Maximilian J. Werner, Warner Marzocchi, Thomas H. Jordan, Yosihiko Ogata, David D. Jackson, and others. The Collaboratory for the Study of Earthquake Predictability: achievements and priorities. Seismological Research Letters, 89(4):1305–1313, 2018. doi:10.1785/0220180053.">Schorlemmer <em>et al.</em>, 2018</a>]</span>. Cuando esos sismos ya ocurrieron, se hace una prueba
+<strong>pseudoprospectiva</strong>: se calibra con un periodo de aprendizaje y se pronostica el siguiente, sin usar
+información posterior <span id="id6">[<a class="reference internal" href="12_conclusiones.html#id38" title="Eszter Király-Proag, J. Douglas Zechar, Valentin Gischig, Stefan Wiemer, Dimitrios Karvounis, and Joseph Doetsch. Validating induced seismicity forecast models: Induced Seismicity Test Bench. Journal of Geophysical Research: Solid Earth, 2016. doi:10.1002/2016JB013236.">Király-Proag <em>et al.</em>, 2016</a>]</span>. El origen móvil es una prueba pseudoprospectiva repetida
+año a año.</p></li>
+</ul>
+</section>
+</section>
+<section id="combinaciones-evaluadas-en-el-origen-movil">
+<h2>13.12 Combinaciones evaluadas en el origen móvil<a class="headerlink" href="#combinaciones-evaluadas-en-el-origen-movil" title="Link to this heading">#</a></h2>
+<p>Las <strong>140 combinaciones</strong> del enunciado se ejecutaron completas en la validación anidada (13.10, cap. 14). Para
+la evaluación final en origen móvil se usan:</p>
+<ul class="simple">
+<li><p><strong>Regresión: las 28 combinaciones</strong> (7 modelos × 4 optimizadores).</p></li>
+<li><p><strong>Clasificación: 26 combinaciones</strong>, los 7 modelos × 4 técnicas de balanceo con optimización bayesiana (TPE),
+sin los dos pares equivalentes. La reducción se decidió antes de correr la evaluación y solo con evidencia
+anterior a 2021:</p>
+<ul>
+<li><p><strong>Un optimizador (TPE) en lugar de cuatro.</strong> En la validación anidada los cuatro optimizadores dan la misma
+métrica externa en clasificación (Friedman entre optimizadores, cap. 14.2) y TPE es el más eficiente por
+unidad de presupuesto (cap. 14.4). Repetir la evaluación con cuatro versiones del mismo modelo que llegan
+al mismo resultado no aporta información.</p></li>
+<li><p><strong>Sin KNN ni Naive Bayes con class_weight.</strong> Son equivalentes a «sin balanceo» en ROC-AUC (13.6; confirmado
+con la validación anidada completa en el cap. 14.7).</p></li>
+</ul>
+</li>
+</ul>
+<p>Así se conservan los 7 modelos y las 4 técnicas de balanceo, que es lo que comparan los capítulos 17 y 21
+(<code class="docutils literal notranslate"><span class="pre">scripts/origen_movil_benchmark.py</span></code> y <code class="docutils literal notranslate"><span class="pre">scripts/origen_movil_clasificacion.py</span></code>).</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="12_conclusiones.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">12. Conclusiones del Entregable 1, limitaciones y checklist</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="14_optimizacion_hiperparametros.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">14. Optimización de hiperparámetros: resultados de la validación anidada</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#las-dos-tareas-sobre-el-mismo-panel">13.1 Las dos tareas sobre el mismo panel</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validacion-anidada-temporal-y-presupuesto">13.2 Validación anidada temporal y presupuesto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#espacios-de-busqueda">13.3 Espacios de búsqueda</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complejidad-teorica-antes-de-medir">13.4 Complejidad teórica (antes de medir)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#piloto-de-costos-medido-no-supuesto">13.5 Piloto de costos (medido, no supuesto)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reduccion-1-combinaciones-equivalentes-demostradas-no-se-corren">13.6 Reducción 1: combinaciones equivalentes demostradas (no se corren)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reduccion-2-tamizaje-de-baja-fidelidad-multi-fidelidad-sobre-combinaciones">13.7 Reducción 2: tamizaje de baja fidelidad (multi-fidelidad sobre combinaciones)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lista-de-combinaciones-a-ejecutar">13.8 Lista de combinaciones a ejecutar</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#como-se-ejecuta-reproducible-con-puntos-de-control">13.9 Cómo se ejecuta (reproducible, con puntos de control)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decision-posterior-se-ejecutaron-las-140-combinaciones">13.10 Decisión posterior: se ejecutaron las 140 combinaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluacion-final-origen-movil-20212026">13.11 Evaluación final: origen móvil 2021–2026</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#por-que-no-un-unico-corte">Por qué no un único corte</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#como-funciona-el-origen-movil-rolling-origin-ventana-creciente">Cómo funciona el origen móvil (<em>rolling origin</em>, ventana creciente)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#respaldo-en-la-literatura">Respaldo en la literatura</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combinaciones-evaluadas-en-el-origen-movil">13.12 Combinaciones evaluadas en el origen móvil</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

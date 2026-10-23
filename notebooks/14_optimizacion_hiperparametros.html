@@ -1,0 +1,2707 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>14. Optimización de hiperparámetros: resultados de la validación anidada &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/14_optimizacion_hiperparametros';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="15. Optimización multi-fidelidad: Successive Halving e Hyperband" href="15_multifidelidad.html" />
+    <link rel="prev" title="13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones" href="13_diseno_experimental.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/14_optimizacion_hiperparametros.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>14. Optimización de hiperparámetros: resultados de la validación anidada</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuracion-de-los-cuatro-optimizadores">14.1 Configuración de los cuatro optimizadores</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabla-maestra-de-resultados-bucle-externo">14.2 Tabla maestra de resultados (bucle externo)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#campeones-la-mejor-combinacion-de-cada-modelo">Campeones: la mejor combinación de cada modelo</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-de-los-optimizadores-por-metrica-tiempo-y-presupuesto">Comparación de los optimizadores por métrica, tiempo y presupuesto</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#curvas-anytime-mejor-valor-hallado-hasta-la-evaluacion-t">14.3 Curvas anytime: mejor valor hallado hasta la evaluación <em>t</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evidencia-cuantitativa-de-eficiencia-por-unidad-de-presupuesto">14.4 Evidencia cuantitativa de eficiencia por unidad de presupuesto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diversidad-genetica-del-ag">14.5 Diversidad genética del AG</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estabilidad-de-cada-optimizador-ante-la-semilla">14.6 Estabilidad de cada optimizador ante la semilla</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verificacion-de-las-reducciones-del-capitulo-13">14.7 Verificación de las reducciones del capítulo 13</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-del-capitulo">14.8 Conclusiones del capítulo</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="optimizacion-de-hiperparametros-resultados-de-la-validacion-anidada">
+<h1>14. Optimización de hiperparámetros: resultados de la validación anidada<a class="headerlink" href="#optimizacion-de-hiperparametros-resultados-de-la-validacion-anidada" title="Link to this heading">#</a></h1>
+<p>Este capítulo reporta lo que pasó al ejecutar el diseño del capítulo 13: las <strong>140 combinaciones</strong> del
+enunciado (28 de regresión y 112 de clasificación). Las 28 de clasificación que las reglas del cap. 13
+habían excluido también se ejecutaron completas, para cumplir el enunciado y para <strong>verificar</strong> si esas
+reglas acertaban (14.7).
+Responde a la sección 3 del enunciado:</p>
+<ol class="arabic simple">
+<li><p>cómo están configurados los cuatro optimizadores y por qué (sustituto, adquisición, operadores genéticos);</p></li>
+<li><p>la <strong>tabla maestra</strong> con la métrica del <strong>bucle externo</strong> (media ± desviación), tiempos y presupuesto;</p></li>
+<li><p>las <strong>curvas anytime</strong> (mejor valor hallado hasta la evaluación <em>t</em>);</p></li>
+<li><p>la evidencia <strong>cuantitativa</strong> de eficiencia por unidad de presupuesto;</p></li>
+<li><p>la diversidad genética del AG y la estabilidad de cada optimizador ante la semilla.</p></li>
+</ol>
+<p>Todas las métricas que se reportan como desempeño vienen del <strong>bucle externo</strong>; los valores del bucle
+interno solo se usan para estudiar la búsqueda (curvas anytime), nunca como estimación de generalización.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tabla maestra y resultados de las 140 combinaciones</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">wilcoxon</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">benchmark</span> <span class="k">as</span> <span class="n">bm</span><span class="p">,</span> <span class="n">resultados_e2</span> <span class="k">as</span> <span class="n">r2</span>
+<span class="n">M</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">maestro</span><span class="p">()</span>
+<span class="n">REG</span><span class="p">,</span> <span class="n">CLF</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">cargar</span><span class="p">(</span><span class="s2">"reg"</span><span class="p">),</span> <span class="n">r2</span><span class="o">.</span><span class="n">cargar</span><span class="p">(</span><span class="s2">"clf"</span><span class="p">)</span>
+<span class="n">OPT</span> <span class="o">=</span> <span class="n">bm</span><span class="o">.</span><span class="n">OPTIMIZADORES</span>
+<span class="n">COL</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">OPT</span><span class="p">,</span> <span class="p">[</span><span class="s2">"#7f7f7f"</span><span class="p">,</span> <span class="s2">"#1f77b4"</span><span class="p">,</span> <span class="s2">"#d62728"</span><span class="p">,</span> <span class="s2">"#2ca02c"</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Combinaciones completadas: regresión </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">REG</span><span class="p">)</span><span class="si">}</span><span class="s2">, clasificación </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">CLF</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Combinaciones completadas: regresión 28, clasificación 112
+</pre></div>
+</div>
+</div>
+</div>
+<section id="configuracion-de-los-cuatro-optimizadores">
+<h2>14.1 Configuración de los cuatro optimizadores<a class="headerlink" href="#configuracion-de-los-cuatro-optimizadores" title="Link to this heading">#</a></h2>
+<p>Los cuatro métodos comparten <strong>todo</strong> salvo la estrategia de búsqueda: el mismo espacio (cap. 13.3), el
+mismo presupuesto de <strong>15 evaluaciones</strong> y la misma función objetivo. Cada evaluación es una validación
+temporal interna de 3 pliegues en la que el <strong>Pipeline completo</strong> (imputación, escalado, balanceo y modelo)
+se ajusta solo con la parte de ajuste del pliegue: no hay fuga ni en Grid/Random ni en Optuna/DEAP, porque
+la función objetivo construye el Pipeline dentro de cada pliegue (<code class="docutils literal notranslate"><span class="pre">src/benchmark.py</span></code>, <code class="docutils literal notranslate"><span class="pre">correr_combinacion</span></code>).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Método</p></th>
+<th class="head"><p>Implementación</p></th>
+<th class="head"><p>Decisiones y justificación</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Grid Search</strong></p></td>
+<td><p>rejilla propia de ≤ 15 puntos (<code class="docutils literal notranslate"><span class="pre">rejilla</span></code>)</p></td>
+<td><p>Niveles en escala log para C, λ, learning rate y <code class="docutils literal notranslate"><span class="pre">min_samples_leaf</span></code>. Con 4–6 hiperparámetros solo caben 2 niveles en los primeros y el resto queda fijo en el centro: es la limitación conocida de Grid en alta dimensión. Por eso a veces usa <strong>menos de 15 evaluaciones</strong> (no hay más puntos).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Random Search</strong></p></td>
+<td><p>15 muestras uniformes en el cubo [0,1]^d mapeadas al espacio (log cuando corresponde)</p></td>
+<td><p>Línea base de Bergstra y Bengio (2012): cubre mejor las dimensiones importantes que Grid con el mismo presupuesto.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Bayesiano</strong></p></td>
+<td><p>Optuna 4.1, <code class="docutils literal notranslate"><span class="pre">TPESampler(multivariate=True,</span> <span class="pre">n_startup_trials=3)</span></code></p></td>
+<td><p><strong>Sustituto:</strong> <em>Tree-structured Parzen Estimator</em>. En vez de modelar p(y∣x) como un proceso gaussiano, modela dos densidades: l(x) para las configuraciones buenas (cuantil superior γ) y g(x) para las demás. <strong>Adquisición:</strong> elige el candidato que maximiza l(x)/g(x), que es proporcional a la <strong>Mejora Esperada (EI)</strong> (Bergstra et al., 2011). Las 3 primeras evaluaciones son aleatorias (exploración); después EI concentra la búsqueda cerca de lo bueno (explotación). <code class="docutils literal notranslate"><span class="pre">multivariate=True</span></code> modela dependencias entre hiperparámetros (p. ej. learning rate × número de árboles).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Genético</strong></p></td>
+<td><p>DEAP 1.4 con genes en [0,1]^d</p></td>
+<td><p><strong>Selección:</strong> torneo de tamaño 3 (presión moderada, no depende de la escala de la aptitud). <strong>Cruce:</strong> BLX-α (<code class="docutils literal notranslate"><span class="pre">cxBlend</span></code>, α = 0,5) con probabilidad 0,7. <strong>Mutación:</strong> gaussiana σ = 0,15 por gen con prob. 0,5, aplicada al individuo con prob. 0,3. <strong>Elitismo:</strong> el mejor pasa intacto. <strong>Población:</strong> 4 individuos → 1 generación inicial + ~4 generaciones con 15 evaluaciones. Se registra la <strong>diversidad</strong> (distancia media entre individuos) en cada generación. Si la población converge a individuos ya evaluados, se reinyectan individuos aleatorios para no gastar presupuesto.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Con solo 15 evaluaciones, la población del AG es necesariamente pequeña: el presupuesto igual para los
+cuatro métodos es la condición para que la comparación sea justa (cap. 13.2), y el AG paga ese precio.</p>
+</section>
+<section id="tabla-maestra-de-resultados-bucle-externo">
+<h2>14.2 Tabla maestra de resultados (bucle externo)<a class="headerlink" href="#tabla-maestra-de-resultados-bucle-externo" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Resultados por combinación: métrica externa, evaluaciones y tiempos</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">REG</span> <span class="o">+</span> <span class="n">CLF</span><span class="p">:</span>
+    <span class="n">t_eval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">h</span><span class="p">[</span><span class="s2">"tiempos"</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="s2">"historial"</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">"historial_final"</span><span class="p">][</span><span class="s2">"tiempos"</span><span class="p">]])</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"tarea"</span><span class="p">],</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">],</span> <span class="s2">"balanceo"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"balanceo"</span><span class="p">],</span> <span class="s2">"optimizador"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"optimizador"</span><span class="p">],</span>
+                  <span class="s2">"métrica"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"metrica_principal"</span><span class="p">],</span> <span class="s2">"externo_media"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"externo_media"</span><span class="p">],</span> <span class="s2">"externo_desv"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"externo_desv"</span><span class="p">],</span>
+                  <span class="s2">"evaluaciones"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"evaluaciones"</span><span class="p">],</span> <span class="s2">"t_total_min"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"t_total_s"</span><span class="p">]</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span> <span class="s2">"t_por_eval_s"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">t_eval</span><span class="p">)),</span>
+                  <span class="s2">"hiperparámetros finales"</span><span class="p">:</span> <span class="n">r2</span><span class="o">.</span><span class="n">params</span><span class="p">(</span><span class="n">r</span><span class="p">)})</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="s2">"e2_tabla_maestra.csv"</span><span class="p">)</span>
+<span class="n">T</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">])</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"externo_media"</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>optimizador</th>
+      <th>métrica</th>
+      <th>externo_media</th>
+      <th>externo_desv</th>
+      <th>evaluaciones</th>
+      <th>t_total_min</th>
+      <th>t_por_eval_s</th>
+      <th>hiperparámetros finales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>21</th>
+      <td>XGBoost</td>
+      <td>Random</td>
+      <td>RMSLE</td>
+      <td>0.3175</td>
+      <td>0.0264</td>
+      <td>60</td>
+      <td>2.0984</td>
+      <td>1.8781</td>
+      <td>{"n_estimators": 421, "max_depth": 4, "learnin...</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>XGBoost</td>
+      <td>Genético (DEAP)</td>
+      <td>RMSLE</td>
+      <td>0.3177</td>
+      <td>0.0258</td>
+      <td>60</td>
+      <td>2.0149</td>
+      <td>1.8970</td>
+      <td>{"n_estimators": 421, "max_depth": 4, "learnin...</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>XGBoost</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.3182</td>
+      <td>0.0266</td>
+      <td>60</td>
+      <td>1.9739</td>
+      <td>1.8890</td>
+      <td>{"n_estimators": 403, "max_depth": 4, "learnin...</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>Random Forest</td>
+      <td>Random</td>
+      <td>RMSLE</td>
+      <td>0.3185</td>
+      <td>0.0249</td>
+      <td>60</td>
+      <td>55.8883</td>
+      <td>7.1495</td>
+      <td>{"n_estimators": 248, "max_depth": 7, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>XGBoost</td>
+      <td>Grid</td>
+      <td>RMSLE</td>
+      <td>0.3191</td>
+      <td>0.0264</td>
+      <td>32</td>
+      <td>1.6524</td>
+      <td>2.0799</td>
+      <td>{"n_estimators": 100, "max_depth": 2, "learnin...</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>Random Forest</td>
+      <td>Genético (DEAP)</td>
+      <td>RMSLE</td>
+      <td>0.3192</td>
+      <td>0.0256</td>
+      <td>60</td>
+      <td>55.3604</td>
+      <td>6.9915</td>
+      <td>{"n_estimators": 157, "max_depth": 14, "min_sa...</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>Random Forest</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.3197</td>
+      <td>0.0269</td>
+      <td>60</td>
+      <td>56.7060</td>
+      <td>7.0179</td>
+      <td>{"n_estimators": 220, "max_depth": 8, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>KNN</td>
+      <td>Random</td>
+      <td>RMSLE</td>
+      <td>0.3234</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>1.1510</td>
+      <td>1.0518</td>
+      <td>{"n_neighbors": 75, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Random Forest</td>
+      <td>Grid</td>
+      <td>RMSLE</td>
+      <td>0.3236</td>
+      <td>0.0257</td>
+      <td>32</td>
+      <td>4.4419</td>
+      <td>5.9695</td>
+      <td>{"n_estimators": 50, "max_depth": 4, "min_samp...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>KNN</td>
+      <td>Genético (DEAP)</td>
+      <td>RMSLE</td>
+      <td>0.3238</td>
+      <td>0.0244</td>
+      <td>60</td>
+      <td>1.1598</td>
+      <td>1.0823</td>
+      <td>{"n_neighbors": 75, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>KNN</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.3239</td>
+      <td>0.0241</td>
+      <td>60</td>
+      <td>1.2343</td>
+      <td>1.1209</td>
+      <td>{"n_neighbors": 68, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>KNN</td>
+      <td>Grid</td>
+      <td>RMSLE</td>
+      <td>0.3239</td>
+      <td>0.0256</td>
+      <td>56</td>
+      <td>1.0856</td>
+      <td>1.0419</td>
+      <td>{"n_neighbors": 58, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Árbol de decisión</td>
+      <td>Grid</td>
+      <td>RMSLE</td>
+      <td>0.3263</td>
+      <td>0.0266</td>
+      <td>48</td>
+      <td>0.1975</td>
+      <td>0.2290</td>
+      <td>{"max_depth": 8, "min_samples_leaf": 5}</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Árbol de decisión</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.3311</td>
+      <td>0.0315</td>
+      <td>60</td>
+      <td>0.2227</td>
+      <td>0.2101</td>
+      <td>{"max_depth": 8, "min_samples_leaf": 6}</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Árbol de decisión</td>
+      <td>Genético (DEAP)</td>
+      <td>RMSLE</td>
+      <td>0.3312</td>
+      <td>0.0317</td>
+      <td>60</td>
+      <td>0.2267</td>
+      <td>0.2099</td>
+      <td>{"max_depth": 7, "min_samples_leaf": 10}</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Árbol de decisión</td>
+      <td>Random</td>
+      <td>RMSLE</td>
+      <td>0.3317</td>
+      <td>0.0310</td>
+      <td>60</td>
+      <td>0.2375</td>
+      <td>0.2340</td>
+      <td>{"max_depth": 7, "min_samples_leaf": 10}</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>SVR</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.3327</td>
+      <td>0.0257</td>
+      <td>60</td>
+      <td>2.9790</td>
+      <td>2.4282</td>
+      <td>{"C": 0.2919, "epsilon": 0.1635, "gamma": 0.0029}</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Ridge</td>
+      <td>Genético (DEAP)</td>
+      <td>RMSLE</td>
+      <td>0.3341</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>0.0883</td>
+      <td>0.0851</td>
+      <td>{"alpha": 0.001}</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Ridge</td>
+      <td>Random</td>
+      <td>RMSLE</td>
+      <td>0.3341</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>0.0880</td>
+      <td>0.0841</td>
+      <td>{"alpha": 0.001}</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Ridge</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.3341</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>0.0895</td>
+      <td>0.0852</td>
+      <td>{"alpha": 0.001}</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Ridge</td>
+      <td>Grid</td>
+      <td>RMSLE</td>
+      <td>0.3341</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>0.0862</td>
+      <td>0.0820</td>
+      <td>{"alpha": 0.001}</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Lasso</td>
+      <td>Genético (DEAP)</td>
+      <td>RMSLE</td>
+      <td>0.3341</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>0.1400</td>
+      <td>0.1382</td>
+      <td>{"alpha": 0.0}</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Lasso</td>
+      <td>Grid</td>
+      <td>RMSLE</td>
+      <td>0.3341</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>0.1248</td>
+      <td>0.1204</td>
+      <td>{"alpha": 0.0}</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Lasso</td>
+      <td>Bayesiano (TPE)</td>
+      <td>RMSLE</td>
+      <td>0.3341</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>0.1490</td>
+      <td>0.1457</td>
+      <td>{"alpha": 0.0}</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Lasso</td>
+      <td>Random</td>
+      <td>RMSLE</td>
+      <td>0.3341</td>
+      <td>0.0251</td>
+      <td>60</td>
+      <td>0.1321</td>
+      <td>0.1264</td>
+      <td>{"alpha": 0.0}</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>SVR</td>
+      <td>Random</td>
+      <td>RMSLE</td>
+      <td>0.3386</td>
+      <td>0.0337</td>
+      <td>60</td>
+      <td>51.3633</td>
+      <td>2.7565</td>
+      <td>{"C": 9.1139, "epsilon": 0.1584, "gamma": 0.0025}</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>SVR</td>
+      <td>Grid</td>
+      <td>RMSLE</td>
+      <td>0.3486</td>
+      <td>0.0319</td>
+      <td>48</td>
+      <td>50.3305</td>
+      <td>2.6991</td>
+      <td>{"C": 30.0, "epsilon": 0.01, "gamma": 0.001}</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>SVR</td>
+      <td>Genético (DEAP)</td>
+      <td>RMSLE</td>
+      <td>0.3641</td>
+      <td>0.0662</td>
+      <td>60</td>
+      <td>2.6583</td>
+      <td>2.3827</td>
+      <td>{"C": 1.1372, "epsilon": 0.1602, "gamma": 0.0089}</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p><strong>Regresión (RMSLE externo, menor es mejor).</strong> La tabla está ordenada de mejor a peor.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de los resultados de regresión</span>
+<span class="n">tr_</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"externo_media"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- El mejor es **</span><span class="si">{</span><span class="n">tr_</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> con </span><span class="si">{</span><span class="n">tr_</span><span class="o">.</span><span class="n">optimizador</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">** (RMSLE externo </span><span class="si">{</span><span class="n">tr_</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> ± "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tr_</span><span class="o">.</span><span class="n">externo_desv</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">), y las cuatro versiones de XGBoost quedan entre las "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">tr_</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">tr_</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">values</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'XGBoost'</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> primeras.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- La desviación entre los 3 bloques externos (≈ </span><span class="si">{</span><span class="n">tr_</span><span class="o">.</span><span class="n">externo_desv</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">) es **mucho mayor** que la diferencia "</span>
+   <span class="sa">f</span><span class="s2">"entre optimizadores de un mismo modelo (p. ej. XGBoost: </span><span class="si">{</span><span class="n">tr_</span><span class="p">[</span><span class="n">tr_</span><span class="o">.</span><span class="n">modelo</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'XGBoost'</span><span class="p">]</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> a "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tr_</span><span class="p">[</span><span class="n">tr_</span><span class="o">.</span><span class="n">modelo</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'XGBoost'</span><span class="p">]</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">). La variación de un año a otro pesa más que el optimizador; "</span>
+   <span class="sa">f</span><span class="s2">"el cap. 20 lo cuantifica y el cap. 21 lo prueba formalmente.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- Ridge y Lasso dan el mismo RMSLE con los cuatro optimizadores: la superficie del objetivo es casi plana en λ "</span>
+   <span class="sa">f</span><span class="s2">"(18 predictoras, ~31 000 filas), así que cualquier método encuentra el óptimo."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p>El mejor es <strong>XGBoost con Random</strong> (RMSLE externo 0.3175 ± 0.0264), y las cuatro versiones de XGBoost quedan entre las 5 primeras.</p></li>
+<li><p>La desviación entre los 3 bloques externos (≈ 0.026) es <strong>mucho mayor</strong> que la diferencia entre optimizadores de un mismo modelo (p. ej. XGBoost: 0.3175 a 0.3191). La variación de un año a otro pesa más que el optimizador; el cap. 20 lo cuantifica y el cap. 21 lo prueba formalmente.</p></li>
+<li><p>Ridge y Lasso dan el mismo RMSLE con los cuatro optimizadores: la superficie del objetivo es casi plana en λ (18 predictoras, ~31 000 filas), así que cualquier método encuentra el óptimo.</p></li>
+</ul>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">T</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"clf"</span><span class="p">]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"tarea"</span><span class="p">])</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"externo_media"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>balanceo</th>
+      <th>optimizador</th>
+      <th>métrica</th>
+      <th>externo_media</th>
+      <th>externo_desv</th>
+      <th>evaluaciones</th>
+      <th>t_total_min</th>
+      <th>t_por_eval_s</th>
+      <th>hiperparámetros finales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>89</th>
+      <td>XGBoost</td>
+      <td>sin balanceo</td>
+      <td>Random</td>
+      <td>ROC_AUC</td>
+      <td>0.7781</td>
+      <td>0.0334</td>
+      <td>60</td>
+      <td>34.5558</td>
+      <td>2.1295</td>
+      <td>{"n_estimators": 222, "max_depth": 3, "learnin...</td>
+    </tr>
+    <tr>
+      <th>91</th>
+      <td>XGBoost</td>
+      <td>sin balanceo</td>
+      <td>Genético (DEAP)</td>
+      <td>ROC_AUC</td>
+      <td>0.7779</td>
+      <td>0.0347</td>
+      <td>60</td>
+      <td>34.3814</td>
+      <td>2.0446</td>
+      <td>{"n_estimators": 428, "max_depth": 3, "learnin...</td>
+    </tr>
+    <tr>
+      <th>90</th>
+      <td>XGBoost</td>
+      <td>sin balanceo</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.7778</td>
+      <td>0.0334</td>
+      <td>60</td>
+      <td>34.5019</td>
+      <td>2.1037</td>
+      <td>{"n_estimators": 331, "max_depth": 3, "learnin...</td>
+    </tr>
+    <tr>
+      <th>86</th>
+      <td>XGBoost</td>
+      <td>class_weight</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.7772</td>
+      <td>0.0327</td>
+      <td>60</td>
+      <td>34.5433</td>
+      <td>2.1076</td>
+      <td>{"n_estimators": 417, "max_depth": 3, "learnin...</td>
+    </tr>
+    <tr>
+      <th>85</th>
+      <td>XGBoost</td>
+      <td>class_weight</td>
+      <td>Random</td>
+      <td>ROC_AUC</td>
+      <td>0.7766</td>
+      <td>0.0342</td>
+      <td>60</td>
+      <td>34.6984</td>
+      <td>2.1275</td>
+      <td>{"n_estimators": 222, "max_depth": 3, "learnin...</td>
+    </tr>
+    <tr>
+      <th>87</th>
+      <td>XGBoost</td>
+      <td>class_weight</td>
+      <td>Genético (DEAP)</td>
+      <td>ROC_AUC</td>
+      <td>0.7765</td>
+      <td>0.0349</td>
+      <td>60</td>
+      <td>2.1816</td>
+      <td>1.8704</td>
+      <td>{"n_estimators": 222, "max_depth": 3, "learnin...</td>
+    </tr>
+    <tr>
+      <th>69</th>
+      <td>Random Forest</td>
+      <td>class_weight</td>
+      <td>Random</td>
+      <td>ROC_AUC</td>
+      <td>0.7755</td>
+      <td>0.0355</td>
+      <td>60</td>
+      <td>11.2389</td>
+      <td>7.0355</td>
+      <td>{"n_estimators": 248, "max_depth": 7, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>75</th>
+      <td>Random Forest</td>
+      <td>sin balanceo</td>
+      <td>Genético (DEAP)</td>
+      <td>ROC_AUC</td>
+      <td>0.7749</td>
+      <td>0.0373</td>
+      <td>60</td>
+      <td>20.6399</td>
+      <td>6.5776</td>
+      <td>{"n_estimators": 101, "max_depth": 6, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>65</th>
+      <td>Random Forest</td>
+      <td>SMOTE</td>
+      <td>Random</td>
+      <td>ROC_AUC</td>
+      <td>0.7744</td>
+      <td>0.0317</td>
+      <td>60</td>
+      <td>32.4064</td>
+      <td>24.4297</td>
+      <td>{"n_estimators": 101, "max_depth": 6, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>88</th>
+      <td>XGBoost</td>
+      <td>sin balanceo</td>
+      <td>Grid</td>
+      <td>ROC_AUC</td>
+      <td>0.7744</td>
+      <td>0.0324</td>
+      <td>32</td>
+      <td>1.2653</td>
+      <td>1.7462</td>
+      <td>{"n_estimators": 600, "max_depth": 2, "learnin...</td>
+    </tr>
+    <tr>
+      <th>71</th>
+      <td>Random Forest</td>
+      <td>class_weight</td>
+      <td>Genético (DEAP)</td>
+      <td>ROC_AUC</td>
+      <td>0.7743</td>
+      <td>0.0348</td>
+      <td>60</td>
+      <td>10.1038</td>
+      <td>5.6960</td>
+      <td>{"n_estimators": 101, "max_depth": 6, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>73</th>
+      <td>Random Forest</td>
+      <td>sin balanceo</td>
+      <td>Random</td>
+      <td>ROC_AUC</td>
+      <td>0.7739</td>
+      <td>0.0370</td>
+      <td>60</td>
+      <td>21.3634</td>
+      <td>7.2306</td>
+      <td>{"n_estimators": 101, "max_depth": 6, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>70</th>
+      <td>Random Forest</td>
+      <td>class_weight</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.7738</td>
+      <td>0.0391</td>
+      <td>60</td>
+      <td>10.1292</td>
+      <td>5.9494</td>
+      <td>{"n_estimators": 146, "max_depth": 5, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>74</th>
+      <td>Random Forest</td>
+      <td>sin balanceo</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.7734</td>
+      <td>0.0397</td>
+      <td>60</td>
+      <td>19.4500</td>
+      <td>5.2958</td>
+      <td>{"n_estimators": 150, "max_depth": 6, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>68</th>
+      <td>Random Forest</td>
+      <td>class_weight</td>
+      <td>Grid</td>
+      <td>ROC_AUC</td>
+      <td>0.7730</td>
+      <td>0.0380</td>
+      <td>32</td>
+      <td>17.2656</td>
+      <td>4.9190</td>
+      <td>{"n_estimators": 250, "max_depth": 4, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>KNN</td>
+      <td>class_weight</td>
+      <td>Random</td>
+      <td>ROC_AUC</td>
+      <td>0.7727</td>
+      <td>0.0296</td>
+      <td>60</td>
+      <td>1.6491</td>
+      <td>1.4938</td>
+      <td>{"n_neighbors": 189, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>Random</td>
+      <td>ROC_AUC</td>
+      <td>0.7727</td>
+      <td>0.0295</td>
+      <td>60</td>
+      <td>1.2236</td>
+      <td>1.0952</td>
+      <td>{"n_neighbors": 189, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>67</th>
+      <td>Random Forest</td>
+      <td>SMOTE</td>
+      <td>Genético (DEAP)</td>
+      <td>ROC_AUC</td>
+      <td>0.7727</td>
+      <td>0.0297</td>
+      <td>60</td>
+      <td>42.9866</td>
+      <td>35.8540</td>
+      <td>{"n_estimators": 101, "max_depth": 6, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>Grid</td>
+      <td>ROC_AUC</td>
+      <td>0.7716</td>
+      <td>0.0295</td>
+      <td>56</td>
+      <td>1.1418</td>
+      <td>1.0795</td>
+      <td>{"n_neighbors": 200, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>KNN</td>
+      <td>class_weight</td>
+      <td>Grid</td>
+      <td>ROC_AUC</td>
+      <td>0.7716</td>
+      <td>0.0295</td>
+      <td>56</td>
+      <td>1.6153</td>
+      <td>1.5078</td>
+      <td>{"n_neighbors": 200, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>KNN</td>
+      <td>class_weight</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.7716</td>
+      <td>0.0286</td>
+      <td>60</td>
+      <td>1.9950</td>
+      <td>1.8284</td>
+      <td>{"n_neighbors": 198, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>KNN</td>
+      <td>sin balanceo</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.7716</td>
+      <td>0.0286</td>
+      <td>60</td>
+      <td>1.4083</td>
+      <td>1.3038</td>
+      <td>{"n_neighbors": 198, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>81</th>
+      <td>XGBoost</td>
+      <td>SMOTE</td>
+      <td>Random</td>
+      <td>ROC_AUC</td>
+      <td>0.7716</td>
+      <td>0.0379</td>
+      <td>60</td>
+      <td>6.9906</td>
+      <td>3.4988</td>
+      <td>{"n_estimators": 421, "max_depth": 4, "learnin...</td>
+    </tr>
+    <tr>
+      <th>62</th>
+      <td>Random Forest</td>
+      <td>ADASYN</td>
+      <td>Bayesiano (TPE)</td>
+      <td>ROC_AUC</td>
+      <td>0.7711</td>
+      <td>0.0326</td>
+      <td>60</td>
+      <td>15.5602</td>
+      <td>12.9826</td>
+      <td>{"n_estimators": 215, "max_depth": 4, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>KNN</td>
+      <td>class_weight</td>
+      <td>Genético (DEAP)</td>
+      <td>ROC_AUC</td>
+      <td>0.7711</td>
+      <td>0.0286</td>
+      <td>60</td>
+      <td>1.6702</td>
+      <td>1.4928</td>
+      <td>{"n_neighbors": 189, "weights": "uniform"}</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de los resultados de clasificación</span>
+<span class="n">tc_</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"clf"</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"externo_media"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Clasificación (ROC-AUC externo, mayor es mejor; se muestran las 25 primeras de </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tc_</span><span class="p">)</span><span class="si">}</span><span class="s2">).** La mejor es "</span>
+   <span class="sa">f</span><span class="s2">"**</span><span class="si">{</span><span class="n">tc_</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> · </span><span class="si">{</span><span class="n">tc_</span><span class="o">.</span><span class="n">balanceo</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> · </span><span class="si">{</span><span class="n">tc_</span><span class="o">.</span><span class="n">optimizador</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">** (AUC </span><span class="si">{</span><span class="n">tc_</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> ± "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tc_</span><span class="o">.</span><span class="n">externo_desv</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">). Las </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tc_</span><span class="p">)</span><span class="si">}</span><span class="s2"> combinaciones caen entre </span><span class="si">{</span><span class="n">tc_</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> y </span><span class="si">{</span><span class="n">tc_</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">: "</span>
+   <span class="sa">f</span><span class="s2">"el rango completo equivale a ~</span><span class="si">{</span><span class="p">(</span><span class="n">tc_</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">tc_</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">tc_</span><span class="o">.</span><span class="n">externo_desv</span><span class="o">.</span><span class="n">median</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> desviaciones "</span>
+   <span class="sa">f</span><span class="s2">"típicas entre bloques externos."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Clasificación (ROC-AUC externo, mayor es mejor; se muestran las 25 primeras de 112).</strong> La mejor es <strong>XGBoost · sin balanceo · Random</strong> (AUC 0.7781 ± 0.0334). Las 112 combinaciones caen entre 0.678 y 0.778: el rango completo equivale a ~2.9 desviaciones típicas entre bloques externos.</p>
+</div>
+</div>
+<section id="campeones-la-mejor-combinacion-de-cada-modelo">
+<h3>Campeones: la mejor combinación de cada modelo<a class="headerlink" href="#campeones-la-mejor-combinacion-de-cada-modelo" title="Link to this heading">#</a></h3>
+<p>Para cada uno de los 7 modelos se elige <strong>una sola</strong> combinación, la de mejor métrica en el <strong>bucle externo</strong>
+(RMSLE en regresión, ROC-AUC en clasificación), con datos de entrenamiento únicamente. Resume qué
+configuración de cada familia rinde mejor en la validación anidada. En la evaluación final en origen móvil
+(cap. 13.11) cada familia tiene su propio campeón, elegido con la validación anterior a 2016, que es el que se
+compara con el modelo propuesto (cap. 22.4) y entra a Friedman, Nemenyi y las pruebas de independencia
+(cap. 21). Comparar contra un representante por familia, y no contra las 28 o 112 combinaciones, evita corregir
+por muchas comparaciones casi redundantes entre versiones de un mismo modelo.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Campeón de cada familia (mejor combinación del modelo)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">campeones</span><span class="p">(</span><span class="n">tarea</span><span class="p">):</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="n">tarea</span><span class="p">]</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span> <span class="k">if</span> <span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span> <span class="k">else</span> <span class="n">sub</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"externo_media"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="p">(</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span><span class="p">))</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">c</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">"puesto"</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">c</span><span class="p">[</span><span class="s2">"combinación"</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">optimizador</span> <span class="k">if</span> <span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span> <span class="k">else</span> <span class="n">c</span><span class="o">.</span><span class="n">balanceo</span> <span class="o">+</span> <span class="s2">" · "</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">optimizador</span>
+    <span class="n">c</span><span class="p">[</span><span class="s2">"métrica externa"</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" ± "</span> <span class="o">+</span> <span class="n">c</span><span class="o">.</span><span class="n">externo_desv</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">v</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span><span class="p">[[</span><span class="s2">"puesto"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"combinación"</span><span class="p">,</span> <span class="s2">"métrica externa"</span><span class="p">,</span> <span class="s2">"t_total_min"</span><span class="p">,</span> <span class="s2">"hiperparámetros finales"</span><span class="p">]]</span>
+
+<span class="n">CAMP_R</span><span class="p">,</span> <span class="n">CAMP_C</span> <span class="o">=</span> <span class="n">campeones</span><span class="p">(</span><span class="s2">"reg"</span><span class="p">),</span> <span class="n">campeones</span><span class="p">(</span><span class="s2">"clf"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">CAMP_R</span><span class="p">,</span> <span class="s2">"e2_campeones_regresion.csv"</span><span class="p">);</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">CAMP_C</span><span class="p">,</span> <span class="s2">"e2_campeones_clasificacion.csv"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="s2">"**Regresión: campeón de cada modelo (RMSLE externo, menor es mejor)**"</span><span class="p">)</span>
+<span class="n">CAMP_R</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Regresión: campeón de cada modelo (RMSLE externo, menor es mejor)</strong></p>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>puesto</th>
+      <th>modelo</th>
+      <th>combinación</th>
+      <th>métrica externa</th>
+      <th>t_total_min</th>
+      <th>hiperparámetros finales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>21</th>
+      <td>1</td>
+      <td>XGBoost</td>
+      <td>Random</td>
+      <td>0.3175 ± 0.0264</td>
+      <td>2.10</td>
+      <td>{"n_estimators": 421, "max_depth": 4, "learnin...</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2</td>
+      <td>Random Forest</td>
+      <td>Random</td>
+      <td>0.3185 ± 0.0249</td>
+      <td>55.89</td>
+      <td>{"n_estimators": 248, "max_depth": 7, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>3</td>
+      <td>KNN</td>
+      <td>Random</td>
+      <td>0.3234 ± 0.0251</td>
+      <td>1.15</td>
+      <td>{"n_neighbors": 75, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>4</td>
+      <td>Árbol de decisión</td>
+      <td>Grid</td>
+      <td>0.3263 ± 0.0266</td>
+      <td>0.20</td>
+      <td>{"max_depth": 8, "min_samples_leaf": 5}</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>5</td>
+      <td>SVR</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.3327 ± 0.0257</td>
+      <td>2.98</td>
+      <td>{"C": 0.2919, "epsilon": 0.1635, "gamma": 0.0029}</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>6</td>
+      <td>Ridge</td>
+      <td>Genético (DEAP)</td>
+      <td>0.3341 ± 0.0251</td>
+      <td>0.09</td>
+      <td>{"alpha": 0.001}</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>7</td>
+      <td>Lasso</td>
+      <td>Genético (DEAP)</td>
+      <td>0.3341 ± 0.0251</td>
+      <td>0.14</td>
+      <td>{"alpha": 0.0}</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="s2">"**Clasificación: campeón de cada modelo (ROC-AUC externo, mayor es mejor)**"</span><span class="p">)</span>
+<span class="n">CAMP_C</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Clasificación: campeón de cada modelo (ROC-AUC externo, mayor es mejor)</strong></p>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>puesto</th>
+      <th>modelo</th>
+      <th>combinación</th>
+      <th>métrica externa</th>
+      <th>t_total_min</th>
+      <th>hiperparámetros finales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>89</th>
+      <td>1</td>
+      <td>XGBoost</td>
+      <td>sin balanceo · Random</td>
+      <td>0.7781 ± 0.0334</td>
+      <td>34.56</td>
+      <td>{"n_estimators": 222, "max_depth": 3, "learnin...</td>
+    </tr>
+    <tr>
+      <th>69</th>
+      <td>2</td>
+      <td>Random Forest</td>
+      <td>class_weight · Random</td>
+      <td>0.7755 ± 0.0355</td>
+      <td>11.24</td>
+      <td>{"n_estimators": 248, "max_depth": 7, "min_sam...</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>3</td>
+      <td>KNN</td>
+      <td>class_weight · Random</td>
+      <td>0.7727 ± 0.0296</td>
+      <td>1.65</td>
+      <td>{"n_neighbors": 189, "weights": "uniform"}</td>
+    </tr>
+    <tr>
+      <th>121</th>
+      <td>4</td>
+      <td>Regresión logística (L1/L2)</td>
+      <td>sin balanceo · Random</td>
+      <td>0.7700 ± 0.0364</td>
+      <td>0.29</td>
+      <td>{"C": 0.0116, "penalty": "l1"}</td>
+    </tr>
+    <tr>
+      <th>125</th>
+      <td>5</td>
+      <td>SVM</td>
+      <td>ADASYN · Random</td>
+      <td>0.7665 ± 0.0366</td>
+      <td>5.23</td>
+      <td>{"C": 0.2167, "gamma": 0.0076}</td>
+    </tr>
+    <tr>
+      <th>92</th>
+      <td>6</td>
+      <td>Naive Bayes</td>
+      <td>ADASYN · Grid</td>
+      <td>0.7643 ± 0.0319</td>
+      <td>1.19</td>
+      <td>{"var_smoothing": 0.1}</td>
+    </tr>
+    <tr>
+      <th>52</th>
+      <td>7</td>
+      <td>Árbol de decisión</td>
+      <td>class_weight · Grid</td>
+      <td>0.7637 ± 0.0378</td>
+      <td>0.22</td>
+      <td>{"max_depth": 14, "min_samples_leaf": 500}</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- **Regresión.** El orden de familias es </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CAMP_R</span><span class="o">.</span><span class="n">modelo</span><span class="p">)</span><span class="si">}</span><span class="s2">. XGBoost y Random Forest quedan muy cerca "</span>
+   <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">CAMP_R</span><span class="p">[</span><span class="s1">'métrica externa'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">' ±'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> frente a </span><span class="si">{</span><span class="n">CAMP_R</span><span class="p">[</span><span class="s1">'métrica externa'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">' ±'</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">); los modelos lineales "</span>
+   <span class="sa">f</span><span class="s2">"(Ridge, Lasso) y SVR son claramente peores.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Clasificación.** El orden es </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CAMP_C</span><span class="o">.</span><span class="n">modelo</span><span class="p">)</span><span class="si">}</span><span class="s2">. Ganan </span><span class="si">{</span><span class="n">CAMP_C</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">CAMP_C</span><span class="o">.</span><span class="n">combinación</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">) y "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">CAMP_C</span><span class="o">.</span><span class="n">modelo</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">CAMP_C</span><span class="o">.</span><span class="n">combinación</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- En KNN gana por 0,00002 de AUC la versión con class_weight, que el cap. 13.6 demostró equivalente a «sin balanceo» (ordena las "</span>
+   <span class="sa">f</span><span class="s2">"celdas igual): da lo mismo cuál de las dos represente a KNN.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- El optimizador que produjo cada campeón varía de un modelo a otro: ninguno gana siempre, coherente con lo que muestran las "</span>
+   <span class="sa">f</span><span class="s2">"secciones siguientes."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p><strong>Regresión.</strong> El orden de familias es XGBoost, Random Forest, KNN, Árbol de decisión, SVR, Ridge, Lasso. XGBoost y Random Forest quedan muy cerca (0.3175 frente a 0.3185); los modelos lineales (Ridge, Lasso) y SVR son claramente peores.</p></li>
+<li><p><strong>Clasificación.</strong> El orden es XGBoost, Random Forest, KNN, Regresión logística (L1/L2), SVM, Naive Bayes, Árbol de decisión. Ganan XGBoost (sin balanceo · Random) y Random Forest (class_weight · Random).</p></li>
+<li><p>En KNN gana por 0,00002 de AUC la versión con class_weight, que el cap. 13.6 demostró equivalente a «sin balanceo» (ordena las celdas igual): da lo mismo cuál de las dos represente a KNN.</p></li>
+<li><p>El optimizador que produjo cada campeón varía de un modelo a otro: ninguno gana siempre, coherente con lo que muestran las secciones siguientes.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="comparacion-de-los-optimizadores-por-metrica-tiempo-y-presupuesto">
+<h3>Comparación de los optimizadores por métrica, tiempo y presupuesto<a class="headerlink" href="#comparacion-de-los-optimizadores-por-metrica-tiempo-y-presupuesto" title="Link to this heading">#</a></h3>
+<p>Para comparar optimizadores sin mezclar modelos, cada <strong>grupo</strong> (modelo × balanceo) se trata como un bloque:
+dentro de él se ordenan los 4 optimizadores por la métrica externa (1 = mejor) y se promedian los rangos.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ranking de optimizadores dentro de cada modelo y prueba de Friedman</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rangos_opt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">menor_mejor</span><span class="p">):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"optimizador"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"externo_media"</span><span class="p">)[</span><span class="n">OPT</span><span class="p">]</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="n">menor_mejor</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">g</span><span class="p">,</span> <span class="n">R</span>
+
+<span class="n">resumen</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">tarea</span><span class="p">,</span> <span class="n">menor</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"reg"</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> <span class="p">(</span><span class="s2">"clf"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="n">tarea</span><span class="p">]</span>
+    <span class="n">g</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">rangos_opt</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">menor</span><span class="p">)</span>
+    <span class="n">fr</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">friedmanchisquare</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">g</span><span class="p">[</span><span class="n">o</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">OPT</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">OPT</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">d</span><span class="o">.</span><span class="n">optimizador</span> <span class="o">==</span> <span class="n">o</span><span class="p">]</span>
+        <span class="n">resumen</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="n">tarea</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">:</span> <span class="n">o</span><span class="p">,</span> <span class="s2">"rango_medio"</span><span class="p">:</span> <span class="n">R</span><span class="p">[</span><span class="n">o</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"veces_mejor"</span><span class="p">:</span> <span class="nb">int</span><span class="p">((</span><span class="n">R</span><span class="p">[</span><span class="n">o</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()),</span>
+                        <span class="s2">"grupos"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">R</span><span class="p">),</span> <span class="s2">"métrica_externa_media"</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"evaluaciones_medias"</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">evaluaciones</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+                        <span class="s2">"t_total_medio_min"</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">t_total_min</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"t_por_eval_mediana_s"</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">t_por_eval_s</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span>
+                        <span class="s2">"Friedman_p (entre optimizadores)"</span><span class="p">:</span> <span class="n">fr</span><span class="o">.</span><span class="n">pvalue</span><span class="p">})</span>
+<span class="n">RO</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">resumen</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">RO</span><span class="p">,</span> <span class="s2">"e2_optimizadores_resumen.csv"</span><span class="p">)</span>
+<span class="n">RO</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>tarea</th>
+      <th>optimizador</th>
+      <th>rango_medio</th>
+      <th>veces_mejor</th>
+      <th>grupos</th>
+      <th>métrica_externa_media</th>
+      <th>evaluaciones_medias</th>
+      <th>t_total_medio_min</th>
+      <th>t_por_eval_mediana_s</th>
+      <th>Friedman_p (entre optimizadores)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>reg</td>
+      <td>Grid</td>
+      <td>3.1429</td>
+      <td>1</td>
+      <td>7</td>
+      <td>0.3300</td>
+      <td>48.0000</td>
+      <td>8.2741</td>
+      <td>1.0419</td>
+      <td>0.4188</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>reg</td>
+      <td>Random</td>
+      <td>2.1429</td>
+      <td>3</td>
+      <td>7</td>
+      <td>0.3283</td>
+      <td>60.0000</td>
+      <td>15.8512</td>
+      <td>1.0518</td>
+      <td>0.4188</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>reg</td>
+      <td>Bayesiano (TPE)</td>
+      <td>2.5714</td>
+      <td>1</td>
+      <td>7</td>
+      <td>0.3277</td>
+      <td>60.0000</td>
+      <td>9.0506</td>
+      <td>1.1209</td>
+      <td>0.4188</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>reg</td>
+      <td>Genético (DEAP)</td>
+      <td>2.1429</td>
+      <td>2</td>
+      <td>7</td>
+      <td>0.3320</td>
+      <td>60.0000</td>
+      <td>8.8069</td>
+      <td>1.0823</td>
+      <td>0.4188</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>clf</td>
+      <td>Grid</td>
+      <td>2.3571</td>
+      <td>10</td>
+      <td>28</td>
+      <td>0.7623</td>
+      <td>47.4286</td>
+      <td>7.3265</td>
+      <td>1.7456</td>
+      <td>0.7086</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>clf</td>
+      <td>Random</td>
+      <td>2.4107</td>
+      <td>11</td>
+      <td>28</td>
+      <td>0.7613</td>
+      <td>60.0000</td>
+      <td>11.2301</td>
+      <td>1.8617</td>
+      <td>0.7086</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>clf</td>
+      <td>Bayesiano (TPE)</td>
+      <td>2.5000</td>
+      <td>4</td>
+      <td>28</td>
+      <td>0.7634</td>
+      <td>60.0000</td>
+      <td>12.1109</td>
+      <td>1.9829</td>
+      <td>0.7086</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>clf</td>
+      <td>Genético (DEAP)</td>
+      <td>2.7321</td>
+      <td>3</td>
+      <td>28</td>
+      <td>0.7607</td>
+      <td>60.0000</td>
+      <td>10.1500</td>
+      <td>1.7896</td>
+      <td>0.7086</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de la comparación de optimizadores</span>
+<span class="n">p_reg</span> <span class="o">=</span> <span class="n">RO</span><span class="p">[</span><span class="n">RO</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span><span class="p">][</span><span class="s2">"Friedman_p (entre optimizadores)"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">p_clf</span> <span class="o">=</span> <span class="n">RO</span><span class="p">[</span><span class="n">RO</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"clf"</span><span class="p">][</span><span class="s2">"Friedman_p (entre optimizadores)"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">mej</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="p">:</span> <span class="n">RO</span><span class="p">[</span><span class="n">RO</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"rango_medio"</span><span class="p">)</span><span class="o">.</span><span class="n">optimizador</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"reg"</span><span class="p">,</span> <span class="s2">"clf"</span><span class="p">)}</span>
+<span class="n">peor</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="p">:</span> <span class="n">RO</span><span class="p">[</span><span class="n">RO</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"rango_medio"</span><span class="p">)</span><span class="o">.</span><span class="n">optimizador</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"reg"</span><span class="p">,</span> <span class="s2">"clf"</span><span class="p">)}</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- **Por métrica externa.** El mejor rango medio lo tiene **</span><span class="si">{</span><span class="n">mej</span><span class="p">[</span><span class="s1">'reg'</span><span class="p">]</span><span class="si">}</span><span class="s2">** en regresión y **</span><span class="si">{</span><span class="n">mej</span><span class="p">[</span><span class="s1">'clf'</span><span class="p">]</span><span class="si">}</span><span class="s2">** en "</span>
+   <span class="sa">f</span><span class="s2">"clasificación; el peor, </span><span class="si">{</span><span class="n">peor</span><span class="p">[</span><span class="s1">'reg'</span><span class="p">]</span><span class="si">}</span><span class="s2"> y </span><span class="si">{</span><span class="n">peor</span><span class="p">[</span><span class="s1">'clf'</span><span class="p">]</span><span class="si">}</span><span class="s2">. La prueba de Friedman entre optimizadores (bloques = grupos) da "</span>
+   <span class="sa">f</span><span class="s2">"p = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">p_reg</span><span class="p">)</span><span class="si">}</span><span class="s2"> en regresión y p = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">p_clf</span><span class="p">)</span><span class="si">}</span><span class="s2"> en clasificación"</span>
+   <span class="o">+</span> <span class="p">(</span><span class="s2">": en regresión **no** hay evidencia de que el optimizador cambie la métrica externa"</span> <span class="k">if</span> <span class="n">p_reg</span> <span class="o">&gt;=</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span>
+   <span class="o">+</span> <span class="p">(</span><span class="s2">", y en clasificación sí hay diferencias"</span> <span class="k">if</span> <span class="n">p_clf</span> <span class="o">&lt;</span> <span class="mf">0.05</span> <span class="k">else</span> <span class="s2">", y en clasificación tampoco"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Por presupuesto.** Grid usa en promedio menos de 15 evaluaciones porque su rejilla tiene menos puntos; "</span>
+   <span class="sa">f</span><span class="s2">"los otros tres agotan las 15.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Por tiempo.** El tiempo por evaluación lo domina el ajuste del modelo, no el optimizador: la mediana es "</span>
+   <span class="sa">f</span><span class="s2">"parecida en los cuatro. El sobrecosto de TPE (ajustar el sustituto) y del AG (operadores) es de milisegundos frente "</span>
+   <span class="sa">f</span><span class="s2">"a segundos de cada validación interna. Los tiempos totales se midieron con varias combinaciones corriendo en paralelo en "</span>
+   <span class="sa">f</span><span class="s2">"la máquina de los autores, así que tienen ruido de contención; por eso se comparan medianas."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p><strong>Por métrica externa.</strong> El mejor rango medio lo tiene <strong>Random</strong> en regresión y <strong>Grid</strong> en clasificación; el peor, Grid y Genético (DEAP). La prueba de Friedman entre optimizadores (bloques = grupos) da p = 0,419 en regresión y p = 0,709 en clasificación: en regresión <strong>no</strong> hay evidencia de que el optimizador cambie la métrica externa, y en clasificación tampoco.</p></li>
+<li><p><strong>Por presupuesto.</strong> Grid usa en promedio menos de 15 evaluaciones porque su rejilla tiene menos puntos; los otros tres agotan las 15.</p></li>
+<li><p><strong>Por tiempo.</strong> El tiempo por evaluación lo domina el ajuste del modelo, no el optimizador: la mediana es parecida en los cuatro. El sobrecosto de TPE (ajustar el sustituto) y del AG (operadores) es de milisegundos frente a segundos de cada validación interna. Los tiempos totales se midieron con varias combinaciones corriendo en paralelo en la máquina de los autores, así que tienen ruido de contención; por eso se comparan medianas.</p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="curvas-anytime-mejor-valor-hallado-hasta-la-evaluacion-t">
+<h2>14.3 Curvas anytime: mejor valor hallado hasta la evaluación <em>t</em><a class="headerlink" href="#curvas-anytime-mejor-valor-hallado-hasta-la-evaluacion-t" title="Link to this heading">#</a></h2>
+<p>Para cada búsqueda (3 pliegues externos + la búsqueda final de cada combinación) se calcula el mejor valor
+del objetivo interno hasta la evaluación <em>t</em>. Para promediar entre modelos de escalas distintas se usa el
+<strong>regret relativo</strong>: la distancia (en %) entre ese valor y el mejor valor que <strong>cualquiera</strong> de los 4
+optimizadores encontró para el mismo grupo y pliegue. Regret 0 = ya encontró el mejor conocido.
+Cuando Grid agota su rejilla antes de 15, su curva se mantiene plana (no tiene más puntos que evaluar).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Curvas anytime: mejor valor acumulado por evaluación (regret relativo)</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">REG</span> <span class="o">+</span> <span class="n">CLF</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="s2">"historial"</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">"historial_final"</span><span class="p">],</span> <span class="n">pliegue</span><span class="o">=</span><span class="s2">"final"</span><span class="p">)]:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s2">"valores"</span><span class="p">]))</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">15</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))])</span>
+        <span class="n">tc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">h</span><span class="p">[</span><span class="s2">"tiempos"</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">15</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s2">"tiempos"</span><span class="p">]))]))</span>
+        <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">tc</span><span class="p">)):</span>
+            <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"tarea"</span><span class="p">],</span> <span class="s2">"grupo"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">'modelo'</span><span class="p">]</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">'balanceo'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"pliegue"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s2">"pliegue"</span><span class="p">]),</span>
+                          <span class="s2">"optimizador"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"optimizador"</span><span class="p">],</span> <span class="s2">"t"</span><span class="p">:</span> <span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"mejor"</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">"t_acum_s"</span><span class="p">:</span> <span class="n">s</span><span class="p">})</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">ref</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"grupo"</span><span class="p">,</span> <span class="s2">"pliegue"</span><span class="p">])</span><span class="o">.</span><span class="n">mejor</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">"max"</span><span class="p">)</span>
+<span class="n">A</span><span class="p">[</span><span class="s2">"regret_%"</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">ref</span> <span class="o">-</span> <span class="n">A</span><span class="o">.</span><span class="n">mejor</span><span class="p">)</span> <span class="o">/</span> <span class="n">ref</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.2</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="p">(</span><span class="n">tarea</span><span class="p">,</span> <span class="n">nom</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axs</span><span class="p">,</span> <span class="p">((</span><span class="s2">"reg"</span><span class="p">,</span> <span class="s2">"Regresión (−RMSLE interno)"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"clf"</span><span class="p">,</span> <span class="s2">"Clasificación (AUC interno)"</span><span class="p">))):</span>
+    <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">OPT</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">A</span><span class="p">[(</span><span class="n">A</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="n">tarea</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">optimizador</span> <span class="o">==</span> <span class="n">o</span><span class="p">)]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"t"</span><span class="p">)[</span><span class="s2">"regret_%"</span><span class="p">]</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">c</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.75</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">COL</span><span class="p">[</span><span class="n">o</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">o</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">"symlog"</span><span class="p">,</span> <span class="n">linthresh</span><span class="o">=</span><span class="mf">0.1</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"evaluación t"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"regret relativo medio (%)"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">nom</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"e2_anytime.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/06c5b97af97b90fd452b91aab8c1dddefbb3851978119a06e89c325f0c826cf0.png" src="../_images/06c5b97af97b90fd452b91aab8c1dddefbb3851978119a06e89c325f0c826cf0.png" />
+</div>
+</div>
+</section>
+<section id="evidencia-cuantitativa-de-eficiencia-por-unidad-de-presupuesto">
+<h2>14.4 Evidencia cuantitativa de eficiencia por unidad de presupuesto<a class="headerlink" href="#evidencia-cuantitativa-de-eficiencia-por-unidad-de-presupuesto" title="Link to this heading">#</a></h2>
+<p>Tres medidas por búsqueda, comparadas con pruebas pareadas (Wilcoxon de rangos con signo, bloques =
+grupo × pliegue, Holm sobre las comparaciones):</p>
+<ul class="simple">
+<li><p><strong>Regret final</strong> (t = 15): calidad alcanzada con todo el presupuesto.</p></li>
+<li><p><strong>Área bajo la curva de regret</strong> (media de las 15 evaluaciones): calidad <strong>en cualquier momento</strong>; premia
+llegar pronto a buenas soluciones.</p></li>
+<li><p><strong>Evaluaciones hasta quedar a menos de 0,5 % del mejor conocido</strong> (16 = no lo logró): presupuesto necesario.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Métricas de eficiencia: regret final, área bajo la curva y evaluaciones hasta 0,5 %</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hasta</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">umbral</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="n">ok</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="s2">"regret_%"</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">&lt;=</span> <span class="n">umbral</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">ok</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">ok</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">else</span> <span class="mi">16</span>
+
+<span class="n">met</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"grupo"</span><span class="p">,</span> <span class="s2">"pliegue"</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">])</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">"regret_final"</span><span class="p">:</span> <span class="n">g</span><span class="p">[</span><span class="s2">"regret_%"</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"area_regret"</span><span class="p">:</span> <span class="n">g</span><span class="p">[</span><span class="s2">"regret_%"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"evals_hasta_0.5%"</span><span class="p">:</span> <span class="n">hasta</span><span class="p">(</span><span class="n">g</span><span class="p">)}))</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">tab</span> <span class="o">=</span> <span class="n">met</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">])[[</span><span class="s2">"regret_final"</span><span class="p">,</span> <span class="s2">"area_regret"</span><span class="p">,</span> <span class="s2">"evals_hasta_0.5%"</span><span class="p">]]</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="s2">"mean"</span><span class="p">,</span> <span class="s2">"median"</span><span class="p">])</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">tab</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"e2_eficiencia_optimizadores.csv"</span><span class="p">)</span>
+<span class="n">tab</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th colspan="2" halign="left">regret_final</th>
+      <th colspan="2" halign="left">area_regret</th>
+      <th colspan="2" halign="left">evals_hasta_0.5%</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th></th>
+      <th>mean</th>
+      <th>median</th>
+      <th>mean</th>
+      <th>median</th>
+      <th>mean</th>
+      <th>median</th>
+    </tr>
+    <tr>
+      <th>tarea</th>
+      <th>optimizador</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="4" valign="top">clf</th>
+      <th>Bayesiano (TPE)</th>
+      <td>0.052</td>
+      <td>0.007</td>
+      <td>0.450</td>
+      <td>0.241</td>
+      <td>3.652</td>
+      <td>3.0</td>
+    </tr>
+    <tr>
+      <th>Genético (DEAP)</th>
+      <td>0.209</td>
+      <td>0.036</td>
+      <td>0.635</td>
+      <td>0.362</td>
+      <td>6.036</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th>Grid</th>
+      <td>0.136</td>
+      <td>0.020</td>
+      <td>0.880</td>
+      <td>0.344</td>
+      <td>5.054</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>Random</th>
+      <td>0.230</td>
+      <td>0.087</td>
+      <td>0.598</td>
+      <td>0.354</td>
+      <td>5.571</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <th rowspan="4" valign="top">reg</th>
+      <th>Bayesiano (TPE)</th>
+      <td>0.072</td>
+      <td>0.000</td>
+      <td>0.693</td>
+      <td>0.187</td>
+      <td>4.071</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>Genético (DEAP)</th>
+      <td>0.706</td>
+      <td>0.005</td>
+      <td>1.308</td>
+      <td>0.158</td>
+      <td>4.321</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>Grid</th>
+      <td>1.203</td>
+      <td>0.265</td>
+      <td>3.238</td>
+      <td>0.883</td>
+      <td>7.393</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>Random</th>
+      <td>0.290</td>
+      <td>0.018</td>
+      <td>1.045</td>
+      <td>0.164</td>
+      <td>4.679</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Comparación pareada de optimizadores (Wilcoxon) con corrección de Holm</span>
+<span class="n">pruebas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">tarea</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"reg"</span><span class="p">,</span> <span class="s2">"clf"</span><span class="p">):</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">met</span><span class="p">[</span><span class="n">met</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="n">tarea</span><span class="p">]</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"grupo"</span><span class="p">,</span> <span class="s2">"pliegue"</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"optimizador"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"area_regret"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b_</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"Bayesiano (TPE)"</span><span class="p">,</span> <span class="s2">"Random"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Bayesiano (TPE)"</span><span class="p">,</span> <span class="s2">"Grid"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Genético (DEAP)"</span><span class="p">,</span> <span class="s2">"Random"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Genético (DEAP)"</span><span class="p">,</span> <span class="s2">"Grid"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"Random"</span><span class="p">,</span> <span class="s2">"Grid"</span><span class="p">)):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">w</span><span class="p">[</span><span class="n">a</span><span class="p">]</span> <span class="o">-</span> <span class="n">w</span><span class="p">[</span><span class="n">b_</span><span class="p">]</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">wilcoxon</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">w</span><span class="p">[</span><span class="n">b_</span><span class="p">],</span> <span class="n">zero_method</span><span class="o">=</span><span class="s2">"zsplit"</span><span class="p">)</span>
+        <span class="n">pruebas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="n">tarea</span><span class="p">,</span> <span class="s2">"comparación"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">b_</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"dif_media_area"</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"mediana_dif"</span><span class="p">:</span> <span class="n">d</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span>
+                        <span class="s2">"% bloques en que A es mejor"</span><span class="p">:</span> <span class="mi">100</span> <span class="o">*</span> <span class="p">(</span><span class="n">d</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"p"</span><span class="p">:</span> <span class="n">st</span><span class="o">.</span><span class="n">pvalue</span><span class="p">})</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pruebas</span><span class="p">)</span>
+<span class="n">P</span><span class="p">[</span><span class="s2">"p_Holm"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">eda</span><span class="o">.</span><span class="n">holm</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"reg"</span><span class="p">,</span> <span class="s2">"clf"</span><span class="p">)])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="s2">"e2_eficiencia_pruebas.csv"</span><span class="p">)</span>
+<span class="n">P</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>tarea</th>
+      <th>comparación</th>
+      <th>dif_media_area</th>
+      <th>mediana_dif</th>
+      <th>% bloques en que A es mejor</th>
+      <th>p</th>
+      <th>p_Holm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>reg</td>
+      <td>Bayesiano (TPE) vs Random</td>
+      <td>-0.3521</td>
+      <td>0.0014</td>
+      <td>50.0000</td>
+      <td>0.7621</td>
+      <td>0.9045</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>reg</td>
+      <td>Bayesiano (TPE) vs Grid</td>
+      <td>-2.5450</td>
+      <td>-0.4182</td>
+      <td>64.2857</td>
+      <td>0.0007</td>
+      <td>0.0036</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>reg</td>
+      <td>Genético (DEAP) vs Random</td>
+      <td>0.2630</td>
+      <td>-0.0000</td>
+      <td>53.5714</td>
+      <td>0.4522</td>
+      <td>0.9045</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>reg</td>
+      <td>Genético (DEAP) vs Grid</td>
+      <td>-1.9299</td>
+      <td>-0.4016</td>
+      <td>57.1429</td>
+      <td>0.0191</td>
+      <td>0.0573</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>reg</td>
+      <td>Random vs Grid</td>
+      <td>-2.1929</td>
+      <td>-0.4706</td>
+      <td>64.2857</td>
+      <td>0.0017</td>
+      <td>0.0068</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>clf</td>
+      <td>Bayesiano (TPE) vs Random</td>
+      <td>-0.1483</td>
+      <td>-0.1005</td>
+      <td>60.7143</td>
+      <td>0.0100</td>
+      <td>0.0501</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>clf</td>
+      <td>Bayesiano (TPE) vs Grid</td>
+      <td>-0.4301</td>
+      <td>-0.0932</td>
+      <td>58.0357</td>
+      <td>0.0410</td>
+      <td>0.1639</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>clf</td>
+      <td>Genético (DEAP) vs Random</td>
+      <td>0.0373</td>
+      <td>0.0000</td>
+      <td>41.9643</td>
+      <td>0.0796</td>
+      <td>0.2388</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>clf</td>
+      <td>Genético (DEAP) vs Grid</td>
+      <td>-0.2445</td>
+      <td>-0.0129</td>
+      <td>50.8929</td>
+      <td>0.7297</td>
+      <td>1.0000</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>clf</td>
+      <td>Random vs Grid</td>
+      <td>-0.2817</td>
+      <td>-0.0076</td>
+      <td>51.7857</td>
+      <td>0.5498</td>
+      <td>1.0000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de cada comparación de optimizadores</span>
+<span class="n">lin</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">p_Holm</span> <span class="o">&lt;</span> <span class="mf">0.05</span>
+    <span class="n">lin</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- </span><span class="si">{</span><span class="s1">'reg.'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">tarea</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'reg'</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'clf.'</span><span class="si">}</span><span class="s2"> **</span><span class="si">{</span><span class="n">f</span><span class="p">[</span><span class="s1">'comparación'</span><span class="p">]</span><span class="si">}</span><span class="s2">**: área de regret media </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">dif_media_area</span><span class="si">:</span><span class="s2">+.3f</span><span class="si">}</span><span class="s2"> pp "</span>
+               <span class="sa">f</span><span class="s2">"(negativo = el primero es mejor), mejor en </span><span class="si">{</span><span class="n">f</span><span class="p">[</span><span class="s1">'% bloques en que A es mejor'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> % de los bloques, p Holm = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">p_Holm</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span>
+               <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">' → diferencia significativa'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">sig</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">' → sin diferencia significativa'</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lin</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p>reg. <strong>Bayesiano (TPE) vs Random</strong>: área de regret media -0.352 pp (negativo = el primero es mejor), mejor en 50 % de los bloques, p Holm = 0,904 → sin diferencia significativa.</p></li>
+<li><p>reg. <strong>Bayesiano (TPE) vs Grid</strong>: área de regret media -2.545 pp (negativo = el primero es mejor), mejor en 64 % de los bloques, p Holm = 0,004 → diferencia significativa.</p></li>
+<li><p>reg. <strong>Genético (DEAP) vs Random</strong>: área de regret media +0.263 pp (negativo = el primero es mejor), mejor en 54 % de los bloques, p Holm = 0,904 → sin diferencia significativa.</p></li>
+<li><p>reg. <strong>Genético (DEAP) vs Grid</strong>: área de regret media -1.930 pp (negativo = el primero es mejor), mejor en 57 % de los bloques, p Holm = 0,057 → sin diferencia significativa.</p></li>
+<li><p>reg. <strong>Random vs Grid</strong>: área de regret media -2.193 pp (negativo = el primero es mejor), mejor en 64 % de los bloques, p Holm = 0,007 → diferencia significativa.</p></li>
+<li><p>clf. <strong>Bayesiano (TPE) vs Random</strong>: área de regret media -0.148 pp (negativo = el primero es mejor), mejor en 61 % de los bloques, p Holm = 0,050 → sin diferencia significativa.</p></li>
+<li><p>clf. <strong>Bayesiano (TPE) vs Grid</strong>: área de regret media -0.430 pp (negativo = el primero es mejor), mejor en 58 % de los bloques, p Holm = 0,164 → sin diferencia significativa.</p></li>
+<li><p>clf. <strong>Genético (DEAP) vs Random</strong>: área de regret media +0.037 pp (negativo = el primero es mejor), mejor en 42 % de los bloques, p Holm = 0,239 → sin diferencia significativa.</p></li>
+<li><p>clf. <strong>Genético (DEAP) vs Grid</strong>: área de regret media -0.244 pp (negativo = el primero es mejor), mejor en 51 % de los bloques, p Holm = 1,000 → sin diferencia significativa.</p></li>
+<li><p>clf. <strong>Random vs Grid</strong>: área de regret media -0.282 pp (negativo = el primero es mejor), mejor en 52 % de los bloques, p Holm = 1,000 → sin diferencia significativa.</p></li>
+</ul>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura global de la eficiencia</span>
+<span class="n">ar</span> <span class="o">=</span> <span class="n">tab</span><span class="p">[</span><span class="s2">"area_regret"</span><span class="p">][</span><span class="s2">"mean"</span><span class="p">]</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">p_Holm</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">]</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Lectura.**</span><span class="se">\n\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Bayesiano (TPE) tiene el área de regret media más baja en las dos tareas** (regresión </span><span class="si">{</span><span class="n">ar</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Bayesiano (TPE)'</span><span class="p">,</span><span class="w"> </span><span class="s1">'reg'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> pp, "</span>
+   <span class="sa">f</span><span class="s2">"clasificación </span><span class="si">{</span><span class="n">ar</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Bayesiano (TPE)'</span><span class="p">,</span><span class="w"> </span><span class="s1">'clf'</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> pp) y, en promedio, necesita menos evaluaciones para quedar a 0,5 % del mejor conocido: después "</span>
+   <span class="sa">f</span><span class="s2">"de las 3 evaluaciones de arranque, la Mejora Esperada concentra el muestreo donde l(x)/g(x) es alto.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Pero la ventaja solo es significativa frente a Grid.** Tras Holm, las diferencias significativas son: "</span>
+   <span class="o">+</span> <span class="p">(</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">f</span><span class="p">[</span><span class="s1">'comparación'</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="s1">'reg.'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">tarea</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'reg'</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'clf.'</span><span class="si">}</span><span class="s2">, p = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">p_Holm</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">iterrows</span><span class="p">())</span> <span class="ow">or</span> <span class="s2">"ninguna"</span><span class="p">)</span>
+   <span class="o">+</span> <span class="s2">". TPE frente a Random y el AG frente a Random no se distinguen: con solo 15 evaluaciones, TPE pasa un 20 </span><span class="si">% d</span><span class="s2">el presupuesto en "</span>
+   <span class="s2">"arranque aleatorio y el AG, con población 4, se parece mucho a Random (su generación inicial **es** aleatoria). De hecho, en "</span>
+   <span class="s2">"XGBoost de regresión el AG y Random encontraron **la misma configuración**: con la misma semilla, la población inicial del AG "</span>
+   <span class="s2">"coincide con las primeras muestras de Random y el élite nunca fue superado.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Grid es el menos eficiente** cuando el espacio tiene más de 2–3 hiperparámetros (XGBoost, Random Forest, SVR), porque fija en "</span>
+   <span class="sa">f</span><span class="s2">"el centro los que no caben en la rejilla.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- La ventaja de un método de búsqueda **interna** no se traslada al bucle **externo** (14.2): las mejoras de la búsqueda son "</span>
+   <span class="sa">f</span><span class="s2">"de décimas de punto porcentual, menores que la variación entre años."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Lectura.</strong></p>
+<ul class="simple">
+<li><p><strong>Bayesiano (TPE) tiene el área de regret media más baja en las dos tareas</strong> (regresión 0.69 pp, clasificación 0.45 pp) y, en promedio, necesita menos evaluaciones para quedar a 0,5 % del mejor conocido: después de las 3 evaluaciones de arranque, la Mejora Esperada concentra el muestreo donde l(x)/g(x) es alto.</p></li>
+<li><p><strong>Pero la ventaja solo es significativa frente a Grid.</strong> Tras Holm, las diferencias significativas son: Bayesiano (TPE) vs Grid (reg., p = 0,004), Random vs Grid (reg., p = 0,007). TPE frente a Random y el AG frente a Random no se distinguen: con solo 15 evaluaciones, TPE pasa un 20 % del presupuesto en arranque aleatorio y el AG, con población 4, se parece mucho a Random (su generación inicial <strong>es</strong> aleatoria). De hecho, en XGBoost de regresión el AG y Random encontraron <strong>la misma configuración</strong>: con la misma semilla, la población inicial del AG coincide con las primeras muestras de Random y el élite nunca fue superado.</p></li>
+<li><p><strong>Grid es el menos eficiente</strong> cuando el espacio tiene más de 2–3 hiperparámetros (XGBoost, Random Forest, SVR), porque fija en el centro los que no caben en la rejilla.</p></li>
+<li><p>La ventaja de un método de búsqueda <strong>interna</strong> no se traslada al bucle <strong>externo</strong> (14.2): las mejoras de la búsqueda son de décimas de punto porcentual, menores que la variación entre años.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="diversidad-genetica-del-ag">
+<h2>14.5 Diversidad genética del AG<a class="headerlink" href="#diversidad-genetica-del-ag" title="Link to this heading">#</a></h2>
+<p>La diversidad es la distancia euclídea media entre los individuos de la población (genes en [0,1]^d). Una
+caída rápida a cero indica <strong>convergencia prematura</strong>: la población se vuelve copias del élite y deja de
+explorar.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Algoritmo genético: diversidad de la población por generación</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">REG</span> <span class="o">+</span> <span class="n">CLF</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">"optimizador"</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"Genético (DEAP)"</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bm</span><span class="o">.</span><span class="n">ESPACIOS</span><span class="p">[(</span><span class="n">r</span><span class="p">[</span><span class="s2">"tarea"</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">])])</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">r</span><span class="p">[</span><span class="s2">"historial"</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">"historial_final"</span><span class="p">]]:</span>
+        <span class="k">for</span> <span class="n">gnr</span><span class="p">,</span> <span class="n">dv</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="s2">"diversidad"</span><span class="p">]):</span>
+            <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"tarea"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"tarea"</span><span class="p">],</span> <span class="s2">"modelo"</span><span class="p">:</span> <span class="n">r</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">],</span> <span class="s2">"generación"</span><span class="p">:</span> <span class="n">gnr</span><span class="p">,</span> <span class="s2">"diversidad_rel"</span><span class="p">:</span> <span class="n">dv</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)})</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">tarea</span><span class="p">,</span> <span class="n">mod</span><span class="p">),</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">D</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"tarea"</span><span class="p">,</span> <span class="s2">"modelo"</span><span class="p">]):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"generación"</span><span class="p">)</span><span class="o">.</span><span class="n">diversidad_rel</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">"o"</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"-"</span> <span class="k">if</span> <span class="n">tarea</span> <span class="o">==</span> <span class="s2">"reg"</span> <span class="k">else</span> <span class="s2">"--"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">tarea</span><span class="si">}</span><span class="s2"> · </span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">":"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"generación"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"diversidad / esperada al azar"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Diversidad de la población del AG"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mf">6.5</span><span class="p">,</span> <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"e2_diversidad_ag.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">g0</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">generación</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">diversidad_rel</span><span class="o">.</span><span class="n">mean</span><span class="p">();</span> <span class="n">gf</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">generación</span> <span class="o">==</span> <span class="n">D</span><span class="o">.</span><span class="n">generación</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span><span class="o">.</span><span class="n">diversidad_rel</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"La diversidad está normalizada por la esperada entre puntos al azar en [0,1]^d (√(d/6)). En la generación inicial vale "</span>
+   <span class="sa">f</span><span class="s2">"≈ </span><span class="si">{</span><span class="n">g0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> (población aleatoria) y en la última ≈ </span><span class="si">{</span><span class="n">gf</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">: cae a "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gf</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">g0</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> % del valor inicial. Hay convergencia hacia el élite, como se espera con torneo + elitismo y "</span>
+   <span class="sa">f</span><span class="s2">"población 4, pero sin colapso total gracias a la mutación y a la reinyección. Con un presupuesto mayor convendría una "</span>
+   <span class="sa">f</span><span class="s2">"población más grande para retrasar esta caída."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/d9ea87cb051291d7e0708a478cd32f99f9aa00dc65e706a8252d477df6df47d0.png" src="../_images/d9ea87cb051291d7e0708a478cd32f99f9aa00dc65e706a8252d477df6df47d0.png" />
+<p>La diversidad está normalizada por la esperada entre puntos al azar en [0,1]^d (√(d/6)). En la generación inicial vale ≈ 1.00 (población aleatoria) y en la última ≈ 0.26: cae a 26 % del valor inicial. Hay convergencia hacia el élite, como se espera con torneo + elitismo y población 4, pero sin colapso total gracias a la mutación y a la reinyección. Con un presupuesto mayor convendría una población más grande para retrasar esta caída.</p>
+</div>
+</div>
+</section>
+<section id="estabilidad-de-cada-optimizador-ante-la-semilla">
+<h2>14.6 Estabilidad de cada optimizador ante la semilla<a class="headerlink" href="#estabilidad-de-cada-optimizador-ante-la-semilla" title="Link to this heading">#</a></h2>
+<p>Para separar el efecto del método del efecto del azar, se repitió la búsqueda de XGBoost (regresión) con
+<strong>5 semillas</strong> por optimizador sobre todo el entrenamiento (15 evaluaciones, la misma validación interna).
+Grid es determinista: sus 5 repeticiones coinciden.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estabilidad de cada optimizador ante 5 semillas</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">E2</span> <span class="o">/</span> <span class="s2">"semillas_optimizadores.csv"</span><span class="p">)</span>
+<span class="n">S</span><span class="p">[</span><span class="s2">"mejor"</span><span class="p">]</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"optimizador"</span><span class="p">,</span> <span class="s2">"semilla"</span><span class="p">])</span><span class="o">.</span><span class="n">RMSLE</span><span class="o">.</span><span class="n">cummin</span><span class="p">()</span>
+<span class="n">fin</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"optimizador"</span><span class="p">,</span> <span class="s2">"semilla"</span><span class="p">])</span><span class="o">.</span><span class="n">mejor</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="mi">0</span><span class="p">)[</span><span class="n">OPT</span><span class="p">]</span>
+<span class="n">est</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"media"</span><span class="p">:</span> <span class="n">fin</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"desv"</span><span class="p">:</span> <span class="n">fin</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="s2">"mín"</span><span class="p">:</span> <span class="n">fin</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="s2">"máx"</span><span class="p">:</span> <span class="n">fin</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+                    <span class="s2">"t_por_eval_mediana_s"</span><span class="p">:</span> <span class="n">S</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"optimizador"</span><span class="p">)</span><span class="o">.</span><span class="n">t_eval_s</span><span class="o">.</span><span class="n">median</span><span class="p">()[</span><span class="n">OPT</span><span class="p">]})</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"e2_semillas_optimizadores.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mf">3.8</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">OPT</span><span class="p">:</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="n">S</span><span class="o">.</span><span class="n">optimizador</span> <span class="o">==</span> <span class="n">o</span><span class="p">]</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"evaluacion"</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"semilla"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"mejor"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">COL</span><span class="p">[</span><span class="n">o</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">o</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">g</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">COL</span><span class="p">[</span><span class="n">o</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"evaluación"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"mejor RMSLE interno hasta t"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"XGBoost: 5 semillas por optimizador (banda = mín–máx)"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span> <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"e2_semillas_optimizadores.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">est</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/bd1d3a9b2d736a66cf5a0b898a1293d7cd75682d259a35c7ed45c5c6a85558d4.png" src="../_images/bd1d3a9b2d736a66cf5a0b898a1293d7cd75682d259a35c7ed45c5c6a85558d4.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>media</th>
+      <th>desv</th>
+      <th>mín</th>
+      <th>máx</th>
+      <th>t_por_eval_mediana_s</th>
+    </tr>
+    <tr>
+      <th>optimizador</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Grid</th>
+      <td>0.35173</td>
+      <td>0.00000</td>
+      <td>0.35173</td>
+      <td>0.35173</td>
+      <td>0.90535</td>
+    </tr>
+    <tr>
+      <th>Random</th>
+      <td>0.35054</td>
+      <td>0.00032</td>
+      <td>0.35022</td>
+      <td>0.35094</td>
+      <td>1.23915</td>
+    </tr>
+    <tr>
+      <th>Bayesiano (TPE)</th>
+      <td>0.35025</td>
+      <td>0.00019</td>
+      <td>0.35008</td>
+      <td>0.35057</td>
+      <td>0.95005</td>
+    </tr>
+    <tr>
+      <th>Genético (DEAP)</th>
+      <td>0.35049</td>
+      <td>0.00015</td>
+      <td>0.35022</td>
+      <td>0.35058</td>
+      <td>1.01826</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura de la estabilidad ante semillas</span>
+<span class="n">o_est</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s2">"Grid"</span><span class="p">)</span><span class="o">.</span><span class="n">desv</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Entre los métodos estocásticos, el más estable ante la semilla es **</span><span class="si">{</span><span class="n">o_est</span><span class="si">}</span><span class="s2">** (desviación </span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">o_est</span><span class="p">,</span><span class="w"> </span><span class="s1">'desv'</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> en el "</span>
+   <span class="sa">f</span><span class="s2">"RMSLE final). La mejor media la obtiene **</span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">media</span><span class="o">.</span><span class="n">idxmin</span><span class="p">()</span><span class="si">}</span><span class="s2">** (</span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">media</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">). Las diferencias entre semillas "</span>
+   <span class="sa">f</span><span class="s2">"(≤ </span><span class="si">{</span><span class="p">(</span><span class="n">est</span><span class="p">[</span><span class="s1">'máx'</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">est</span><span class="p">[</span><span class="s1">'mín'</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">) son del mismo orden que las diferencias entre optimizadores, lo que confirma que, "</span>
+   <span class="sa">f</span><span class="s2">"para este problema, la elección del optimizador influye poco en el resultado final y mucho más en **cuán rápido** se llega "</span>
+   <span class="sa">f</span><span class="s2">"a él (14.4)."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p>Entre los métodos estocásticos, el más estable ante la semilla es <strong>Genético (DEAP)</strong> (desviación 0.00015 en el RMSLE final). La mejor media la obtiene <strong>Bayesiano (TPE)</strong> (0.3502). Las diferencias entre semillas (≤ 0.0007) son del mismo orden que las diferencias entre optimizadores, lo que confirma que, para este problema, la elección del optimizador influye poco en el resultado final y mucho más en <strong>cuán rápido</strong> se llega a él (14.4).</p>
+</div>
+</div>
+</section>
+<section id="verificacion-de-las-reducciones-del-capitulo-13">
+<h2>14.7 Verificación de las reducciones del capítulo 13<a class="headerlink" href="#verificacion-de-las-reducciones-del-capitulo-13" title="Link to this heading">#</a></h2>
+<p>El cap. 13 había excluido 28 combinaciones de clasificación <strong>antes</strong> de correrlas: 8 por equivalencia
+demostrada (KNN y Naive Bayes con class_weight) y 20 por el tamizaje de baja fidelidad. Para cumplir el
+enunciado (140 combinaciones) se ejecutaron todas con el mismo protocolo, lo que permite comprobar si esas
+reglas, fijadas sin ver los resultados completos, habrían acertado.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Equivalencia de class_weight y sin balanceo en KNN y Naive Bayes</span>
+<span class="n">Mc</span> <span class="o">=</span> <span class="n">M</span><span class="p">[(</span><span class="n">M</span><span class="o">.</span><span class="n">tarea</span> <span class="o">==</span> <span class="s2">"clf"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">estado</span> <span class="o">==</span> <span class="s2">"completado"</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">eq</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"KNN"</span><span class="p">,</span> <span class="s2">"Naive Bayes"</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">OPT</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Mc</span><span class="p">[(</span><span class="n">Mc</span><span class="o">.</span><span class="n">modelo</span> <span class="o">==</span> <span class="n">mod</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Mc</span><span class="o">.</span><span class="n">balanceo</span> <span class="o">==</span> <span class="s2">"class_weight"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Mc</span><span class="o">.</span><span class="n">optimizador</span> <span class="o">==</span> <span class="n">o</span><span class="p">)]</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">Mc</span><span class="p">[(</span><span class="n">Mc</span><span class="o">.</span><span class="n">modelo</span> <span class="o">==</span> <span class="n">mod</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Mc</span><span class="o">.</span><span class="n">balanceo</span> <span class="o">==</span> <span class="s2">"sin balanceo"</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Mc</span><span class="o">.</span><span class="n">optimizador</span> <span class="o">==</span> <span class="n">o</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+            <span class="n">ra</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">CLF</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">]</span> <span class="o">==</span> <span class="n">mod</span> <span class="ow">and</span> <span class="n">r</span><span class="p">[</span><span class="s2">"balanceo"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"class_weight"</span> <span class="ow">and</span> <span class="n">r</span><span class="p">[</span><span class="s2">"optimizador"</span><span class="p">]</span> <span class="o">==</span> <span class="n">o</span><span class="p">)</span>
+            <span class="n">rb</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">CLF</span> <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s2">"modelo"</span><span class="p">]</span> <span class="o">==</span> <span class="n">mod</span> <span class="ow">and</span> <span class="n">r</span><span class="p">[</span><span class="s2">"balanceo"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"sin balanceo"</span> <span class="ow">and</span> <span class="n">r</span><span class="p">[</span><span class="s2">"optimizador"</span><span class="p">]</span> <span class="o">==</span> <span class="n">o</span><span class="p">)</span>
+            <span class="n">eq</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"modelo"</span><span class="p">:</span> <span class="n">mod</span><span class="p">,</span> <span class="s2">"optimizador"</span><span class="p">:</span> <span class="n">o</span><span class="p">,</span> <span class="s2">"AUC externo class_weight"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"AUC externo sin balanceo"</span><span class="p">:</span> <span class="n">b</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="s2">"diferencia"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="s2">"correlación de rangos (predicciones del bucle externo)"</span><span class="p">:</span> <span class="n">stats</span><span class="o">.</span><span class="n">spearmanr</span><span class="p">(</span><span class="n">ra</span><span class="p">[</span><span class="s2">"oof_pred"</span><span class="p">],</span> <span class="n">rb</span><span class="p">[</span><span class="s2">"oof_pred"</span><span class="p">])[</span><span class="mi">0</span><span class="p">]})</span>
+<span class="n">EQ</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">eq</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">EQ</span><span class="p">,</span> <span class="s2">"e2_verificacion_a_priori.csv"</span><span class="p">)</span>
+<span class="n">EQ</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>optimizador</th>
+      <th>AUC externo class_weight</th>
+      <th>AUC externo sin balanceo</th>
+      <th>diferencia</th>
+      <th>correlación de rangos (predicciones del bucle externo)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>KNN</td>
+      <td>Grid</td>
+      <td>0.771642</td>
+      <td>0.771644</td>
+      <td>-0.000002</td>
+      <td>0.999608</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>KNN</td>
+      <td>Random</td>
+      <td>0.772729</td>
+      <td>0.772709</td>
+      <td>0.000020</td>
+      <td>0.999565</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>KNN</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.771622</td>
+      <td>0.771611</td>
+      <td>0.000011</td>
+      <td>0.999574</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>KNN</td>
+      <td>Genético (DEAP)</td>
+      <td>0.771055</td>
+      <td>0.771055</td>
+      <td>0.000000</td>
+      <td>0.999597</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Naive Bayes</td>
+      <td>Grid</td>
+      <td>0.760466</td>
+      <td>0.760466</td>
+      <td>0.000001</td>
+      <td>0.999948</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Naive Bayes</td>
+      <td>Random</td>
+      <td>0.759682</td>
+      <td>0.759689</td>
+      <td>-0.000007</td>
+      <td>0.999952</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Naive Bayes</td>
+      <td>Bayesiano (TPE)</td>
+      <td>0.760395</td>
+      <td>0.760395</td>
+      <td>0.000000</td>
+      <td>0.999949</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Naive Bayes</td>
+      <td>Genético (DEAP)</td>
+      <td>0.760148</td>
+      <td>0.760157</td>
+      <td>-0.000009</td>
+      <td>0.999941</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Equivalencia (KNN y Naive Bayes con class_weight).** La diferencia de AUC externo frente a «sin balanceo» es como máximo "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EQ</span><span class="o">.</span><span class="n">diferencia</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2"> y la correlación de rangos de sus predicciones del bucle externo es ≥ "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EQ</span><span class="p">[</span><span class="s1">'correlación de rangos (predicciones del bucle externo)'</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">: "</span>
+   <span class="o">+</span> <span class="p">(</span><span class="s2">"las dos versiones ordenan las celdas **igual**, como se demostró en el cap. 13.6. Correrlas no aportó información nueva."</span>
+      <span class="k">if</span> <span class="n">EQ</span><span class="o">.</span><span class="n">diferencia</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1e-3</span> <span class="k">else</span> <span class="s2">"la equivalencia no es exacta en la práctica; ver tabla."</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Equivalencia (KNN y Naive Bayes con class_weight).</strong> La diferencia de AUC externo frente a «sin balanceo» es como máximo 2.01e-05 y la correlación de rangos de sus predicciones del bucle externo es ≥ 0.9996: las dos versiones ordenan las celdas <strong>igual</strong>, como se demostró en el cap. 13.6. Correrlas no aportó información nueva.</p>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Validación del tamizaje: posición de los pares descartados</span>
+<span class="n">dec</span> <span class="o">=</span> <span class="n">Mc</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s2">"decision_previa"</span><span class="p">])</span> <span class="k">if</span> <span class="s2">"decision_previa"</span> <span class="ow">in</span> <span class="n">Mc</span> <span class="k">else</span> <span class="n">Mc</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">decision_previa</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">dec</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"balanceo"</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">AUC_externo</span><span class="o">=</span><span class="p">(</span><span class="s2">"externo_media"</span><span class="p">,</span> <span class="s2">"mean"</span><span class="p">),</span> <span class="n">t_min</span><span class="o">=</span><span class="p">(</span><span class="s2">"t_total_s"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="mi">60</span><span class="p">),</span>
+                                          <span class="n">decision</span><span class="o">=</span><span class="p">(</span><span class="s2">"decision_previa"</span><span class="p">,</span> <span class="s2">"first"</span><span class="p">))</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">g</span><span class="p">[</span><span class="s2">"rango en su modelo"</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span><span class="o">.</span><span class="n">AUC_externo</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">g</span><span class="p">[</span><span class="s2">"distancia al mejor del modelo"</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span><span class="o">.</span><span class="n">AUC_externo</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="s2">"max"</span><span class="p">)</span> <span class="o">-</span> <span class="n">g</span><span class="o">.</span><span class="n">AUC_externo</span>
+<span class="n">tam</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">decision</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"descartada en tamizaje"</span><span class="p">)]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">"modelo"</span><span class="p">,</span> <span class="s2">"AUC_externo"</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="s2">"e2_verificacion_tamizaje.csv"</span><span class="p">)</span>
+<span class="n">tam</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>modelo</th>
+      <th>balanceo</th>
+      <th>AUC_externo</th>
+      <th>t_min</th>
+      <th>decision</th>
+      <th>rango en su modelo</th>
+      <th>distancia al mejor del modelo</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>9</th>
+      <td>Random Forest</td>
+      <td>SMOTE</td>
+      <td>0.7712</td>
+      <td>120.2556</td>
+      <td>descartada en tamizaje (se ejecutó igual)</td>
+      <td>3</td>
+      <td>0.0029</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Random Forest</td>
+      <td>ADASYN</td>
+      <td>0.7679</td>
+      <td>83.3075</td>
+      <td>descartada en tamizaje (se ejecutó igual)</td>
+      <td>4</td>
+      <td>0.0063</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>XGBoost</td>
+      <td>ADASYN</td>
+      <td>0.7658</td>
+      <td>14.8477</td>
+      <td>descartada en tamizaje (se ejecutó igual)</td>
+      <td>4</td>
+      <td>0.0113</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>Árbol de decisión</td>
+      <td>SMOTE</td>
+      <td>0.7378</td>
+      <td>3.3919</td>
+      <td>descartada en tamizaje (se ejecutó igual)</td>
+      <td>3</td>
+      <td>0.0239</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>Árbol de decisión</td>
+      <td>ADASYN</td>
+      <td>0.7075</td>
+      <td>8.1115</td>
+      <td>descartada en tamizaje (se ejecutó igual)</td>
+      <td>4</td>
+      <td>0.0542</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lectura del tamizaje</span>
+<span class="n">pasan</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">decision</span> <span class="o">==</span> <span class="s2">"pasa tamizaje"</span><span class="p">]</span>
+<span class="n">mejor_es_desc</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span><span class="o">.</span><span class="n">AUC_externo</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()]</span><span class="o">.</span><span class="n">decision</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"descartada en tamizaje"</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"**Tamizaje.** De los </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">tam</span><span class="p">)</span><span class="si">}</span><span class="s2"> pares descartados por el tamizaje, </span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">tam</span><span class="p">[</span><span class="s1">'rango en su modelo'</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> quedaron, con la validación "</span>
+   <span class="sa">f</span><span class="s2">"anidada completa, por debajo de la mejor técnica de su modelo (distancia media </span><span class="si">{</span><span class="n">tam</span><span class="p">[</span><span class="s1">'distancia al mejor del modelo'</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> de AUC); "</span>
+   <span class="sa">f</span><span class="s2">"en </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">mejor_es_desc</span><span class="p">)</span><span class="si">}</span><span class="s2"> modelo(s) la mejor técnica resultó ser una descartada. El mejor AUC externo global "</span>
+   <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">Mc</span><span class="o">.</span><span class="n">externo_media</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">) </span><span class="si">{</span><span class="s1">'corresponde a un par que pasó el tamizaje'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">Mc</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">'externo_media'</span><span class="p">)</span><span class="o">.</span><span class="n">decision_previa</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'pasa tamizaje'</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'corresponde a un par descartado'</span><span class="si">}</span><span class="s2">. "</span>
+   <span class="sa">f</span><span class="s2">"Correr los descartados costó </span><span class="si">{</span><span class="n">tam</span><span class="o">.</span><span class="n">t_min</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> minutos de cómputo adicional "</span>
+   <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tam</span><span class="o">.</span><span class="n">t_min</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">g</span><span class="o">.</span><span class="n">t_min</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> % del total de clasificación). "</span>
+   <span class="o">+</span> <span class="p">(</span><span class="s2">"El tamizaje acertó en lo esencial: no habría cambiado ninguna conclusión del proyecto."</span>
+      <span class="k">if</span> <span class="n">mejor_es_desc</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s2">"El tamizaje se equivocó en algún caso; las conclusiones usan los 112 resultados completos."</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Tamizaje.</strong> De los 5 pares descartados por el tamizaje, 5 quedaron, con la validación anidada completa, por debajo de la mejor técnica de su modelo (distancia media 0.0197 de AUC); en 0 modelo(s) la mejor técnica resultó ser una descartada. El mejor AUC externo global (0.7781) corresponde a un par que pasó el tamizaje. Correr los descartados costó 230 minutos de cómputo adicional (20 % del total de clasificación). El tamizaje acertó en lo esencial: no habría cambiado ninguna conclusión del proyecto.</p>
+</div>
+</div>
+</section>
+<section id="conclusiones-del-capitulo">
+<h2>14.8 Conclusiones del capítulo<a class="headerlink" href="#conclusiones-del-capitulo" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>La validación anidada se ejecutó en las 140 combinaciones del enunciado, con el mismo presupuesto (15
+evaluaciones) y el Pipeline completo dentro de cada pliegue interno.</p></li>
+<li><p><strong>Bayesiano (TPE)</strong> tiene la menor área de regret (la mejor calidad por unidad de presupuesto); la ventaja
+es significativa frente a Grid en regresión y no frente a Random con un presupuesto de solo 15 evaluaciones.
+Con presupuestos mayores la ventaja de un sustituto con Mejora Esperada suele crecer, porque el arranque
+aleatorio pesa menos.</p></li>
+<li><p>En la <strong>métrica externa</strong> las diferencias entre optimizadores son pequeñas frente a la variabilidad entre
+años; elegir modelo importa mucho más que elegir optimizador.</p></li>
+<li><p>Grid es el peor cuando el espacio tiene más de 2–3 hiperparámetros. El AG converge hacia el élite en pocas
+generaciones por la población pequeña que impone el presupuesto.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="13_diseno_experimental.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="15_multifidelidad.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">15. Optimización multi-fidelidad: Successive Halving e Hyperband</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuracion-de-los-cuatro-optimizadores">14.1 Configuración de los cuatro optimizadores</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabla-maestra-de-resultados-bucle-externo">14.2 Tabla maestra de resultados (bucle externo)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#campeones-la-mejor-combinacion-de-cada-modelo">Campeones: la mejor combinación de cada modelo</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#comparacion-de-los-optimizadores-por-metrica-tiempo-y-presupuesto">Comparación de los optimizadores por métrica, tiempo y presupuesto</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#curvas-anytime-mejor-valor-hallado-hasta-la-evaluacion-t">14.3 Curvas anytime: mejor valor hallado hasta la evaluación <em>t</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evidencia-cuantitativa-de-eficiencia-por-unidad-de-presupuesto">14.4 Evidencia cuantitativa de eficiencia por unidad de presupuesto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diversidad-genetica-del-ag">14.5 Diversidad genética del AG</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estabilidad-de-cada-optimizador-ante-la-semilla">14.6 Estabilidad de cada optimizador ante la semilla</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verificacion-de-las-reducciones-del-capitulo-13">14.7 Verificación de las reducciones del capítulo 13</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-del-capitulo">14.8 Conclusiones del capítulo</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

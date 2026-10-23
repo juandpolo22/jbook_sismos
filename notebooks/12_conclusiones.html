@@ -1,0 +1,1147 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>12. Conclusiones del Entregable 1, limitaciones y checklist &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/12_conclusiones';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones" href="13_diseno_experimental.html" />
+    <link rel="prev" title="11. Modelo base: líneas base triviales y SVR lineal" href="11_modelo_base.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/12_conclusiones.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>12. Conclusiones del Entregable 1, limitaciones y checklist</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrica-elegida-rmsle-y-por-que">Métrica elegida: RMSLE, y por qué</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#respuestas-a-las-preguntas-del-enunciado">Respuestas a las preguntas del enunciado</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hallazgos-del-eda-que-guiaron-el-modelado">Hallazgos del EDA que guiaron el modelado</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">Limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usos-apropiados-y-consideraciones-eticas">Usos apropiados y consideraciones éticas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checklist-del-entregable-1">Checklist del Entregable 1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducibilidad-semillas-y-versiones">Reproducibilidad: semillas y versiones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#referencias">Referencias</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="conclusiones-del-entregable-1-limitaciones-y-checklist">
+<h1>12. Conclusiones del Entregable 1, limitaciones y checklist<a class="headerlink" href="#conclusiones-del-entregable-1-limitaciones-y-checklist" title="Link to this heading">#</a></h1>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Resumen ejecutivo a partir de las tablas guardadas por los capítulos anteriores</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TABLAS</span> <span class="o">/</span> <span class="s2">"resultados_prueba.csv"</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span>
+<span class="n">ic</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TABLAS</span> <span class="o">/</span> <span class="s2">"intervalos_bootstrap.csv"</span><span class="p">)</span>
+<span class="n">ic</span> <span class="o">=</span> <span class="n">ic</span><span class="p">[</span><span class="n">ic</span><span class="p">[</span><span class="s2">"métrica"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"RMSLE"</span><span class="p">]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"modelo"</span><span class="p">)</span>
+<span class="n">comp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TABLAS</span> <span class="o">/</span> <span class="s2">"diferencias_vs_triviales.csv"</span><span class="p">)</span>
+<span class="n">resumen</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">cfg</span><span class="o">.</span><span class="n">TABLAS</span> <span class="o">/</span> <span class="s2">"resumen_proyecto.csv"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""## Resumen ejecutivo</span>
+
+<span class="s2">- **Pregunta.** Con el catálogo del SGC (2004–2026, </span><span class="si">{</span><span class="n">resumen</span><span class="o">.</span><span class="n">valor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> sismos M ≥ 2,5), ¿cuántos sismos habrá el próximo mes en cada una de las</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">resumen</span><span class="o">.</span><span class="n">valor</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> celdas activas de 0,5°?</span>
+<span class="s2">- **Diseño.**</span>
+<span class="s2">  - Panel celda × mes de </span><span class="si">{</span><span class="n">resumen</span><span class="o">.</span><span class="n">valor</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2"> filas.</span>
+<span class="s2">  - Partición cronológica con gap: entrenamiento hasta noviembre de 2020; prueba de enero de 2021 a septiembre de 2026.</span>
+<span class="s2">  - Validación cruzada temporal de ventana creciente.</span>
+<span class="s2">  - Métrica principal: **RMSLE**.</span>
+<span class="s2">- **Resultado del modelo base.** El SVR lineal (Pipeline con log1p, imputación y escalado) obtiene **RMSLE = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">**</span>
+<span class="s2">  (IC 95 % BCa </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ic</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="s1">'IC_BCa_inf'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ic</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="s1">'IC_BCa_sup'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">  - Mejora a la mejor línea base trivial (media por celda, </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Media por celda'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">) y al Dummy (mediana 0,</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Dummy (mediana = 0)'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">  - La mejora es significativa frente a las </span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">comp</span><span class="o">.</span><span class="n">veredicto</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">'SVR mejor'</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> líneas base (Diebold-Mariano HLN con Holm).</span>
+<span class="s2">- **R² en log = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'SVR lineal'</span><span class="p">,</span><span class="w"> </span><span class="s1">'R2_log'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">.** Desempeño moderado y creíble, sin señales de fuga."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<h2 class="rubric" id="resumen-ejecutivo">Resumen ejecutivo</h2>
+<ul class="simple">
+<li><p><strong>Pregunta.</strong> Con el catálogo del SGC (2004–2026, 40.365 sismos M ≥ 2,5), ¿cuántos sismos habrá el próximo mes en cada una de las
+163 celdas activas de 0,5°?</p></li>
+<li><p><strong>Diseño.</strong></p>
+<ul>
+<li><p>Panel celda × mes de 42.380 filas.</p></li>
+<li><p>Partición cronológica con gap: entrenamiento hasta noviembre de 2020; prueba de enero de 2021 a septiembre de 2026.</p></li>
+<li><p>Validación cruzada temporal de ventana creciente.</p></li>
+<li><p>Métrica principal: <strong>RMSLE</strong>.</p></li>
+</ul>
+</li>
+<li><p><strong>Resultado del modelo base.</strong> El SVR lineal (Pipeline con log1p, imputación y escalado) obtiene <strong>RMSLE = 0,364</strong>
+(IC 95 % BCa 0,349–0,391).</p>
+<ul>
+<li><p>Mejora a la mejor línea base trivial (media por celda, 0,397) y al Dummy (mediana 0,
+0,566).</p></li>
+<li><p>La mejora es significativa frente a las 5 líneas base (Diebold-Mariano HLN con Holm).</p></li>
+</ul>
+</li>
+<li><p><strong>R² en log = 0,522.</strong> Desempeño moderado y creíble, sin señales de fuga.</p></li>
+</ul>
+</div>
+</div>
+<section id="metrica-elegida-rmsle-y-por-que">
+<h2>Métrica elegida: RMSLE, y por qué<a class="headerlink" href="#metrica-elegida-rmsle-y-por-que" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Naturaleza del objetivo.</strong> Es un conteo con 76 % de ceros y enjambres de cientos de sismos. El RMSLE
+mide el error <strong>relativo</strong>, que es lo relevante para una tasa de actividad, y no se deja dominar por
+unos pocos meses extremos, como sí le pasa al RMSE.</p></li>
+<li><p><strong>Por qué no MAPE.</strong> Se indefine con ceros.</p></li>
+<li><p><strong>Cuándo se fijó.</strong> Antes de evaluar, y no se cambió.</p></li>
+<li><p><strong>Métricas complementarias.</strong> RMSE, MAE, MAPE (solo y &gt; 0), sMAPE, R² y R² en log se reportan siempre.
+El RMSE cuenta otra historia, centrada en los meses extremos, y se discute en el capítulo 11.</p></li>
+</ul>
+</section>
+<section id="respuestas-a-las-preguntas-del-enunciado">
+<h2>Respuestas a las preguntas del enunciado<a class="headerlink" href="#respuestas-a-las-preguntas-del-enunciado" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Requisito</p></th>
+<th class="head"><p>Respuesta breve</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Problema y justificación</p></td>
+<td><p>Pronóstico mensual de tasa sísmica por zona; insumo para gestión del riesgo; datos oficiales y abiertos a consulta</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tamaño</p></td>
+<td><p>42.380 filas celda-mes (≥ 20.000); 18 predictoras; n/p ≈ 2.354; 163 celdas × 260 meses (tamaño efectivo menor)</p></td>
+</tr>
+<tr class="row-even"><td><p>Estructura</p></td>
+<td><p>Proceso puntual agregado en panel espacio-temporal regular (ruta D)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Faltantes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">depto</span></code> MAR por ubicación (mar y frontera, excluidos por homogeneidad entre portales); magnitudes de ventana: faltante estructural (Little rechaza MCAR)</p></td>
+</tr>
+<tr class="row-even"><td><p>Duplicados</p></td>
+<td><p>11 exactos eliminados; casi-duplicados &lt; 0,1 %, conservados (sismos reales muy seguidos)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Atípicos</p></td>
+<td><p>Reales (enjambres, nido de Bucaramanga, cola de Gutenberg-Richter): se conservan y se usa escala log</p></td>
+</tr>
+<tr class="row-even"><td><p>Imposibles</p></td>
+<td><p>Ninguno; profundidades negativas plausibles; profundidades fijadas en 0 km documentadas</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sesgos</p></td>
+<td><p>Completitud por debajo de M 2,9 (estable en el tiempo); sin mar ni fronteras; menor detección en zonas con pocas estaciones</p></td>
+</tr>
+<tr class="row-even"><td><p>Fuga</p></td>
+<td><p>Auditoría limpia (cap. 9); demostración con fuga deliberada</p></td>
+</tr>
+<tr class="row-odd"><td><p>Validación</p></td>
+<td><p>Cronológica con gap; CV temporal; bloques espaciales con buffer como diagnóstico</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="hallazgos-del-eda-que-guiaron-el-modelado">
+<h2>Hallazgos del EDA que guiaron el modelado<a class="headerlink" href="#hallazgos-del-eda-que-guiaron-el-modelado" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Objetivo inflado en ceros y con cola pesada</strong> (cap. 3) → log1p, RMSLE y bootstrap por meses.</p></li>
+<li><p><strong>Sobredispersión, sobre todo por heterogeneidad entre celdas</strong> (cap. 3 y 6) → variables de historia
+propia de la celda y, en el Entregable 2, modelos de conteo (Poisson, ZINB).</p></li>
+<li><p><strong>Persistencia moderada hasta 12 meses y sin estacionalidad</strong> (cap. 7) → ventanas de 1, 3, 6 y 12
+meses; el calendario pesa ≈ 0.</p></li>
+<li><p><strong>Autocorrelación espacial y agrupamiento espacio-temporal</strong> (cap. 8: Moran, LISA, Knox) → rezago
+espacial y, en el Entregable 2, intensidades de excitación tipo ETAS.</p></li>
+<li><p><strong>Relaciones no lineales con la ubicación y heterogeneidad regional</strong> (cap. 5 y 8), confirmadas por
+los residuos del SVR (cap. 11) → modelos no lineales en el Entregable 2.</p></li>
+<li><p><strong>Deriva moderada en la actividad acumulada</strong> (cap. 7) → evaluación en varios cortes temporales.</p></li>
+</ol>
+</section>
+<section id="limitaciones">
+<h2>Limitaciones<a class="headerlink" href="#limitaciones" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Completitud.</strong> El catálogo no está completo entre M 2,5 y ≈ 2,9. Los conteos subestiman la
+actividad real, aunque de forma estable en el tiempo.</p></li>
+<li><p><strong>Cobertura.</strong> Los sismos en el mar y en las fronteras quedan fuera, y las zonas con pocas estaciones
+están subrepresentadas.</p></li>
+<li><p><strong>Escalas de magnitud.</strong> Cambian entre portales. No se detectó un salto en la distribución, pero no
+se puede descartar un efecto menor alrededor del umbral.</p></li>
+<li><p><strong>Lo que el modelo no anticipa.</strong> Las secuencias de réplicas que empiezan de golpe (por ejemplo,
+diciembre de 2019 en el Meta) dominan los errores grandes.</p></li>
+<li><p><strong>Alcance del modelo base.</strong> Es lineal: deja heterocedasticidad, sesgos regionales (Moran de los
+residuos medios por celda) y estructura no lineal (BDS) sin capturar.</p></li>
+<li><p><strong>Prueba única.</strong> La evaluación final es una sola prueba cronológica (2021–2026). En el Entregable 2
+se añaden cortes de 2018 y 2023.</p></li>
+</ul>
+</section>
+<section id="usos-apropiados-y-consideraciones-eticas">
+<h2>Usos apropiados y consideraciones éticas<a class="headerlink" href="#usos-apropiados-y-consideraciones-eticas" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Para qué sirve.</strong> El pronóstico es una <strong>tasa esperada de actividad</strong>: sirve para priorizar
+monitoreo y comunicar niveles de actividad.</p></li>
+<li><p><strong>Para qué no sirve.</strong> No predice terremotos individuales ni su hora, lugar o magnitud. No sustituye
+los análisis oficiales del SGC.</p></li>
+<li><p><strong>Incertidumbre.</strong> Toda comunicación del resultado debe incluir su incertidumbre. Debe advertir que
+las zonas con menos estaciones están peor representadas.</p></li>
+</ul>
+</section>
+<section id="checklist-del-entregable-1">
+<h2>Checklist del Entregable 1<a class="headerlink" href="#checklist-del-entregable-1" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Lista de chequeo de la guía del Entregable 1 y dónde se cumple cada punto</span>
+<span class="n">check</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Definición del problema, justificación, fuente, licencia"</span><span class="p">,</span> <span class="s2">"Cap. 1 y 2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Diccionario de variables (tipo, unidad, significado)"</span><span class="p">,</span> <span class="s2">"Cap. 2 · tables/diccionario_*.csv"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Estructura: unidad, agregación, tipo"</span><span class="p">,</span> <span class="s2">"Cap. 2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Tamaño ≥ 20.000; n/p; rango del objetivo; entidades independientes"</span><span class="p">,</span> <span class="s2">"Cap. 1 y 2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Faltantes: patrón (matriz de nulos) y mecanismo (Little, comparación de distribuciones, AUC)"</span><span class="p">,</span> <span class="s2">"Cap. 2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Duplicados exactos y casi-duplicados"</span><span class="p">,</span> <span class="s2">"Cap. 2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Outliers: detección y tratamiento"</span><span class="p">,</span> <span class="s2">"Cap. 2, 4 y 6"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Valores imposibles o inconsistentes"</span><span class="p">,</span> <span class="s2">"Cap. 2"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"1"</span><span class="p">,</span> <span class="s2">"Sesgos de muestreo y representatividad; ética"</span><span class="p">,</span> <span class="s2">"Cap. 2, 8 y 12"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2"</span><span class="p">,</span> <span class="s2">"Reserva del conjunto de prueba antes de decidir"</span><span class="p">,</span> <span class="s2">"Cap. 1 (partición cronológica con gap)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.1"</span><span class="p">,</span> <span class="s2">"Variable objetivo: distribución, asimetría, colas, transformación, tiempo y espacio"</span><span class="p">,</span> <span class="s2">"Cap. 3"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.2"</span><span class="p">,</span> <span class="s2">"Univariado: tipos, cardinalidad, estadísticos, histogramas, asimetría, curtosis, normalidad, boxplots, categorías raras"</span><span class="p">,</span> <span class="s2">"Cap. 4"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.3"</span><span class="p">,</span> <span class="s2">"Bivariado: hexbin, Pearson/Spearman, pruebas entre grupos con tamaño de efecto, χ²/Cramér, información mutua, heatmap, VIF, Holm/FDR"</span><span class="p">,</span> <span class="s2">"Cap. 5"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.4"</span><span class="p">,</span> <span class="s2">"Multivariado: PCA, t-SNE (visual), Mahalanobis robusta, Isolation Forest, clustering"</span><span class="p">,</span> <span class="s2">"Cap. 6"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.5"</span><span class="p">,</span> <span class="s2">"Auditoría de fuga: disponibilidad, proxies, R² univariado, entidades entre particiones"</span><span class="p">,</span> <span class="s2">"Cap. 9"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.6"</span><span class="p">,</span> <span class="s2">"Temporal: validación, agregaciones, STL, ADF/KPSS, ACF/PACF/CCF, regímenes, calendario, deriva, panel"</span><span class="p">,</span> <span class="s2">"Cap. 7"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.7"</span><span class="p">,</span> <span class="s2">"Espacial: CRS, mapa base, densidad, coropletas, Clark-Evans, Ripley, DBSCAN haversine, Moran, LISA, Gi*, MAUP, heterogeneidad"</span><span class="p">,</span> <span class="s2">"Cap. 8"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.8"</span><span class="p">,</span> <span class="s2">"Espacio-temporal: mapas por periodo, series por zona, Knox, persistencia de hotspots, Moran por año"</span><span class="p">,</span> <span class="s2">"Cap. 8"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"2.9"</span><span class="p">,</span> <span class="s2">"Preprocesamiento en Pipeline ajustado solo con entrenamiento; decisiones trazadas al EDA"</span><span class="p">,</span> <span class="s2">"Cap. 10"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"3"</span><span class="p">,</span> <span class="s2">"Línea base trivial (Dummy, persistencia, ingenuo estacional, media por celda) y SVR lineal"</span><span class="p">,</span> <span class="s2">"Cap. 11"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"3"</span><span class="p">,</span> <span class="s2">"Validación cruzada del mismo tipo que la partición (temporal) y espacial por separado"</span><span class="p">,</span> <span class="s2">"Cap. 11"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"3"</span><span class="p">,</span> <span class="s2">"Métricas RMSE, MAPE, R² (+ RMSLE, MAE, sMAPE) e IC bootstrap (percentil y BCa)"</span><span class="p">,</span> <span class="s2">"Cap. 11"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"3"</span><span class="p">,</span> <span class="s2">"Residuos: normalidad, heterocedasticidad (White/BP), ACF + Ljung-Box, BDS, I de Moran"</span><span class="p">,</span> <span class="s2">"Cap. 11"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"3"</span><span class="p">,</span> <span class="s2">"Curva de aprendizaje; interpretación de coeficientes; nota crítica"</span><span class="p">,</span> <span class="s2">"Cap. 11"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Entregables"</span><span class="p">,</span> <span class="s2">"Jupyter Book, datos (data/), requirements.txt, semilla 42"</span><span class="p">,</span> <span class="s2">"Este repositorio"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"sección"</span><span class="p">,</span> <span class="s2">"requisito"</span><span class="p">,</span> <span class="s2">"dónde"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">check</span><span class="p">,</span> <span class="s2">"checklist_entregable1.csv"</span><span class="p">)</span>
+<span class="n">check</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>sección</th>
+      <th>requisito</th>
+      <th>dónde</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>Definición del problema, justificación, fuente...</td>
+      <td>Cap. 1 y 2</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>Diccionario de variables (tipo, unidad, signif...</td>
+      <td>Cap. 2 · tables/diccionario_*.csv</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>Estructura: unidad, agregación, tipo</td>
+      <td>Cap. 2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1</td>
+      <td>Tamaño ≥ 20.000; n/p; rango del objetivo; enti...</td>
+      <td>Cap. 1 y 2</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1</td>
+      <td>Faltantes: patrón (matriz de nulos) y mecanism...</td>
+      <td>Cap. 2</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>1</td>
+      <td>Duplicados exactos y casi-duplicados</td>
+      <td>Cap. 2</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>1</td>
+      <td>Outliers: detección y tratamiento</td>
+      <td>Cap. 2, 4 y 6</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>1</td>
+      <td>Valores imposibles o inconsistentes</td>
+      <td>Cap. 2</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>1</td>
+      <td>Sesgos de muestreo y representatividad; ética</td>
+      <td>Cap. 2, 8 y 12</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2</td>
+      <td>Reserva del conjunto de prueba antes de decidir</td>
+      <td>Cap. 1 (partición cronológica con gap)</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2.1</td>
+      <td>Variable objetivo: distribución, asimetría, co...</td>
+      <td>Cap. 3</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2.2</td>
+      <td>Univariado: tipos, cardinalidad, estadísticos,...</td>
+      <td>Cap. 4</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>2.3</td>
+      <td>Bivariado: hexbin, Pearson/Spearman, pruebas e...</td>
+      <td>Cap. 5</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>2.4</td>
+      <td>Multivariado: PCA, t-SNE (visual), Mahalanobis...</td>
+      <td>Cap. 6</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>2.5</td>
+      <td>Auditoría de fuga: disponibilidad, proxies, R²...</td>
+      <td>Cap. 9</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>2.6</td>
+      <td>Temporal: validación, agregaciones, STL, ADF/K...</td>
+      <td>Cap. 7</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>2.7</td>
+      <td>Espacial: CRS, mapa base, densidad, coropletas...</td>
+      <td>Cap. 8</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2.8</td>
+      <td>Espacio-temporal: mapas por periodo, series po...</td>
+      <td>Cap. 8</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>2.9</td>
+      <td>Preprocesamiento en Pipeline ajustado solo con...</td>
+      <td>Cap. 10</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>3</td>
+      <td>Línea base trivial (Dummy, persistencia, ingen...</td>
+      <td>Cap. 11</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>3</td>
+      <td>Validación cruzada del mismo tipo que la parti...</td>
+      <td>Cap. 11</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>3</td>
+      <td>Métricas RMSE, MAPE, R² (+ RMSLE, MAE, sMAPE) ...</td>
+      <td>Cap. 11</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>3</td>
+      <td>Residuos: normalidad, heterocedasticidad (Whit...</td>
+      <td>Cap. 11</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>3</td>
+      <td>Curva de aprendizaje; interpretación de coefic...</td>
+      <td>Cap. 11</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>Entregables</td>
+      <td>Jupyter Book, datos (data/), requirements.txt,...</td>
+      <td>Este repositorio</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="reproducibilidad-semillas-y-versiones">
+<h2>Reproducibilidad: semillas y versiones<a class="headerlink" href="#reproducibilidad-semillas-y-versiones" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Semilla global:</strong> <code class="docutils literal notranslate"><span class="pre">SEMILLA</span> <span class="pre">=</span> <span class="pre">42</span></code> en <code class="docutils literal notranslate"><span class="pre">src/config.py</span></code>. Se propaga con <code class="docutils literal notranslate"><span class="pre">cfg.fijar_semillas()</span></code> (random,
+numpy, <code class="docutils literal notranslate"><span class="pre">PYTHONHASHSEED</span></code>) y como <code class="docutils literal notranslate"><span class="pre">random_state</span></code> en cada estimador.</p></li>
+<li><p><strong>Versiones exactas:</strong> <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>, verificadas con <strong>Python 3.9.25</strong>.</p></li>
+<li><p><strong>Ejecución completa desde los datos crudos:</strong> <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">herramientas/construir_notebooks.py</span></code>.</p></li>
+<li><p><strong>Datos:</strong> <code class="docutils literal notranslate"><span class="pre">data/crudos/</span></code> (archivos originales del SGC) y <code class="docutils literal notranslate"><span class="pre">data/sismos_sgc_2004_2026.csv</span></code> (salida
+de la ETL).</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Versiones del entorno y semilla usadas</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span><span class="o">,</span><span class="w"> </span><span class="nn">sklearn</span><span class="o">,</span><span class="w"> </span><span class="nn">statsmodels</span><span class="o">,</span><span class="w"> </span><span class="nn">scipy</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([(</span><span class="s2">"Python"</span><span class="p">,</span> <span class="n">platform</span><span class="o">.</span><span class="n">python_version</span><span class="p">()),</span> <span class="p">(</span><span class="s2">"numpy"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">__version__</span><span class="p">),</span> <span class="p">(</span><span class="s2">"pandas"</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">__version__</span><span class="p">),</span>
+              <span class="p">(</span><span class="s2">"scikit-learn"</span><span class="p">,</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">__version__</span><span class="p">),</span> <span class="p">(</span><span class="s2">"statsmodels"</span><span class="p">,</span> <span class="n">statsmodels</span><span class="o">.</span><span class="n">__version__</span><span class="p">),</span> <span class="p">(</span><span class="s2">"scipy"</span><span class="p">,</span> <span class="n">scipy</span><span class="o">.</span><span class="n">__version__</span><span class="p">),</span>
+              <span class="p">(</span><span class="s2">"semilla"</span><span class="p">,</span> <span class="n">cfg</span><span class="o">.</span><span class="n">SEMILLA</span><span class="p">)],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"componente"</span><span class="p">,</span> <span class="s2">"versión"</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>componente</th>
+      <th>versión</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Python</td>
+      <td>3.9.25</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>numpy</td>
+      <td>1.26.4</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>pandas</td>
+      <td>2.2.3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>scikit-learn</td>
+      <td>1.5.2</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>statsmodels</td>
+      <td>0.14.4</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>scipy</td>
+      <td>1.13.1</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>semilla</td>
+      <td>42</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="referencias">
+<h2>Referencias<a class="headerlink" href="#referencias" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id1">
+<div role="list" class="citation-list">
+<div class="citation" id="id9" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Aki65<span class="fn-bracket">]</span></span>
+<p>Keiiti Aki. Maximum likelihood estimate of b in the formula log N = a - bM and its confidence limits. <em>Bulletin of the Earthquake Research Institute</em>, 43:237–239, 1965.</p>
+</div>
+<div class="citation" id="id25" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>ASY+19<span class="fn-bracket">]</span></span>
+<p>Takuya Akiba, Shotaro Sano, Toshihiko Yanase, Takeru Ohta, and Masanori Koyama. Optuna: a next-generation hyperparameter optimization framework. In <em>Proceedings of the 25th ACM SIGKDD</em>, 2623–2631. 2019.</p>
+</div>
+<div class="citation" id="id11" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Ans95<span class="fn-bracket">]</span></span>
+<p>Luc Anselin. Local indicators of spatial association—LISA. <em>Geographical Analysis</em>, 27(2):93–115, 1995.</p>
+</div>
+<div class="citation" id="id28" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>BBBKegl11<span class="fn-bracket">]</span></span>
+<p>James Bergstra, Rémi Bardenet, Yoshua Bengio, and Balázs Kégl. Algorithms for hyper-parameter optimization. In <em>Advances in Neural Information Processing Systems 24</em>. 2011.</p>
+</div>
+<div class="citation" id="id32" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>BDSL96<span class="fn-bracket">]</span></span>
+<p>William A. Brock, W. Davis Dechert, José A. Scheinkman, and Blake LeBaron. A test for independence based on the correlation dimension. <em>Econometric Reviews</em>, 15(3):197–235, 1996.</p>
+</div>
+<div class="citation" id="id36" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>CTMozetivc20<span class="fn-bracket">]</span></span>
+<p>Vitor Cerqueira, Luis Torgo, and Igor Mozetič. Evaluating time series forecasting models: an empirical study on performance estimation methods. <em>Machine Learning</em>, 109:1997–2028, 2020. <a class="reference external" href="https://doi.org/10.1007/s10994-020-05910-7">doi:10.1007/s10994-020-05910-7</a>.</p>
+</div>
+<div class="citation" id="id29" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>CBHK02<span class="fn-bracket">]</span></span>
+<p>Nitesh V. Chawla, Kevin W. Bowyer, Lawrence O. Hall, and W. Philip Kegelmeyer. SMOTE: synthetic minority over-sampling technique. <em>Journal of Artificial Intelligence Research</em>, 16:321–357, 2002.</p>
+</div>
+<div class="citation" id="id18" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>CW07<span class="fn-bracket">]</span></span>
+<p>Todd E. Clark and Kenneth D. West. Approximately normal tests for equal predictive accuracy in nested models. <em>Journal of Econometrics</em>, 138(1):291–311, 2007.</p>
+</div>
+<div class="citation" id="id12" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>CCMT90<span class="fn-bracket">]</span></span>
+<p>Robert B. Cleveland, William S. Cleveland, Jean E. McRae, and Irma Terpenning. STL: a seasonal-trend decomposition procedure based on loess. <em>Journal of Official Statistics</em>, 6(1):3–73, 1990.</p>
+</div>
+<div class="citation" id="id22" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>DDCP88<span class="fn-bracket">]</span></span>
+<p>Elizabeth R. DeLong, David M. DeLong, and Daniel L. Clarke-Pearson. Comparing the areas under two or more correlated receiver operating characteristic curves: a nonparametric approach. <em>Biometrics</em>, 44(3):837–845, 1988.</p>
+</div>
+<div class="citation" id="id21" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Demvsar06<span class="fn-bracket">]</span></span>
+<p>Janez Demšar. Statistical comparisons of classifiers over multiple data sets. <em>Journal of Machine Learning Research</em>, 7:1–30, 2006.</p>
+</div>
+<div class="citation" id="id4" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>DM95<span class="fn-bracket">]</span></span>
+<p>Francis X. Diebold and Roberto S. Mariano. Comparing predictive accuracy. <em>Journal of Business &amp; Economic Statistics</em>, 13(3):253–263, 1995.</p>
+</div>
+<div class="citation" id="id26" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>FDRG+12<span class="fn-bracket">]</span></span>
+<p>Félix-Antoine Fortin, François-Michel De Rainville, Marc-André Gardner, Marc Parizeau, and Christian Gagné. DEAP: evolutionary algorithms made easy. <em>Journal of Machine Learning Research</em>, 13:2171–2175, 2012.</p>
+</div>
+<div class="citation" id="id14" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Fri01<span class="fn-bracket">]</span></span>
+<p>Jerome H. Friedman. Greedy function approximation: a gradient boosting machine. <em>The Annals of Statistics</em>, 29(5):1189–1232, 2001.</p>
+</div>
+<div class="citation" id="id17" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>GW06<span class="fn-bracket">]</span></span>
+<p>Raffaella Giacomini and Halbert White. Tests of conditional predictive ability. <em>Econometrica</em>, 74(6):1545–1578, 2006.</p>
+</div>
+<div class="citation" id="id7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>GR44<span class="fn-bracket">]</span></span>
+<p>Beno Gutenberg and Charles F. Richter. Frequency of earthquakes in California. <em>Bulletin of the Seismological Society of America</em>, 34(4):185–188, 1944.</p>
+</div>
+<div class="citation" id="id19" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Han05<span class="fn-bracket">]</span></span>
+<p>Peter R. Hansen. A test for superior predictive ability. <em>Journal of Business &amp; Economic Statistics</em>, 23(4):365–380, 2005.</p>
+</div>
+<div class="citation" id="id16" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>HLN11<span class="fn-bracket">]</span></span>
+<p>Peter R. Hansen, Asger Lunde, and James M. Nason. The model confidence set. <em>Econometrica</em>, 79(2):453–497, 2011.</p>
+</div>
+<div class="citation" id="id5" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>HLN97<span class="fn-bracket">]</span></span>
+<p>David Harvey, Stephen Leybourne, and Paul Newbold. Testing the equality of prediction mean squared errors. <em>International Journal of Forecasting</em>, 13(2):281–291, 1997.</p>
+</div>
+<div class="citation" id="id30" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>HBGL08<span class="fn-bracket">]</span></span>
+<p>Haibo He, Yang Bai, Edwardo A. Garcia, and Shutao Li. ADASYN: adaptive synthetic sampling approach for imbalanced learning. In <em>IEEE International Joint Conference on Neural Networks</em>, 1322–1328. 2008.</p>
+</div>
+<div class="citation" id="id35" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>HA21<span class="fn-bracket">]</span></span>
+<p>Rob J. Hyndman and George Athanasopoulos. <em>Forecasting: Principles and Practice</em>. OTexts, Melbourne, 3 edition, 2021. Sección 5.10, Time series cross-validation.</p>
+</div>
+<div class="citation" id="id2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>KJ11<span class="fn-bracket">]</span></span>
+<p>Yan Y. Kagan and David D. Jackson. Global earthquake forecasts. <em>Geophysical Journal International</em>, 184(2):759–776, 2011. <a class="reference external" href="https://doi.org/10.1111/j.1365-246X.2010.04857.x">doi:10.1111/j.1365-246X.2010.04857.x</a>.</p>
+</div>
+<div class="citation" id="id38" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>KiralyPZG+16<span class="fn-bracket">]</span></span>
+<p>Eszter Király-Proag, J. Douglas Zechar, Valentin Gischig, Stefan Wiemer, Dimitrios Karvounis, and Joseph Doetsch. Validating induced seismicity forecast models: Induced Seismicity Test Bench. <em>Journal of Geophysical Research: Solid Earth</em>, 2016. <a class="reference external" href="https://doi.org/10.1002/2016JB013236">doi:10.1002/2016JB013236</a>.</p>
+</div>
+<div class="citation" id="id10" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Kno64<span class="fn-bracket">]</span></span>
+<p>E. George Knox. The detection of space-time interactions. <em>Journal of the Royal Statistical Society: Series C (Applied Statistics)</em>, 13(1):25–30, 1964.</p>
+</div>
+<div class="citation" id="id27" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>LJD+18<span class="fn-bracket">]</span></span>
+<p>Lisha Li, Kevin Jamieson, Giulia DeSalvo, Afshin Rostamizadeh, and Ameet Talwalkar. Hyperband: a novel bandit-based approach to hyperparameter optimization. <em>Journal of Machine Learning Research</em>, 18(185):1–52, 2018.</p>
+</div>
+<div class="citation" id="id6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Lit88<span class="fn-bracket">]</span></span>
+<p>Roderick J. A. Little. A test of missing completely at random for multivariate data with missing values. <em>Journal of the American Statistical Association</em>, 83(404):1198–1202, 1988.</p>
+</div>
+<div class="citation" id="id23" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>LL17<span class="fn-bracket">]</span></span>
+<p>Scott M. Lundberg and Su-In Lee. A unified approach to interpreting model predictions. In <em>Advances in Neural Information Processing Systems 30</em>. 2017.</p>
+</div>
+<div class="citation" id="id15" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>MFH+12<span class="fn-bracket">]</span></span>
+<p>Andreas Mayr, Nora Fenske, Benjamin Hofner, Thomas Kneib, and Matthias Schmid. Generalized additive models for location, scale and shape for high dimensional data—a flexible approach based on boosting. <em>Journal of the Royal Statistical Society: Series C (Applied Statistics)</em>, 61(3):403–427, 2012.</p>
+</div>
+<div class="citation" id="id13" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>MMAHT20<span class="fn-bracket">]</span></span>
+<p>Pablo Montero-Manso, George Athanasopoulos, Rob J. Hyndman, and Thiyanga S. Talagala. FFORMA: feature-based forecast model averaging. <em>International Journal of Forecasting</em>, 36(1):86–92, 2020.</p>
+</div>
+<div class="citation" id="id8" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Oga88<span class="fn-bracket">]</span></span>
+<p>Yosihiko Ogata. Statistical models for earthquake occurrences and residual analysis for point processes. <em>Journal of the American Statistical Association</em>, 83(401):9–27, 1988.</p>
+</div>
+<div class="citation" id="id20" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>PR94<span class="fn-bracket">]</span></span>
+<p>Dimitris N. Politis and Joseph P. Romano. The stationary bootstrap. <em>Journal of the American Statistical Association</em>, 89(428):1303–1313, 1994.</p>
+</div>
+<div class="citation" id="id24" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>RSG16<span class="fn-bracket">]</span></span>
+<p>Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin. “why should I trust you?”: explaining the predictions of any classifier. In <em>Proceedings of the 22nd ACM SIGKDD</em>, 1135–1144. 2016.</p>
+</div>
+<div class="citation" id="id37" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SWM+18<span class="fn-bracket">]</span></span>
+<p>Danijel Schorlemmer, Maximilian J. Werner, Warner Marzocchi, Thomas H. Jordan, Yosihiko Ogata, David D. Jackson, and others. The Collaboratory for the Study of Earthquake Predictability: achievements and priorities. <em>Seismological Research Letters</em>, 89(4):1305–1313, 2018. <a class="reference external" href="https://doi.org/10.1785/0220180053">doi:10.1785/0220180053</a>.</p>
+</div>
+<div class="citation" id="id34" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Tas00<span class="fn-bracket">]</span></span>
+<p>Leonard J. Tashman. Out-of-sample tests of forecasting accuracy: an analysis and review. <em>International Journal of Forecasting</em>, 16(4):437–450, 2000. <a class="reference external" href="https://doi.org/10.1016/S0169-2070(00)00065-0">doi:10.1016/S0169-2070(00)00065-0</a>.</p>
+</div>
+<div class="citation" id="id33" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Whi80<span class="fn-bracket">]</span></span>
+<p>Halbert White. A heteroskedasticity-consistent covariance matrix estimator and a direct test for heteroskedasticity. <em>Econometrica</em>, 48(4):817–838, 1980.</p>
+</div>
+<div class="citation" id="id31" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Whi00<span class="fn-bracket">]</span></span>
+<p>Halbert White. A reality check for data snooping. <em>Econometrica</em>, 68(5):1097–1126, 2000.</p>
+</div>
+<div class="citation" id="id3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Zhu11<span class="fn-bracket">]</span></span>
+<p>Jiancang Zhuang. Next-day earthquake forecasts for the Japan region generated by the ETAS model. <em>Earth, Planets and Space</em>, 63:207–216, 2011. <a class="reference external" href="https://doi.org/10.5047/eps.2010.12.010">doi:10.5047/eps.2010.12.010</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="11_modelo_base.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">11. Modelo base: líneas base triviales y SVR lineal</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="13_diseno_experimental.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#metrica-elegida-rmsle-y-por-que">Métrica elegida: RMSLE, y por qué</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#respuestas-a-las-preguntas-del-enunciado">Respuestas a las preguntas del enunciado</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hallazgos-del-eda-que-guiaron-el-modelado">Hallazgos del EDA que guiaron el modelado</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limitaciones">Limitaciones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usos-apropiados-y-consideraciones-eticas">Usos apropiados y consideraciones éticas</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#checklist-del-entregable-1">Checklist del Entregable 1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducibilidad-semillas-y-versiones">Reproducibilidad: semillas y versiones</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#referencias">Referencias</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1457 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>10. Preprocesamiento y Pipeline (2.9) &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/10_preprocesamiento';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="11. Modelo base: líneas base triviales y SVR lineal" href="11_modelo_base.html" />
+    <link rel="prev" title="9. Auditoría de fuga de datos (2.5)" href="09_data_leakage.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/10_preprocesamiento.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>10. Preprocesamiento y Pipeline (2.9)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decisiones-y-hallazgo-que-las-motiva">10.1 Decisiones y hallazgo que las motiva</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-pipeline">10.2 El Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eleccion-por-validacion-cruzada-temporal-solo-entrenamiento">10.3 Elección por validación cruzada temporal (solo entrenamiento)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comprobacion-el-pipeline-se-ajusta-solo-con-entrenamiento">10.4 Comprobación: el Pipeline se ajusta solo con entrenamiento</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="preprocesamiento-y-pipeline-2-9">
+<h1>10. Preprocesamiento y Pipeline (2.9)<a class="headerlink" href="#preprocesamiento-y-pipeline-2-9" title="Link to this heading">#</a></h1>
+<p>Todo el preprocesamiento vive en un <code class="docutils literal notranslate"><span class="pre">Pipeline</span></code> de scikit-learn (<code class="docutils literal notranslate"><span class="pre">src/modelos.py</span></code>) que se ajusta <strong>solo
+con el entrenamiento</strong>, o con la parte de ajuste de cada pliegue. Este capítulo documenta cada decisión
+y el hallazgo del EDA que la motiva, y elige con validación cruzada temporal las dos decisiones que no
+se pueden fijar a priori:</p>
+<ol class="arabic simple">
+<li><p>cómo imputar las magnitudes faltantes;</p></li>
+<li><p>qué conjunto de variables usar.</p></li>
+</ol>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Datos y módulo de modelos</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">estimator_html_repr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">modelos</span> <span class="k">as</span> <span class="n">mdl</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_completo</span><span class="p">()</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"y"</span><span class="p">];</span> <span class="n">tm</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">]</span>
+<span class="n">pl</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">pliegues_temporales</span><span class="p">(</span><span class="n">tm</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="decisiones-y-hallazgo-que-las-motiva">
+<h2>10.1 Decisiones y hallazgo que las motiva<a class="headerlink" href="#decisiones-y-hallazgo-que-las-motiva" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Decisiones de preprocesamiento y el hallazgo del EDA que justifica cada una</span>
+<span class="n">decisiones</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"Objetivo en log(1 + y) dentro de TransformedTargetRegressor"</span><span class="p">,</span> <span class="s2">"Cap. 3: 76 </span><span class="si">% d</span><span class="s2">e ceros, asimetría 13,2, cola de ley de potencia; métrica RMSLE"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"log1p + estandarización de conteos (sin recortar)"</span><span class="p">,</span> <span class="s2">"Cap. 4 y 6: asimetría &gt; 10 y atípicos que son las celdas más activas (información, no error)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Imputación de magnitudes faltantes (constante 2,5 o mediana; elegida por CV)"</span><span class="p">,</span> <span class="s2">"Cap. 2: faltante estructural «no hubo sismos» (Little rechaza MCAR)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Mediana de entrenamiento para prof_media_hist"</span><span class="p">,</span> <span class="s2">"Cap. 2: 1,4 </span><span class="si">% f</span><span class="s2">altante en celdas aún sin sismos"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Sin codificación categórica"</span><span class="p">,</span> <span class="s2">"Cap. 4: depto se descarta (lo sustituye la celda); no quedan categóricas en el panel"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Componentes cíclicos sen/cos del mes objetivo"</span><span class="p">,</span> <span class="s2">"Cap. 7: sin estacionalidad, pero se incluyen por completitud (su exclusión se evalúa por CV)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Rezagos y ventanas 1, 3, 6, 12 meses solo con el pasado"</span><span class="p">,</span> <span class="s2">"Cap. 7: ACF y correlación cruzada positivas hasta 12 meses"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Rezago espacial (8 vecinas) en el mes t"</span><span class="p">,</span> <span class="s2">"Cap. 8: I de Moran &gt; 0; Knox: agrupamiento espacio-temporal"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"lat/lon del centro de la celda"</span><span class="p">,</span> <span class="s2">"Cap. 5 y 8: relación no monótona con la ubicación; heterogeneidad regional"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Estandarización de todas las entradas"</span><span class="p">,</span> <span class="s2">"Modelos lineales con regularización (SVR lineal) y KNN son sensibles a la escala"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Sin selección agresiva por VIF"</span><span class="p">,</span> <span class="s2">"Cap. 5: VIF máximo 8,4 (&lt; 10); la regularización controla la colinealidad"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"decisión"</span><span class="p">,</span> <span class="s2">"hallazgo del EDA que la motiva"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">decisiones</span><span class="p">,</span> <span class="s2">"decisiones_preprocesamiento.csv"</span><span class="p">)</span>
+<span class="n">decisiones</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>decisión</th>
+      <th>hallazgo del EDA que la motiva</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Objetivo en log(1 + y) dentro de TransformedTa...</td>
+      <td>Cap. 3: 76 % de ceros, asimetría 13,2, cola de...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>log1p + estandarización de conteos (sin recortar)</td>
+      <td>Cap. 4 y 6: asimetría &gt; 10 y atípicos que son ...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Imputación de magnitudes faltantes (constante ...</td>
+      <td>Cap. 2: faltante estructural «no hubo sismos» ...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Mediana de entrenamiento para prof_media_hist</td>
+      <td>Cap. 2: 1,4 % faltante en celdas aún sin sismos</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Sin codificación categórica</td>
+      <td>Cap. 4: depto se descarta (lo sustituye la cel...</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Componentes cíclicos sen/cos del mes objetivo</td>
+      <td>Cap. 7: sin estacionalidad, pero se incluyen p...</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Rezagos y ventanas 1, 3, 6, 12 meses solo con ...</td>
+      <td>Cap. 7: ACF y correlación cruzada positivas ha...</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Rezago espacial (8 vecinas) en el mes t</td>
+      <td>Cap. 8: I de Moran &gt; 0; Knox: agrupamiento esp...</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>lat/lon del centro de la celda</td>
+      <td>Cap. 5 y 8: relación no monótona con la ubicac...</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Estandarización de todas las entradas</td>
+      <td>Modelos lineales con regularización (SVR linea...</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>Sin selección agresiva por VIF</td>
+      <td>Cap. 5: VIF máximo 8,4 (&lt; 10); la regularizaci...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+<section id="el-pipeline">
+<h2>10.2 El Pipeline<a class="headerlink" href="#el-pipeline" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Diagrama del Pipeline completo (preprocesamiento + SVR lineal)</span>
+<span class="n">modelo</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">svr_lineal</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+<span class="n">set_config</span><span class="p">(</span><span class="n">display</span><span class="o">=</span><span class="s2">"diagram"</span><span class="p">)</span>
+<span class="n">HTML</span><span class="p">(</span><span class="n">estimator_html_repr</span><span class="p">(</span><span class="n">modelo</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>#sk-container-id-1 {
+  /* Definition of color scheme common for light and dark mode */
+  --sklearn-color-text: black;
+  --sklearn-color-line: gray;
+  /* Definition of color scheme for unfitted estimators */
+  --sklearn-color-unfitted-level-0: #fff5e6;
+  --sklearn-color-unfitted-level-1: #f6e4d2;
+  --sklearn-color-unfitted-level-2: #ffe0b3;
+  --sklearn-color-unfitted-level-3: chocolate;
+  /* Definition of color scheme for fitted estimators */
+  --sklearn-color-fitted-level-0: #f0f8ff;
+  --sklearn-color-fitted-level-1: #d4ebff;
+  --sklearn-color-fitted-level-2: #b3dbfd;
+  --sklearn-color-fitted-level-3: cornflowerblue;
+
+  /* Specific color for light theme */
+  --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, white)));
+  --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, black)));
+  --sklearn-color-icon: #696969;
+
+  @media (prefers-color-scheme: dark) {
+    /* Redefinition of color scheme for dark theme */
+    --sklearn-color-text-on-default-background: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-background: var(--sg-background-color, var(--theme-background, var(--jp-layout-color0, #111)));
+    --sklearn-color-border-box: var(--sg-text-color, var(--theme-code-foreground, var(--jp-content-font-color1, white)));
+    --sklearn-color-icon: #878787;
+  }
+}
+
+#sk-container-id-1 {
+  color: var(--sklearn-color-text);
+}
+
+#sk-container-id-1 pre {
+  padding: 0;
+}
+
+#sk-container-id-1 input.sk-hidden--visually {
+  border: 0;
+  clip: rect(1px 1px 1px 1px);
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+#sk-container-id-1 div.sk-dashed-wrapped {
+  border: 1px dashed var(--sklearn-color-line);
+  margin: 0 0.4em 0.5em 0.4em;
+  box-sizing: border-box;
+  padding-bottom: 0.4em;
+  background-color: var(--sklearn-color-background);
+}
+
+#sk-container-id-1 div.sk-container {
+  /* jupyter's `normalize.less` sets `[hidden] { display: none; }`
+     but bootstrap.min.css set `[hidden] { display: none !important; }`
+     so we also need the `!important` here to be able to override the
+     default hidden behavior on the sphinx rendered scikit-learn.org.
+     See: https://github.com/scikit-learn/scikit-learn/issues/21755 */
+  display: inline-block !important;
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-text-repr-fallback {
+  display: none;
+}
+
+div.sk-parallel-item,
+div.sk-serial,
+div.sk-item {
+  /* draw centered vertical line to link estimators */
+  background-image: linear-gradient(var(--sklearn-color-text-on-default-background), var(--sklearn-color-text-on-default-background));
+  background-size: 2px 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+/* Parallel-specific style estimator block */
+
+#sk-container-id-1 div.sk-parallel-item::after {
+  content: "";
+  width: 100%;
+  border-bottom: 2px solid var(--sklearn-color-text-on-default-background);
+  flex-grow: 1;
+}
+
+#sk-container-id-1 div.sk-parallel {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  background-color: var(--sklearn-color-background);
+  position: relative;
+}
+
+#sk-container-id-1 div.sk-parallel-item {
+  display: flex;
+  flex-direction: column;
+}
+
+#sk-container-id-1 div.sk-parallel-item:first-child::after {
+  align-self: flex-end;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:last-child::after {
+  align-self: flex-start;
+  width: 50%;
+}
+
+#sk-container-id-1 div.sk-parallel-item:only-child::after {
+  width: 0;
+}
+
+/* Serial-specific style estimator block */
+
+#sk-container-id-1 div.sk-serial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--sklearn-color-background);
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Toggleable style: style used for estimator/Pipeline/ColumnTransformer box that is
+clickable and can be expanded/collapsed.
+- Pipeline and ColumnTransformer use this feature and define the default style
+- Estimators will overwrite some part of the style using the `sk-estimator` class
+*/
+
+/* Pipeline and ColumnTransformer style (default) */
+
+#sk-container-id-1 div.sk-toggleable {
+  /* Default theme specific background. It is overwritten whether we have a
+  specific estimator or a Pipeline/ColumnTransformer */
+  background-color: var(--sklearn-color-background);
+}
+
+/* Toggleable label */
+#sk-container-id-1 label.sk-toggleable__label {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  padding: 0.5em;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:before {
+  /* Arrow on the left of the label */
+  content: "▸";
+  float: left;
+  margin-right: 0.25em;
+  color: var(--sklearn-color-icon);
+}
+
+#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {
+  color: var(--sklearn-color-text);
+}
+
+/* Toggleable content - dropdown */
+
+#sk-container-id-1 div.sk-toggleable__content {
+  max-height: 0;
+  max-width: 0;
+  overflow: hidden;
+  text-align: left;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content pre {
+  margin: 0.2em;
+  border-radius: 0.25em;
+  color: var(--sklearn-color-text);
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-toggleable__content.fitted pre {
+  /* unfitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {
+  /* Expand drop-down */
+  max-height: 200px;
+  max-width: 100%;
+  overflow: auto;
+}
+
+#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {
+  content: "▾";
+}
+
+/* Pipeline/ColumnTransformer-specific style */
+
+#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator-specific style */
+
+/* Colorize estimator box */
+#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted input.sk-toggleable__control:checked~label.sk-toggleable__label {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+#sk-container-id-1 div.sk-label label.sk-toggleable__label,
+#sk-container-id-1 div.sk-label label {
+  /* The background is the default theme color */
+  color: var(--sklearn-color-text-on-default-background);
+}
+
+/* On hover, darken the color of the background */
+#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+/* Label box, darken color on hover, fitted */
+#sk-container-id-1 div.sk-label.fitted:hover label.sk-toggleable__label.fitted {
+  color: var(--sklearn-color-text);
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Estimator label */
+
+#sk-container-id-1 div.sk-label label {
+  font-family: monospace;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 1.2em;
+}
+
+#sk-container-id-1 div.sk-label-container {
+  text-align: center;
+}
+
+/* Estimator-specific */
+#sk-container-id-1 div.sk-estimator {
+  font-family: monospace;
+  border: 1px dotted var(--sklearn-color-border-box);
+  border-radius: 0.25em;
+  box-sizing: border-box;
+  margin-bottom: 0.5em;
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-0);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-0);
+}
+
+/* on hover */
+#sk-container-id-1 div.sk-estimator:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-2);
+}
+
+#sk-container-id-1 div.sk-estimator.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-2);
+}
+
+/* Specification for estimator info (e.g. "i" and "?") */
+
+/* Common style for "i" and "?" */
+
+.sk-estimator-doc-link,
+a:link.sk-estimator-doc-link,
+a:visited.sk-estimator-doc-link {
+  float: right;
+  font-size: smaller;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1em;
+  height: 1em;
+  width: 1em;
+  text-decoration: none !important;
+  margin-left: 1ex;
+  /* unfitted */
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+  color: var(--sklearn-color-unfitted-level-1);
+}
+
+.sk-estimator-doc-link.fitted,
+a:link.sk-estimator-doc-link.fitted,
+a:visited.sk-estimator-doc-link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+div.sk-estimator:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover,
+div.sk-label-container:hover .sk-estimator-doc-link:hover,
+.sk-estimator-doc-link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+div.sk-estimator.fitted:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover,
+div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
+.sk-estimator-doc-link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+/* Span, style for the box shown on hovering the info icon */
+.sk-estimator-doc-link span {
+  display: none;
+  z-index: 9999;
+  position: relative;
+  font-weight: normal;
+  right: .2ex;
+  padding: .5ex;
+  margin: .5ex;
+  width: min-content;
+  min-width: 20ex;
+  max-width: 50ex;
+  color: var(--sklearn-color-text);
+  box-shadow: 2pt 2pt 4pt #999;
+  /* unfitted */
+  background: var(--sklearn-color-unfitted-level-0);
+  border: .5pt solid var(--sklearn-color-unfitted-level-3);
+}
+
+.sk-estimator-doc-link.fitted span {
+  /* fitted */
+  background: var(--sklearn-color-fitted-level-0);
+  border: var(--sklearn-color-fitted-level-3);
+}
+
+.sk-estimator-doc-link:hover span {
+  display: block;
+}
+
+/* "?"-specific style due to the `<a>` HTML tag */
+
+#sk-container-id-1 a.estimator_doc_link {
+  float: right;
+  font-size: 1rem;
+  line-height: 1em;
+  font-family: monospace;
+  background-color: var(--sklearn-color-background);
+  border-radius: 1rem;
+  height: 1rem;
+  width: 1rem;
+  text-decoration: none;
+  /* unfitted */
+  color: var(--sklearn-color-unfitted-level-1);
+  border: var(--sklearn-color-unfitted-level-1) 1pt solid;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted {
+  /* fitted */
+  border: var(--sklearn-color-fitted-level-1) 1pt solid;
+  color: var(--sklearn-color-fitted-level-1);
+}
+
+/* On hover */
+#sk-container-id-1 a.estimator_doc_link:hover {
+  /* unfitted */
+  background-color: var(--sklearn-color-unfitted-level-3);
+  color: var(--sklearn-color-background);
+  text-decoration: none;
+}
+
+#sk-container-id-1 a.estimator_doc_link.fitted:hover {
+  /* fitted */
+  background-color: var(--sklearn-color-fitted-level-3);
+}
+</style><div id="sk-container-id-1" class="sk-top-container"><div class="sk-text-repr-fallback"><pre>TransformedTargetRegressor(check_inverse=False, func=&lt;ufunc &#x27;log1p&#x27;&gt;,
+                           inverse_func=&lt;function _expm1_recortado at 0x7fb35bf30af0&gt;,
+                           regressor=Pipeline(steps=[(&#x27;prep&#x27;,
+                                                      ColumnTransformer(transformers=[(&#x27;conteos&#x27;,
+                                                                                       Pipeline(steps=[(&#x27;log1p&#x27;,
+                                                                                                        FunctionTransformer(feature_names_out=&#x27;one-to-one&#x27;,
+                                                                                                                            func=&lt;ufunc &#x27;log1p&#x27;&gt;)),
+                                                                                                       (&#x27;escala&#x27;,
+                                                                                                        StandardScaler())]),
+                                                                                       [&#x27;n_1m&#x27;,
+                                                                                        &#x27;n_3m&#x27;,
+                                                                                        &#x27;n_6m&#x27;,...
+                                                                                      (&#x27;profundidad&#x27;,
+                                                                                       Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                                                                        SimpleImputer(strategy=&#x27;median&#x27;)),
+                                                                                                       (&#x27;escala&#x27;,
+                                                                                                        StandardScaler())]),
+                                                                                       [&#x27;prof_media_hist&#x27;]),
+                                                                                      (&#x27;resto&#x27;,
+                                                                                       Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                                                                        SimpleImputer(strategy=&#x27;median&#x27;)),
+                                                                                                       (&#x27;escala&#x27;,
+                                                                                                        StandardScaler())]),
+                                                                                       [&#x27;sen_mes&#x27;,
+                                                                                        &#x27;cos_mes&#x27;,
+                                                                                        &#x27;lat&#x27;,
+                                                                                        &#x27;lon&#x27;])],
+                                                                        verbose_feature_names_out=False)),
+                                                     (&#x27;svr&#x27;,
+                                                      LinearSVR(C=0.1,
+                                                                max_iter=20000,
+                                                                random_state=42))]))</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox" ><label for="sk-estimator-id-1" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;&nbsp;TransformedTargetRegressor<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.compose.TransformedTargetRegressor.html">?<span>Documentation for TransformedTargetRegressor</span></a><span class="sk-estimator-doc-link ">i<span>Not fitted</span></span></label><div class="sk-toggleable__content "><pre>TransformedTargetRegressor(check_inverse=False, func=&lt;ufunc &#x27;log1p&#x27;&gt;,
+                           inverse_func=&lt;function _expm1_recortado at 0x7fb35bf30af0&gt;,
+                           regressor=Pipeline(steps=[(&#x27;prep&#x27;,
+                                                      ColumnTransformer(transformers=[(&#x27;conteos&#x27;,
+                                                                                       Pipeline(steps=[(&#x27;log1p&#x27;,
+                                                                                                        FunctionTransformer(feature_names_out=&#x27;one-to-one&#x27;,
+                                                                                                                            func=&lt;ufunc &#x27;log1p&#x27;&gt;)),
+                                                                                                       (&#x27;escala&#x27;,
+                                                                                                        StandardScaler())]),
+                                                                                       [&#x27;n_1m&#x27;,
+                                                                                        &#x27;n_3m&#x27;,
+                                                                                        &#x27;n_6m&#x27;,...
+                                                                                      (&#x27;profundidad&#x27;,
+                                                                                       Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                                                                        SimpleImputer(strategy=&#x27;median&#x27;)),
+                                                                                                       (&#x27;escala&#x27;,
+                                                                                                        StandardScaler())]),
+                                                                                       [&#x27;prof_media_hist&#x27;]),
+                                                                                      (&#x27;resto&#x27;,
+                                                                                       Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                                                                        SimpleImputer(strategy=&#x27;median&#x27;)),
+                                                                                                       (&#x27;escala&#x27;,
+                                                                                                        StandardScaler())]),
+                                                                                       [&#x27;sen_mes&#x27;,
+                                                                                        &#x27;cos_mes&#x27;,
+                                                                                        &#x27;lat&#x27;,
+                                                                                        &#x27;lon&#x27;])],
+                                                                        verbose_feature_names_out=False)),
+                                                     (&#x27;svr&#x27;,
+                                                      LinearSVR(C=0.1,
+                                                                max_iter=20000,
+                                                                random_state=42))]))</pre></div> </div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-2" type="checkbox" ><label for="sk-estimator-id-2" class="sk-toggleable__label  sk-toggleable__label-arrow ">regressor: Pipeline</label><div class="sk-toggleable__content "><pre>Pipeline(steps=[(&#x27;prep&#x27;,
+                 ColumnTransformer(transformers=[(&#x27;conteos&#x27;,
+                                                  Pipeline(steps=[(&#x27;log1p&#x27;,
+                                                                   FunctionTransformer(feature_names_out=&#x27;one-to-one&#x27;,
+                                                                                       func=&lt;ufunc &#x27;log1p&#x27;&gt;)),
+                                                                  (&#x27;escala&#x27;,
+                                                                   StandardScaler())]),
+                                                  [&#x27;n_1m&#x27;, &#x27;n_3m&#x27;, &#x27;n_6m&#x27;,
+                                                   &#x27;n_12m&#x27;, &#x27;n35_3m&#x27;, &#x27;n35_12m&#x27;,
+                                                   &#x27;vec_1m&#x27;, &#x27;vec_3m&#x27;,
+                                                   &#x27;n_mismo_mes_anio_prev&#x27;]),
+                                                 (&#x27;magnitudes&#x27;,
+                                                  Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                                   SimpleImputer(fill_val...
+                                                 (&#x27;profundidad&#x27;,
+                                                  Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                                   SimpleImputer(strategy=&#x27;median&#x27;)),
+                                                                  (&#x27;escala&#x27;,
+                                                                   StandardScaler())]),
+                                                  [&#x27;prof_media_hist&#x27;]),
+                                                 (&#x27;resto&#x27;,
+                                                  Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                                   SimpleImputer(strategy=&#x27;median&#x27;)),
+                                                                  (&#x27;escala&#x27;,
+                                                                   StandardScaler())]),
+                                                  [&#x27;sen_mes&#x27;, &#x27;cos_mes&#x27;, &#x27;lat&#x27;,
+                                                   &#x27;lon&#x27;])],
+                                   verbose_feature_names_out=False)),
+                (&#x27;svr&#x27;, LinearSVR(C=0.1, max_iter=20000, random_state=42))])</pre></div> </div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox" ><label for="sk-estimator-id-3" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;prep: ColumnTransformer<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.compose.ColumnTransformer.html">?<span>Documentation for prep: ColumnTransformer</span></a></label><div class="sk-toggleable__content "><pre>ColumnTransformer(transformers=[(&#x27;conteos&#x27;,
+                                 Pipeline(steps=[(&#x27;log1p&#x27;,
+                                                  FunctionTransformer(feature_names_out=&#x27;one-to-one&#x27;,
+                                                                      func=&lt;ufunc &#x27;log1p&#x27;&gt;)),
+                                                 (&#x27;escala&#x27;, StandardScaler())]),
+                                 [&#x27;n_1m&#x27;, &#x27;n_3m&#x27;, &#x27;n_6m&#x27;, &#x27;n_12m&#x27;, &#x27;n35_3m&#x27;,
+                                  &#x27;n35_12m&#x27;, &#x27;vec_1m&#x27;, &#x27;vec_3m&#x27;,
+                                  &#x27;n_mismo_mes_anio_prev&#x27;]),
+                                (&#x27;magnitudes&#x27;,
+                                 Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                  SimpleImputer(fill_value=2.5,
+                                                                strategy=&#x27;constan...
+                                 [&#x27;mag_media_3m&#x27;, &#x27;mag_media_12m&#x27;, &#x27;mag_max_3m&#x27;,
+                                  &#x27;mag_max_12m&#x27;]),
+                                (&#x27;profundidad&#x27;,
+                                 Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                  SimpleImputer(strategy=&#x27;median&#x27;)),
+                                                 (&#x27;escala&#x27;, StandardScaler())]),
+                                 [&#x27;prof_media_hist&#x27;]),
+                                (&#x27;resto&#x27;,
+                                 Pipeline(steps=[(&#x27;imputa&#x27;,
+                                                  SimpleImputer(strategy=&#x27;median&#x27;)),
+                                                 (&#x27;escala&#x27;, StandardScaler())]),
+                                 [&#x27;sen_mes&#x27;, &#x27;cos_mes&#x27;, &#x27;lat&#x27;, &#x27;lon&#x27;])],
+                  verbose_feature_names_out=False)</pre></div> </div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox" ><label for="sk-estimator-id-4" class="sk-toggleable__label  sk-toggleable__label-arrow ">conteos</label><div class="sk-toggleable__content "><pre>[&#x27;n_1m&#x27;, &#x27;n_3m&#x27;, &#x27;n_6m&#x27;, &#x27;n_12m&#x27;, &#x27;n35_3m&#x27;, &#x27;n35_12m&#x27;, &#x27;vec_1m&#x27;, &#x27;vec_3m&#x27;, &#x27;n_mismo_mes_anio_prev&#x27;]</pre></div> </div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-5" type="checkbox" ><label for="sk-estimator-id-5" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;FunctionTransformer<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.preprocessing.FunctionTransformer.html">?<span>Documentation for FunctionTransformer</span></a></label><div class="sk-toggleable__content "><pre>FunctionTransformer(feature_names_out=&#x27;one-to-one&#x27;, func=&lt;ufunc &#x27;log1p&#x27;&gt;)</pre></div> </div></div><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-6" type="checkbox" ><label for="sk-estimator-id-6" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;StandardScaler<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.preprocessing.StandardScaler.html">?<span>Documentation for StandardScaler</span></a></label><div class="sk-toggleable__content "><pre>StandardScaler()</pre></div> </div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-7" type="checkbox" ><label for="sk-estimator-id-7" class="sk-toggleable__label  sk-toggleable__label-arrow ">magnitudes</label><div class="sk-toggleable__content "><pre>[&#x27;mag_media_3m&#x27;, &#x27;mag_media_12m&#x27;, &#x27;mag_max_3m&#x27;, &#x27;mag_max_12m&#x27;]</pre></div> </div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-8" type="checkbox" ><label for="sk-estimator-id-8" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;SimpleImputer<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.impute.SimpleImputer.html">?<span>Documentation for SimpleImputer</span></a></label><div class="sk-toggleable__content "><pre>SimpleImputer(fill_value=2.5, strategy=&#x27;constant&#x27;)</pre></div> </div></div><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-9" type="checkbox" ><label for="sk-estimator-id-9" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;StandardScaler<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.preprocessing.StandardScaler.html">?<span>Documentation for StandardScaler</span></a></label><div class="sk-toggleable__content "><pre>StandardScaler()</pre></div> </div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-10" type="checkbox" ><label for="sk-estimator-id-10" class="sk-toggleable__label  sk-toggleable__label-arrow ">profundidad</label><div class="sk-toggleable__content "><pre>[&#x27;prof_media_hist&#x27;]</pre></div> </div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-11" type="checkbox" ><label for="sk-estimator-id-11" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;SimpleImputer<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.impute.SimpleImputer.html">?<span>Documentation for SimpleImputer</span></a></label><div class="sk-toggleable__content "><pre>SimpleImputer(strategy=&#x27;median&#x27;)</pre></div> </div></div><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-12" type="checkbox" ><label for="sk-estimator-id-12" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;StandardScaler<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.preprocessing.StandardScaler.html">?<span>Documentation for StandardScaler</span></a></label><div class="sk-toggleable__content "><pre>StandardScaler()</pre></div> </div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-13" type="checkbox" ><label for="sk-estimator-id-13" class="sk-toggleable__label  sk-toggleable__label-arrow ">resto</label><div class="sk-toggleable__content "><pre>[&#x27;sen_mes&#x27;, &#x27;cos_mes&#x27;, &#x27;lat&#x27;, &#x27;lon&#x27;]</pre></div> </div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-14" type="checkbox" ><label for="sk-estimator-id-14" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;SimpleImputer<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.impute.SimpleImputer.html">?<span>Documentation for SimpleImputer</span></a></label><div class="sk-toggleable__content "><pre>SimpleImputer(strategy=&#x27;median&#x27;)</pre></div> </div></div><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-15" type="checkbox" ><label for="sk-estimator-id-15" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;StandardScaler<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.preprocessing.StandardScaler.html">?<span>Documentation for StandardScaler</span></a></label><div class="sk-toggleable__content "><pre>StandardScaler()</pre></div> </div></div></div></div></div></div></div></div></div><div class="sk-item"><div class="sk-estimator  sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-16" type="checkbox" ><label for="sk-estimator-id-16" class="sk-toggleable__label  sk-toggleable__label-arrow ">&nbsp;LinearSVR<a class="sk-estimator-doc-link " rel="noreferrer" target="_blank" href="https://scikit-learn.org/1.5/modules/generated/sklearn.svm.LinearSVR.html">?<span>Documentation for LinearSVR</span></a></label><div class="sk-toggleable__content "><pre>LinearSVR(C=0.1, max_iter=20000, random_state=42)</pre></div> </div></div></div></div></div></div></div></div></div></div></div></div></div>
+</div>
+</section>
+<section id="eleccion-por-validacion-cruzada-temporal-solo-entrenamiento">
+<h2>10.3 Elección por validación cruzada temporal (solo entrenamiento)<a class="headerlink" href="#eleccion-por-validacion-cruzada-temporal-solo-entrenamiento" title="Link to this heading">#</a></h2>
+<p>Se usa la <strong>validación cruzada temporal de ventana creciente con gap</strong> del capítulo 7: 5 pliegues sobre
+el último 60 % de los meses de entrenamiento. El modelo es el SVR lineal base con C = 0,1; su
+hiperparámetro se ajusta en el capítulo 11. Se compara el RMSLE medio de los pliegues.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Selección de la imputación y del conjunto de variables por CV temporal (RMSLE)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cv_rmsle</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">imput</span><span class="o">=</span><span class="s2">"constante"</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">pl</span><span class="p">:</span>
+        <span class="n">m_</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">svr_lineal</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">imputacion_magnitud</span><span class="o">=</span><span class="n">imput</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">[</span><span class="n">a</span><span class="p">]][</span><span class="n">cols</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">[</span><span class="n">a</span><span class="p">]])</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">rmsle</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">[</span><span class="n">v</span><span class="p">]],</span> <span class="n">m_</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">[</span><span class="n">v</span><span class="p">]][</span><span class="n">cols</span><span class="p">])))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="n">r</span>
+
+<span class="n">conjuntos</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"todas (18)"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span>
+    <span class="s2">"sin calendario (16)"</span><span class="p">:</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mdl</span><span class="o">.</span><span class="n">CICLICAS</span><span class="p">],</span>
+    <span class="s2">"sin lat/lon (16)"</span><span class="p">:</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mdl</span><span class="o">.</span><span class="n">UBICACION</span><span class="p">],</span>
+    <span class="s2">"sin vecindad (16)"</span><span class="p">:</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"vec"</span><span class="p">)],</span>
+    <span class="s2">"sin magnitudes (14)"</span><span class="p">:</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mdl</span><span class="o">.</span><span class="n">MAGNITUDES</span><span class="p">],</span>
+    <span class="s2">"solo conteos propios (7)"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"n_1m"</span><span class="p">,</span> <span class="s2">"n_3m"</span><span class="p">,</span> <span class="s2">"n_6m"</span><span class="p">,</span> <span class="s2">"n_12m"</span><span class="p">,</span> <span class="s2">"n35_3m"</span><span class="p">,</span> <span class="s2">"n35_12m"</span><span class="p">,</span> <span class="s2">"n_mismo_mes_anio_prev"</span><span class="p">],</span>
+<span class="p">}</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">imput</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"constante"</span><span class="p">,</span> <span class="s2">"mediana"</span><span class="p">):</span>
+    <span class="n">mu_</span><span class="p">,</span> <span class="n">sd_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv_rmsle</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="n">imput</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"prueba"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"imputación de magnitud: </span><span class="si">{</span><span class="n">imput</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"RMSLE_CV_media"</span><span class="p">:</span> <span class="n">mu_</span><span class="p">,</span> <span class="s2">"RMSLE_CV_desv"</span><span class="p">:</span> <span class="n">sd_</span><span class="p">})</span>
+<span class="n">sel_imp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">imput_ok</span> <span class="o">=</span> <span class="s2">"constante"</span> <span class="k">if</span> <span class="n">sel_imp</span><span class="o">.</span><span class="n">RMSLE_CV_media</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">sel_imp</span><span class="o">.</span><span class="n">RMSLE_CV_media</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">else</span> <span class="s2">"mediana"</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">cols</span> <span class="ow">in</span> <span class="n">conjuntos</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">mu_</span><span class="p">,</span> <span class="n">sd_</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">cv_rmsle</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">imput_ok</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"conjunto"</span><span class="p">:</span> <span class="n">nombre</span><span class="p">,</span> <span class="s2">"n_variables"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">),</span> <span class="s2">"RMSLE_CV_media"</span><span class="p">:</span> <span class="n">mu_</span><span class="p">,</span> <span class="s2">"RMSLE_CV_desv"</span><span class="p">:</span> <span class="n">sd_</span><span class="p">,</span>
+                  <span class="o">**</span><span class="p">{</span><span class="sa">f</span><span class="s2">"pliegue_</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r</span><span class="p">)}})</span>
+<span class="n">sel</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"RMSLE_CV_media"</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">sel_imp</span><span class="p">,</span> <span class="s2">"seleccion_imputacion.csv"</span><span class="p">);</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">sel</span><span class="p">,</span> <span class="s2">"seleccion_conjuntos.csv"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">sel_imp</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">sel</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>prueba</th>
+      <th>RMSLE_CV_media</th>
+      <th>RMSLE_CV_desv</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>imputación de magnitud: constante</td>
+      <td>0.422</td>
+      <td>0.0310</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>imputación de magnitud: mediana</td>
+      <td>0.439</td>
+      <td>0.0331</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>conjunto</th>
+      <th>n_variables</th>
+      <th>RMSLE_CV_media</th>
+      <th>RMSLE_CV_desv</th>
+      <th>pliegue_1</th>
+      <th>pliegue_2</th>
+      <th>pliegue_3</th>
+      <th>pliegue_4</th>
+      <th>pliegue_5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>todas (18)</td>
+      <td>18</td>
+      <td>0.4220</td>
+      <td>0.0310</td>
+      <td>0.4250</td>
+      <td>0.4792</td>
+      <td>0.4060</td>
+      <td>0.4115</td>
+      <td>0.3883</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>sin lat/lon (16)</td>
+      <td>16</td>
+      <td>0.4222</td>
+      <td>0.0307</td>
+      <td>0.4252</td>
+      <td>0.4791</td>
+      <td>0.4059</td>
+      <td>0.4122</td>
+      <td>0.3889</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>sin calendario (16)</td>
+      <td>16</td>
+      <td>0.4223</td>
+      <td>0.0310</td>
+      <td>0.4251</td>
+      <td>0.4796</td>
+      <td>0.4062</td>
+      <td>0.4118</td>
+      <td>0.3887</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>sin vecindad (16)</td>
+      <td>16</td>
+      <td>0.4223</td>
+      <td>0.0305</td>
+      <td>0.4252</td>
+      <td>0.4788</td>
+      <td>0.4060</td>
+      <td>0.4120</td>
+      <td>0.3893</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>solo conteos propios (7)</td>
+      <td>7</td>
+      <td>0.4504</td>
+      <td>0.0322</td>
+      <td>0.4354</td>
+      <td>0.5125</td>
+      <td>0.4421</td>
+      <td>0.4428</td>
+      <td>0.4194</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>sin magnitudes (14)</td>
+      <td>14</td>
+      <td>0.4505</td>
+      <td>0.0322</td>
+      <td>0.4357</td>
+      <td>0.5126</td>
+      <td>0.4421</td>
+      <td>0.4428</td>
+      <td>0.4194</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Regla de un error estándar para elegir el conjunto más simple</span>
+<span class="n">mejor</span> <span class="o">=</span> <span class="n">sel</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">umbral_1se</span> <span class="o">=</span> <span class="n">mejor</span><span class="o">.</span><span class="n">RMSLE_CV_media</span> <span class="o">+</span> <span class="n">mejor</span><span class="o">.</span><span class="n">RMSLE_CV_desv</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pl</span><span class="p">))</span>
+<span class="n">candidatos</span> <span class="o">=</span> <span class="n">sel</span><span class="p">[</span><span class="n">sel</span><span class="o">.</span><span class="n">RMSLE_CV_media</span> <span class="o">&lt;=</span> <span class="n">umbral_1se</span><span class="p">]</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Imputación.** La **</span><span class="si">{</span><span class="n">imput_ok</span><span class="si">}</span><span class="s2">** da el menor RMSLE medio (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sel_imp</span><span class="o">.</span><span class="n">RMSLE_CV_media</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> frente a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sel_imp</span><span class="o">.</span><span class="n">RMSLE_CV_media</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">  La diferencia es </span><span class="si">{</span><span class="p">(</span><span class="s1">'mínima'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">abs</span><span class="p">(</span><span class="n">sel_imp</span><span class="o">.</span><span class="n">RMSLE_CV_media</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.002</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'apreciable'</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">- **Conjunto de variables.** El menor RMSLE de validación lo da **«</span><span class="si">{</span><span class="n">mejor</span><span class="o">.</span><span class="n">conjunto</span><span class="si">}</span><span class="s2">»** (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">mejor</span><span class="o">.</span><span class="n">RMSLE_CV_media</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">mejor</span><span class="o">.</span><span class="n">RMSLE_CV_desv</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">- **Regla de un error estándar.** Los conjuntos a menos de un error estándar del mejor (umbral </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">umbral_1se</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">) son:</span>
+<span class="s2">  </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'«'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'»'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">candidatos</span><span class="o">.</span><span class="n">conjunto</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">- **Decisión.** Se adopta **</span><span class="si">{</span><span class="s1">'«todas (18)»'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="s1">'todas (18)'</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">candidatos</span><span class="o">.</span><span class="n">conjunto</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'«'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mejor</span><span class="o">.</span><span class="n">conjunto</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'»'</span><span class="si">}</span><span class="s2">**.</span>
+<span class="s2">  </span><span class="si">{</span><span class="s1">'Las 18 variables están dentro del margen de un error estándar: se conservan por coherencia con el EDA, que justifica cada una, y para que los modelos no lineales del Entregable 2 partan del mismo conjunto.'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="s1">'todas (18)'</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">candidatos</span><span class="o">.</span><span class="n">conjunto</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'El conjunto completo queda fuera del margen de un error estándar, así que se usa el mejor.'</span><span class="si">}</span>
+<span class="s2">- **Qué variables importan.** Quitar las **magnitudes** (o quedarse solo con los conteos propios) empeora el RMSLE en</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sel</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">'conjunto'</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'sin magnitudes (14)'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_CV_media'</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">mejor</span><span class="o">.</span><span class="n">RMSLE_CV_media</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">, y esa diferencia se repite en los 5 pliegues. Quitar calendario,</span>
+<span class="s2">  ubicación o vecindad no cambia nada para un modelo **lineal**. En el caso de la ubicación y la vecindad es esperable: su relación con el</span>
+<span class="s2">  objetivo es no lineal (capítulos 5 y 8).</span>
+<span class="s2">- **Variabilidad entre pliegues.** La desviación entre pliegues (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">sel</span><span class="o">.</span><span class="n">RMSLE_CV_desv</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2"> en promedio) es comparable a la mayor diferencia entre</span>
+<span class="s2">  conjuntos: el error depende mucho del **periodo evaluado** (el pliegue 2 es el más difícil en todos los conjuntos). Es una señal de los</span>
+<span class="s2">  cambios de régimen del capítulo 7."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Imputación.</strong> La <strong>constante</strong> da el menor RMSLE medio (0,4220 frente a 0,4390).
+La diferencia es apreciable.</p></li>
+<li><p><strong>Conjunto de variables.</strong> El menor RMSLE de validación lo da <strong>«todas (18)»</strong> (0,4220 ± 0,0310).</p></li>
+<li><p><strong>Regla de un error estándar.</strong> Los conjuntos a menos de un error estándar del mejor (umbral 0,4358) son:
+«todas (18)», «sin lat/lon (16)», «sin calendario (16)», «sin vecindad (16)».</p></li>
+<li><p><strong>Decisión.</strong> Se adopta <strong>«todas (18)»</strong>.
+Las 18 variables están dentro del margen de un error estándar: se conservan por coherencia con el EDA, que justifica cada una, y para que los modelos no lineales del Entregable 2 partan del mismo conjunto.</p></li>
+<li><p><strong>Qué variables importan.</strong> Quitar las <strong>magnitudes</strong> (o quedarse solo con los conteos propios) empeora el RMSLE en
+0,028, y esa diferencia se repite en los 5 pliegues. Quitar calendario,
+ubicación o vecindad no cambia nada para un modelo <strong>lineal</strong>. En el caso de la ubicación y la vecindad es esperable: su relación con el
+objetivo es no lineal (capítulos 5 y 8).</p></li>
+<li><p><strong>Variabilidad entre pliegues.</strong> La desviación entre pliegues (0,031 en promedio) es comparable a la mayor diferencia entre
+conjuntos: el error depende mucho del <strong>periodo evaluado</strong> (el pliegue 2 es el más difícil en todos los conjuntos). Es una señal de los
+cambios de régimen del capítulo 7.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="comprobacion-el-pipeline-se-ajusta-solo-con-entrenamiento">
+<h2>10.4 Comprobación: el Pipeline se ajusta solo con entrenamiento<a class="headerlink" href="#comprobacion-el-pipeline-se-ajusta-solo-con-entrenamiento" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ajuste final del Pipeline y verificación de que el escalador usa solo el entrenamiento</span>
+<span class="n">final_cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="k">if</span> <span class="s2">"todas (18)"</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">candidatos</span><span class="o">.</span><span class="n">conjunto</span><span class="p">)</span> <span class="k">else</span> <span class="n">conjuntos</span><span class="p">[</span><span class="n">mejor</span><span class="o">.</span><span class="n">conjunto</span><span class="p">]</span>
+<span class="n">m_</span> <span class="o">=</span> <span class="n">mdl</span><span class="o">.</span><span class="n">svr_lineal</span><span class="p">(</span><span class="n">final_cols</span><span class="p">,</span> <span class="n">imputacion_magnitud</span><span class="o">=</span><span class="n">imput_ok</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">][</span><span class="n">final_cols</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">prep</span> <span class="o">=</span> <span class="n">m_</span><span class="o">.</span><span class="n">regressor_</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">"prep"</span><span class="p">]</span>
+<span class="n">esc</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">named_transformers_</span><span class="p">[</span><span class="s2">"conteos"</span><span class="p">]</span><span class="o">.</span><span class="n">named_steps</span><span class="p">[</span><span class="s2">"escala"</span><span class="p">]</span>
+<span class="n">media_tr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">tr</span><span class="p">][[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">mdl</span><span class="o">.</span><span class="n">CONTEOS</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">final_cols</span><span class="p">]])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">media_todo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">X</span><span class="p">[[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">mdl</span><span class="o">.</span><span class="n">CONTEOS</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">final_cols</span><span class="p">]])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""- Medias del escalador de conteos = medias de log1p en **entrenamiento**: **</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">esc</span><span class="o">.</span><span class="n">mean_</span><span class="p">,</span><span class="w"> </span><span class="n">media_tr</span><span class="p">)</span><span class="si">}</span><span class="s2">**. Con todo el panel no</span>
+<span class="s2">  coinciden (diferencia máxima </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">media_todo</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">esc</span><span class="o">.</span><span class="n">mean_</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">- Columnas de salida del preprocesador: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">())</span><span class="si">}</span><span class="s2"> (`</span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">()[:</span><span class="mi">6</span><span class="p">])</span><span class="si">}</span><span class="s2">, …`).</span>
+<span class="s2">- Decisiones guardadas en `tables/parametros_preprocesamiento.csv` para el capítulo 11."""</span><span class="p">)</span>
+<span class="n">_</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">"parametro"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"imputacion_magnitud"</span><span class="p">,</span> <span class="s2">"variables"</span><span class="p">],</span> <span class="s2">"valor"</span><span class="p">:</span> <span class="p">[</span><span class="n">imput_ok</span><span class="p">,</span> <span class="s2">";"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">final_cols</span><span class="p">)]}),</span>
+                      <span class="s2">"parametros_preprocesamiento.csv"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p>Medias del escalador de conteos = medias de log1p en <strong>entrenamiento</strong>: <strong>True</strong>. Con todo el panel no
+coinciden (diferencia máxima 0,061).</p></li>
+<li><p>Columnas de salida del preprocesador: 18 (<code class="docutils literal notranslate"><span class="pre">n_1m,</span> <span class="pre">n_3m,</span> <span class="pre">n_6m,</span> <span class="pre">n_12m,</span> <span class="pre">n35_3m,</span> <span class="pre">n35_12m,</span> <span class="pre">…</span></code>).</p></li>
+<li><p>Decisiones guardadas en <code class="docutils literal notranslate"><span class="pre">tables/parametros_preprocesamiento.csv</span></code> para el capítulo 11.</p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="09_data_leakage.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">9. Auditoría de fuga de datos (2.5)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="11_modelo_base.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">11. Modelo base: líneas base triviales y SVR lineal</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decisiones-y-hallazgo-que-las-motiva">10.1 Decisiones y hallazgo que las motiva</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#el-pipeline">10.2 El Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#eleccion-por-validacion-cruzada-temporal-solo-entrenamiento">10.3 Elección por validación cruzada temporal (solo entrenamiento)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#comprobacion-el-pipeline-se-ajusta-solo-con-entrenamiento">10.4 Comprobación: el Pipeline se ajusta solo con entrenamiento</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

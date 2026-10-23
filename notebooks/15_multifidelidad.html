@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>15. Optimización multi-fidelidad: Successive Halving e Hyperband &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/15_multifidelidad';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="16. Optimización computacional" href="16_optimizacion_computacional.html" />
+    <link rel="prev" title="14. Optimización de hiperparámetros: resultados de la validación anidada" href="14_optimizacion_hiperparametros.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_eda_temporal.html">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/15_multifidelidad.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>15. Optimización multi-fidelidad: Successive Halving e Hyperband</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diseno">15.1 Diseño</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resultados">15.2 Resultados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-del-capitulo">15.3 Conclusiones del capítulo</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="optimizacion-multi-fidelidad-successive-halving-e-hyperband">
+<h1>15. Optimización multi-fidelidad: Successive Halving e Hyperband<a class="headerlink" href="#optimizacion-multi-fidelidad-successive-halving-e-hyperband" title="Link to this heading">#</a></h1>
+<p>La sección 3.3 del enunciado recomienda al menos un método que <strong>elimine pronto las configuraciones poco
+prometedoras</strong> evaluándolas con un presupuesto parcial y reasigne lo ahorrado a las más competitivas. El
+proyecto usa la multi-fidelidad en dos niveles:</p>
+<ol class="arabic simple">
+<li><p><strong>Entre combinaciones</strong> (cap. 13.7): un tamizaje de baja fidelidad (5 evaluaciones, 2 pliegues) descartó
+20 combinaciones de clasificación antes de correrlas completas.</p></li>
+<li><p><strong>Dentro de una búsqueda</strong> (este capítulo): Successive Halving (Jamieson y Talwalkar, 2016) e Hyperband
+(Li et al., 2018) frente a Random Search, con XGBoost de regresión, el modelo más competitivo del benchmark.</p></li>
+</ol>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Resultados de multifidelidad: Random Search, Successive Halving e Hyperband</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">benchmark</span> <span class="k">as</span> <span class="n">bm</span><span class="p">,</span> <span class="n">resultados_e2</span> <span class="k">as</span> <span class="n">r2</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">E2</span> <span class="o">/</span> <span class="s2">"multifidelidad.csv"</span><span class="p">)</span>
+<span class="n">F</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">r2</span><span class="o">.</span><span class="n">E2</span> <span class="o">/</span> <span class="s2">"multifidelidad_resumen.csv"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="diseno">
+<h2>15.1 Diseño<a class="headerlink" href="#diseno" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Fidelidad (recurso): número de árboles</strong> de XGBoost, con R = 600 como recurso completo (el máximo del
+espacio del cap. 13.3). Es una buena medida de fidelidad porque (i) el costo de ajuste es lineal en el
+número de árboles, y (ii) en boosting el error con pocos árboles <strong>suele</strong> estar correlacionado con el
+error final, de modo que las configuraciones malas se descartan pronto. El supuesto (ii) se verifica en
+15.2, porque con learning rates bajos puede fallar. Los demás hiperparámetros (profundidad, learning rate,
+subsample, colsample,
+min_child_weight) se muestrean igual que en Random Search.</p></li>
+<li><p><strong>Factor de reducción η = 3.</strong> En cada ronda se conserva el mejor tercio y se triplica el recurso. Es el
+valor recomendado por Li et al. (2018): con η = 2 habría más rondas (más sobrecosto y más decisiones con
+fidelidad baja); con η = 4 o más se descarta demasiado con una sola medición ruidosa.</p></li>
+<li><p><strong>Successive Halving:</strong> 27 configuraciones con R/9 ≈ 66 árboles → 9 con 200 → 3 con 600. Costo:
+27/9 + 9/3 + 3 = <strong>9 evaluaciones equivalentes</strong> (una equivalente = una validación interna con 600 árboles).</p></li>
+<li><p><strong>Hyperband</strong> (s_max = 2): tres brackets que reparten el riesgo de cortar demasiado pronto: s = 2 (el SH
+anterior), s = 1 (5 configuraciones con 200 → 1 con 600) y s = 0 (3 configuraciones con 600, sin corte).
+Costo ≈ <strong>14,7 equivalentes</strong>, casi igual al de Random Search.</p></li>
+<li><p><strong>Random Search:</strong> 15 configuraciones con 600 árboles = <strong>15 equivalentes</strong> (el presupuesto del cap. 14).</p></li>
+<li><p><strong>Sin fuga y sin tocar la prueba:</strong> la búsqueda usa la validación temporal interna (3 pliegues) sobre el
+entrenamiento <strong>sin su último año</strong>; la configuración ganadora de cada método se reentrena y se evalúa en
+ese último año (dic-2019 a nov-2020), que ningún método vio.</p></li>
+</ul>
+</section>
+<section id="resultados">
+<h2>15.2 Resultados<a class="headerlink" href="#resultados" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tabla de costo y error de cada método</span>
+<span class="n">F2</span> <span class="o">=</span> <span class="n">F</span><span class="p">[[</span><span class="s2">"metodo"</span><span class="p">,</span> <span class="s2">"evaluaciones"</span><span class="p">,</span> <span class="s2">"costo_equiv"</span><span class="p">,</span> <span class="s2">"tiempo_s"</span><span class="p">,</span> <span class="s2">"RMSLE_cv_mejor"</span><span class="p">,</span> <span class="s2">"RMSLE_reserva"</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">F2</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"método"</span><span class="p">,</span> <span class="s2">"configuraciones evaluadas (todas las fidelidades)"</span><span class="p">,</span> <span class="s2">"costo (evaluaciones equivalentes)"</span><span class="p">,</span>
+              <span class="s2">"tiempo de búsqueda (s)"</span><span class="p">,</span> <span class="s2">"mejor RMSLE interno"</span><span class="p">,</span> <span class="s2">"RMSLE en el año reservado"</span><span class="p">]</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">F2</span><span class="p">,</span> <span class="s2">"e2_multifidelidad.csv"</span><span class="p">)</span>
+<span class="n">F2</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>método</th>
+      <th>configuraciones evaluadas (todas las fidelidades)</th>
+      <th>costo (evaluaciones equivalentes)</th>
+      <th>tiempo de búsqueda (s)</th>
+      <th>mejor RMSLE interno</th>
+      <th>RMSLE en el año reservado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Hyperband</td>
+      <td>48</td>
+      <td>14.6667</td>
+      <td>35.1265</td>
+      <td>0.3584</td>
+      <td>0.3217</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Random Search</td>
+      <td>15</td>
+      <td>15.0000</td>
+      <td>32.7897</td>
+      <td>0.3573</td>
+      <td>0.3216</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Successive Halving</td>
+      <td>39</td>
+      <td>9.0000</td>
+      <td>21.2065</td>
+      <td>0.3598</td>
+      <td>0.3231</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Gráficos: error por fidelidad y mejor error frente al costo acumulado</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">metodo</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">"Random Search"</span><span class="p">,</span> <span class="s2">"Successive Halving"</span><span class="p">,</span> <span class="s2">"Hyperband"</span><span class="p">],</span> <span class="p">[</span><span class="s2">"#1f77b4"</span><span class="p">,</span> <span class="s2">"#d62728"</span><span class="p">,</span> <span class="s2">"#2ca02c"</span><span class="p">]):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">D</span><span class="o">.</span><span class="n">metodo</span> <span class="o">==</span> <span class="n">metodo</span><span class="p">]</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">recurso</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mf">0.04</span> <span class="o">*</span> <span class="p">[</span><span class="s2">"Random Search"</span><span class="p">,</span> <span class="s2">"Successive Halving"</span><span class="p">,</span> <span class="s2">"Hyperband"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">metodo</span><span class="p">)),</span> <span class="n">g</span><span class="o">.</span><span class="n">RMSLE_cv</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">metodo</span><span class="p">)</span>
+    <span class="n">g2</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">acum</span> <span class="o">=</span> <span class="n">g2</span><span class="o">.</span><span class="n">costo_equiv</span><span class="o">.</span><span class="n">cumsum</span><span class="p">();</span> <span class="n">mejor</span> <span class="o">=</span> <span class="n">g2</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">g2</span><span class="o">.</span><span class="n">recurso</span> <span class="o">==</span> <span class="mi">600</span><span class="p">)</span><span class="o">.</span><span class="n">RMSLE_cv</span><span class="o">.</span><span class="n">cummin</span><span class="p">()</span><span class="o">.</span><span class="n">ffill</span><span class="p">()</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">acum</span><span class="p">,</span> <span class="n">mejor</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="s2">"post"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">metodo</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s2">"log"</span><span class="p">);</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="mi">66</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">600</span><span class="p">]);</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="s2">"66"</span><span class="p">,</span> <span class="s2">"200"</span><span class="p">,</span> <span class="s2">"600"</span><span class="p">])</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"árboles (fidelidad)"</span><span class="p">);</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"RMSLE interno"</span><span class="p">);</span> <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Cada configuración en cada fidelidad"</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"presupuesto consumido (evaluaciones equivalentes)"</span><span class="p">);</span> <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">"mejor RMSLE con 600 árboles"</span><span class="p">)</span>
+<span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Calidad alcanzada por unidad de presupuesto"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">axs</span><span class="p">:</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">);</span> <span class="n">a</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"e2_multifidelidad.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/fa71449a926ab3af014d50a510533a35e9109a56ccb3e7e027cf3b9b209fbb19.png" src="../_images/fa71449a926ab3af014d50a510533a35e9109a56ccb3e7e027cf3b9b209fbb19.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Correlación entre fidelidades y lectura</span>
+<span class="n">f</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">"metodo"</span><span class="p">)</span>
+<span class="n">corr</span> <span class="o">=</span> <span class="n">D</span><span class="p">[(</span><span class="n">D</span><span class="o">.</span><span class="n">metodo</span> <span class="o">!=</span> <span class="s2">"Random Search"</span><span class="p">)]</span>
+<span class="n">pares</span> <span class="o">=</span> <span class="n">corr</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"metodo"</span><span class="p">,</span> <span class="s2">"config"</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="s2">"recurso"</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s2">"RMSLE_cv"</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="mi">66</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span> <span class="k">if</span> <span class="mi">66</span> <span class="ow">in</span> <span class="n">corr</span><span class="o">.</span><span class="n">recurso</span><span class="o">.</span><span class="n">values</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="n">rho</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">spearmanr</span><span class="p">(</span><span class="n">pares</span><span class="p">[</span><span class="mi">66</span><span class="p">],</span> <span class="n">pares</span><span class="p">[</span><span class="mi">200</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">pares</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pares</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- **Costo.** Successive Halving gastó </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'costo_equiv'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> evaluaciones equivalentes "</span>
+   <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'costo_equiv'</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Random Search'</span><span class="p">,</span><span class="w"> </span><span class="s1">'costo_equiv'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> % del presupuesto de Random Search) "</span>
+   <span class="sa">f</span><span class="s2">"y exploró </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'evaluaciones'</span><span class="p">])</span><span class="si">}</span><span class="s2"> evaluaciones parciales sobre 27 configuraciones, casi el doble de "</span>
+   <span class="sa">f</span><span class="s2">"configuraciones que Random Search (15). Hyperband gastó </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hyperband'</span><span class="p">,</span><span class="w"> </span><span class="s1">'costo_equiv'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> equivalentes sobre 35 configuraciones.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Tiempo.** Random Search tardó </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Random Search'</span><span class="p">,</span><span class="w"> </span><span class="s1">'tiempo_s'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> s, Successive Halving </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'tiempo_s'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> s "</span>
+   <span class="sa">f</span><span class="s2">"e Hyperband </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hyperband'</span><span class="p">,</span><span class="w"> </span><span class="s1">'tiempo_s'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> s.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **Calidad.** El mejor RMSLE interno fue </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Random Search'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_cv_mejor'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (Random), </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_cv_mejor'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> "</span>
+   <span class="sa">f</span><span class="s2">"(SH) y </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hyperband'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_cv_mejor'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> (Hyperband); en el año reservado, </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Random Search'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_reserva'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_reserva'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> y </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hyperband'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_reserva'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">. Las diferencias son de "</span>
+   <span class="sa">f</span><span class="s2">"milésimas: la multi-fidelidad llega a soluciones **cercanas** a las de Random Search con menos cómputo.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- **¿Es buena la fidelidad?** La correlación de Spearman entre el RMSLE con 66 árboles y con 200 árboles de las mismas "</span>
+   <span class="sa">f</span><span class="s2">"configuraciones es </span><span class="si">{</span><span class="n">rho</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">. "</span>
+   <span class="o">+</span> <span class="p">(</span><span class="s2">"Una correlación alta justifica cortar con 66 árboles."</span> <span class="k">if</span> <span class="n">rho</span> <span class="o">&gt;</span> <span class="mf">0.6</span> <span class="k">else</span>
+      <span class="s2">"Es **débil**: con 66 árboles y learning rates que pueden ser tan bajos como 0,01, el boosting está lejos de converger y el orden "</span>
+      <span class="s2">"de las configuraciones con poca fidelidad dice poco del orden final. Por eso Successive Halving descartó configuraciones que "</span>
+      <span class="s2">"habrían sido buenas y terminó con una algo peor. Dos arreglos naturales: subir el recurso mínimo (p. ej. R/3) o usar como "</span>
+      <span class="s2">"recurso el número de árboles **escalado por el learning rate**. Hyperband, que incluye brackets sin corte temprano, es más "</span>
+      <span class="s2">"robusto frente a una fidelidad pobre, y por eso quedó empatado con Random Search."</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p><strong>Costo.</strong> Successive Halving gastó 9.0 evaluaciones equivalentes (60 % del presupuesto de Random Search) y exploró 39 evaluaciones parciales sobre 27 configuraciones, casi el doble de configuraciones que Random Search (15). Hyperband gastó 14.7 equivalentes sobre 35 configuraciones.</p></li>
+<li><p><strong>Tiempo.</strong> Random Search tardó 33 s, Successive Halving 21 s e Hyperband 35 s.</p></li>
+<li><p><strong>Calidad.</strong> El mejor RMSLE interno fue 0.3573 (Random), 0.3598 (SH) y 0.3584 (Hyperband); en el año reservado, 0.3216, 0.3231 y 0.3217. Las diferencias son de milésimas: la multi-fidelidad llega a soluciones <strong>cercanas</strong> a las de Random Search con menos cómputo.</p></li>
+<li><p><strong>¿Es buena la fidelidad?</strong> La correlación de Spearman entre el RMSLE con 66 árboles y con 200 árboles de las mismas configuraciones es 0.16. Es <strong>débil</strong>: con 66 árboles y learning rates que pueden ser tan bajos como 0,01, el boosting está lejos de converger y el orden de las configuraciones con poca fidelidad dice poco del orden final. Por eso Successive Halving descartó configuraciones que habrían sido buenas y terminó con una algo peor. Dos arreglos naturales: subir el recurso mínimo (p. ej. R/3) o usar como recurso el número de árboles <strong>escalado por el learning rate</strong>. Hyperband, que incluye brackets sin corte temprano, es más robusto frente a una fidelidad pobre, y por eso quedó empatado con Random Search.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="conclusiones-del-capitulo">
+<h2>15.3 Conclusiones del capítulo<a class="headerlink" href="#conclusiones-del-capitulo" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"- Con η = 3 y el número de árboles como fidelidad, **Successive Halving** usó el "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'costo_equiv'</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Random Search'</span><span class="p">,</span><span class="w"> </span><span class="s1">'costo_equiv'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> % del presupuesto y el "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'tiempo_s'</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Random Search'</span><span class="p">,</span><span class="w"> </span><span class="s1">'tiempo_s'</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> % del tiempo de Random Search, a cambio de "</span>
+   <span class="sa">f</span><span class="s2">"una configuración algo peor (RMSLE en el año reservado </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_reserva'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> frente a "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Random Search'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_reserva'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, una diferencia de "</span>
+   <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Successive Halving'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_reserva'</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Random Search'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_reserva'</span><span class="p">]</span><span class="si">:</span><span class="s2">+.4f</span><span class="si">}</span><span class="s2">). **Hyperband**, con un costo casi "</span>
+   <span class="sa">f</span><span class="s2">"igual al de Random, quedó prácticamente empatado con él (</span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'Hyperband'</span><span class="p">,</span><span class="w"> </span><span class="s1">'RMSLE_reserva'</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">).</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- La ganancia es de **cómputo**, no de métrica: igual que en el cap. 14, la calidad final depende poco de la estrategia de búsqueda "</span>
+   <span class="sa">f</span><span class="s2">"en este problema, y con un presupuesto tan pequeño (15 equivalentes) el ahorro absoluto es de segundos.</span><span class="se">\n</span><span class="s2">"</span>
+   <span class="sa">f</span><span class="s2">"- En el proyecto, la multi-fidelidad que más ahorró fue la del cap. 13.7 (tamizaje entre combinaciones), que evitó 20 corridas "</span>
+   <span class="sa">f</span><span class="s2">"completas de validación anidada."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<ul class="simple">
+<li><p>Con η = 3 y el número de árboles como fidelidad, <strong>Successive Halving</strong> usó el 60 % del presupuesto y el 65 % del tiempo de Random Search, a cambio de una configuración algo peor (RMSLE en el año reservado 0.3231 frente a 0.3216, una diferencia de +0.0014). <strong>Hyperband</strong>, con un costo casi igual al de Random, quedó prácticamente empatado con él (0.3217).</p></li>
+<li><p>La ganancia es de <strong>cómputo</strong>, no de métrica: igual que en el cap. 14, la calidad final depende poco de la estrategia de búsqueda en este problema, y con un presupuesto tan pequeño (15 equivalentes) el ahorro absoluto es de segundos.</p></li>
+<li><p>En el proyecto, la multi-fidelidad que más ahorró fue la del cap. 13.7 (tamizaje entre combinaciones), que evitó 20 corridas completas de validación anidada.</p></li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="14_optimizacion_hiperparametros.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">14. Optimización de hiperparámetros: resultados de la validación anidada</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="16_optimizacion_computacional.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">16. Optimización computacional</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diseno">15.1 Diseño</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#resultados">15.2 Resultados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusiones-del-capitulo">15.3 Conclusiones del capítulo</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

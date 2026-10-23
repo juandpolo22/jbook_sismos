@@ -1,0 +1,1481 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>7. Componente temporal (2.6) &#8212; Machine learning para predicción mensual de sismos por celda en Colombia</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/07_eda_temporal';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="8. Componente espacial (2.7) y espacio-temporal (2.8)" href="08_eda_espacial.html" />
+    <link rel="prev" title="6. Análisis multivariado (2.4)" href="06_eda_multivariado.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="01_introduccion.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Machine learning para predicción mensual de sismos por celda en Colombia</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="01_introduccion.html">
+                    1. Introducción: ¿cuántos sismos habrá el próximo mes en cada zona de Colombia?
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Base de datos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02_datos.html">2. La base de datos: ETL, estructura, calidad y representatividad</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Análisis exploratorio</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="03_eda_objetivo.html">3. Análisis de la variable objetivo (2.1)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_eda_univariado.html">4. Análisis univariado (2.2)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_eda_bivariado.html">5. Análisis bivariado (2.3)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_eda_multivariado.html">6. Análisis multivariado (2.4)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">7. Componente temporal (2.6)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_eda_espacial.html">8. Componente espacial (2.7) y espacio-temporal (2.8)</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="09_data_leakage.html">9. Auditoría de fuga de datos (2.5)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 1 · Modelado</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="10_preprocesamiento.html">10. Preprocesamiento y Pipeline (2.9)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="11_modelo_base.html">11. Modelo base: líneas base triviales y SVR lineal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="12_conclusiones.html">12. Conclusiones del Entregable 1, limitaciones y checklist</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Diseño experimental</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="13_diseno_experimental.html">13. Diseño experimental del Entregable 2 y reducción justificada de combinaciones</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Optimización</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="14_optimizacion_hiperparametros.html">14. Optimización de hiperparámetros: resultados de la validación anidada</a></li>
+<li class="toctree-l1"><a class="reference internal" href="15_multifidelidad.html">15. Optimización multi-fidelidad: Successive Halving e Hyperband</a></li>
+<li class="toctree-l1"><a class="reference internal" href="16_optimizacion_computacional.html">16. Optimización computacional</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Evaluación y comparación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="17_evaluacion_clasificacion.html">17. Evaluación de los modelos de clasificación</a></li>
+<li class="toctree-l1"><a class="reference internal" href="18_evaluacion_regresion.html">18. Evaluación de los modelos de regresión</a></li>
+<li class="toctree-l1"><a class="reference internal" href="19_interpretabilidad.html">19. Interpretabilidad global y local: SHAP y LIME</a></li>
+<li class="toctree-l1"><a class="reference internal" href="20_robustez.html">20. Robustez y estabilidad de las métricas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="21_comparacion_estadistica.html">21. Comparación estadística de modelos</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Entregable 2 · Modelo propuesto y cierre</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="22_modelo_propuesto.html">22. Modelo propuesto: A+B v2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="23_conclusiones_e2.html">23. Conclusiones del Entregable 2 y matriz de trazabilidad</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/07_eda_temporal.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>7. Componente temporal (2.6)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validacion-de-la-variable-temporal">7.1 Validación de la variable temporal</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serie-completa-y-agregaciones-hora-dia-semana-mes">7.2 Serie completa y agregaciones (hora, día, semana, mes)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#descomposicion-stl-tendencia-estacionalidad-residuo">7.3 Descomposición STL (tendencia, estacionalidad, residuo)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estacionariedad-medias-y-varianzas-moviles-adf-y-kpss">7.4 Estacionariedad: medias y varianzas móviles, ADF y KPSS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencia-temporal-acf-pacf-y-correlacion-cruzada-con-rezagos">7.5 Dependencia temporal: ACF, PACF y correlación cruzada con rezagos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cambios-de-regimen-puntos-de-cambio-y-efectos-de-calendario">7.6 Cambios de régimen, puntos de cambio y efectos de calendario</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deriva-temporal-covariate-shift-y-concept-drift">7.7 Deriva temporal: <em>covariate shift</em> y <em>concept drift</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#panel-series-por-entidad-celda-y-heterogeneidad">7.8 Panel: series por entidad (celda) y heterogeneidad</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consecuencias-para-el-modelado">7.9 Consecuencias para el modelado</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="componente-temporal-2-6">
+<h1>7. Componente temporal (2.6)<a class="headerlink" href="#componente-temporal-2-6" title="Link to this heading">#</a></h1>
+<p>El análisis usa el <strong>periodo de entrenamiento</strong>: sismos hasta noviembre de 2020 y meses objetivo hasta
+esa fecha. La única excepción es la sección 7.7, que compara entrenamiento y prueba para medir la
+deriva. Es descriptiva y no alimenta ninguna decisión.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Localiza la raíz del libro (la carpeta con _config.yml) para poder importar los módulos de src/</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="n">raiz</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="p">(</span><span class="n">raiz</span> <span class="o">/</span> <span class="s2">"_config.yml"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">raiz</span> <span class="o">=</span> <span class="n">raiz</span><span class="o">.</span><span class="n">parent</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">raiz</span><span class="p">))</span>
+<span class="c1"># Librerías de análisis y módulos propios: configuración, datos, EDA, evaluación y utilidades del libro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">cfg</span><span class="p">,</span> <span class="n">datos</span><span class="p">,</span> <span class="n">eda</span><span class="p">,</span> <span class="n">evaluacion</span> <span class="k">as</span> <span class="n">ev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.libro</span><span class="w"> </span><span class="kn">import</span> <span class="n">md</span><span class="p">,</span> <span class="n">tabla</span><span class="p">,</span> <span class="n">mostrar_plotly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.eda</span><span class="w"> </span><span class="kn">import</span> <span class="n">es</span><span class="p">,</span> <span class="n">p_fmt</span>
+<span class="c1"># Estilo común de los gráficos, semilla global (SEMILLA = 42) y formato de las tablas</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">configurar_graficos</span><span class="p">()</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fijar_semillas</span><span class="p">()</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.width"</span><span class="p">,</span> <span class="mi">160</span><span class="p">)</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s2">"display.max_columns"</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Catálogo y panel de entrenamiento para el análisis temporal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.seasonal</span><span class="w"> </span><span class="kn">import</span> <span class="n">STL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.stattools</span><span class="w"> </span><span class="kn">import</span> <span class="n">adfuller</span><span class="p">,</span> <span class="n">kpss</span><span class="p">,</span> <span class="n">acf</span><span class="p">,</span> <span class="n">pacf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.graphics.tsaplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_acf</span><span class="p">,</span> <span class="n">plot_pacf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
+<span class="n">ev_</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">gp</span><span class="p">,</span> <span class="n">te</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_completo</span><span class="p">()</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_dataframe</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">tr</span><span class="p">)</span>
+<span class="n">fin_tr</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"m_test"</span><span class="p">]</span> <span class="o">-</span> <span class="n">cfg</span><span class="o">.</span><span class="n">GAP_MESES</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">cat</span> <span class="o">=</span> <span class="n">ev_</span><span class="p">[</span><span class="n">ev_</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="n">fin_tr</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="validacion-de-la-variable-temporal">
+<h2>7.1 Validación de la variable temporal<a class="headerlink" href="#validacion-de-la-variable-temporal" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Validación de la serie: días sin sismos, rachas y meses del panel</span>
+<span class="n">dias</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">normalize</span><span class="p">(),</span> <span class="n">fin_tr</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">freq</span><span class="o">=</span><span class="s2">"D"</span><span class="p">)</span>
+<span class="n">por_dia</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">normalize</span><span class="p">())</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">dias</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">rachas</span> <span class="o">=</span> <span class="p">(</span><span class="n">por_dia</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">mas_larga</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rachas</span><span class="o">.</span><span class="n">groupby</span><span class="p">((</span><span class="n">rachas</span> <span class="o">!=</span> <span class="n">rachas</span><span class="o">.</span><span class="n">shift</span><span class="p">())</span><span class="o">.</span><span class="n">cumsum</span><span class="p">())</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">meses_panel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">][</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">val</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"Formato"</span><span class="p">,</span> <span class="s2">"datetime64 (fecha-hora con segundos)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Zona horaria"</span><span class="p">,</span> <span class="s2">"UTC según ambos portales (hora local = UTC − 5)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Cobertura"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">%Y-%m-%d</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">%Y-%m-%d</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Frecuencia del catálogo"</span><span class="p">,</span> <span class="s2">"irregular (proceso puntual)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Frecuencia del panel"</span><span class="p">,</span> <span class="s2">"mensual regular"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Marcas de tiempo repetidas (mismo segundo)"</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"Días sin ningún sismo"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">por_dia</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> de </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">por_dia</span><span class="p">)</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">es</span><span class="p">((</span><span class="n">por_dia</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Racha más larga sin sismos (días)"</span><span class="p">,</span> <span class="n">mas_larga</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"Meses sin sismos en el catálogo"</span><span class="p">,</span> <span class="nb">int</span><span class="p">((</span><span class="n">cat</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s1">'M'</span><span class="p">))</span><span class="o">.</span><span class="n">size</span><span class="p">()</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">period_range</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">fin_tr</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">freq</span><span class="o">=</span><span class="s1">'M'</span><span class="p">),</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())),</span>
+    <span class="p">(</span><span class="s2">"Meses objetivo del panel de entrenamiento (consecutivos)"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">meses_panel</span><span class="p">)</span><span class="si">}</span><span class="s2"> (huecos: </span><span class="si">{</span><span class="nb">int</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">meses_panel</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2">)"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"chequeo"</span><span class="p">,</span> <span class="s2">"resultado"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="s2">"validacion_temporal.csv"</span><span class="p">)</span>
+<span class="n">val</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>chequeo</th>
+      <th>resultado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Formato</td>
+      <td>datetime64 (fecha-hora con segundos)</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Zona horaria</td>
+      <td>UTC según ambos portales (hora local = UTC − 5)</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Cobertura</td>
+      <td>2004-01-01 a 2020-11-30</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Frecuencia del catálogo</td>
+      <td>irregular (proceso puntual)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Frecuencia del panel</td>
+      <td>mensual regular</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Marcas de tiempo repetidas (mismo segundo)</td>
+      <td>28</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Días sin ningún sismo</td>
+      <td>168 de 6179 (2,7 %)</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Racha más larga sin sismos (días)</td>
+      <td>16</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Meses sin sismos en el catálogo</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Meses objetivo del panel de entrenamiento (con...</td>
+      <td>190 (huecos: 0)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Formato, zona horaria y continuidad.** La variable temporal es consistente: fecha-hora en UTC, sin huecos de cobertura. El panel</span>
+<span class="s2">  mensual es regular (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">meses_panel</span><span class="p">)</span><span class="si">}</span><span class="s2"> meses consecutivos).</span>
+<span class="s2">- **Marcas repetidas.** Hay </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> sismos con el mismo segundo que otro. Son sismos distintos en lugares distintos</span>
+<span class="s2">  (los duplicados exactos se eliminaron en el capítulo 2).</span>
+<span class="s2">- **Días sin sismos.** Son </span><span class="si">{</span><span class="n">es</span><span class="p">((</span><span class="n">por_dia</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2"> y la racha más larga es de </span><span class="si">{</span><span class="n">mas_larga</span><span class="si">}</span><span class="s2"> días: el catálogo no tiene interrupciones</span>
+<span class="s2">  largas que sugieran caídas de la red."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Formato, zona horaria y continuidad.</strong> La variable temporal es consistente: fecha-hora en UTC, sin huecos de cobertura. El panel
+mensual es regular (190 meses consecutivos).</p></li>
+<li><p><strong>Marcas repetidas.</strong> Hay 28 sismos con el mismo segundo que otro. Son sismos distintos en lugares distintos
+(los duplicados exactos se eliminaron en el capítulo 2).</p></li>
+<li><p><strong>Días sin sismos.</strong> Son 2,7 % y la racha más larga es de 16 días: el catálogo no tiene interrupciones
+largas que sugieran caídas de la red.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="serie-completa-y-agregaciones-hora-dia-semana-mes">
+<h2>7.2 Serie completa y agregaciones (hora, día, semana, mes)<a class="headerlink" href="#serie-completa-y-agregaciones-hora-dia-semana-mes" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Series diaria, semanal y mensual de sismos</span>
+<span class="n">mensual</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">"M"</span><span class="p">))</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">mensual</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">mensual</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_timestamp</span><span class="p">()</span>
+<span class="n">semanal</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">to_period</span><span class="p">(</span><span class="s2">"W"</span><span class="p">))</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
+<span class="n">semanal</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">semanal</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_timestamp</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">por_dia</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">por_dia</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#a0aec0"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"diario"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">semanal</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">semanal</span><span class="o">.</span><span class="n">values</span> <span class="o">/</span> <span class="mi">7</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#2b6cb0"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"semanal / 7"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Sismos M ≥ 2,5 por día (entrenamiento)"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mensual</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">mensual</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#2b6cb0"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mensual</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">mensual</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#dd6b20"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"media móvil 12 meses"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2018-03-01"</span><span class="p">),</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2018-04-01"</span><span class="p">),</span> <span class="n">mensual</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">"cambio de portal"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Sismos por mes"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"07_serie.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a46a704bb92d2121f2a26489af60fcf5f413aeeaec1a1b46c044af2685330143.png" src="../_images/a46a704bb92d2121f2a26489af60fcf5f413aeeaec1a1b46c044af2685330143.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Patrones por hora local y día de la semana (posible sesgo de detección)</span>
+<span class="n">cat</span><span class="p">[</span><span class="s2">"hora_local"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">hour</span>
+<span class="n">cat</span><span class="p">[</span><span class="s2">"dia_semana"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">cat</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">dayofweek</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">hora_local</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#4299e1"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Sismos por hora local"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"hora (UTC−5)"</span><span class="p">)</span>
+<span class="n">dsem</span> <span class="o">=</span> <span class="n">por_dia</span><span class="o">.</span><span class="n">groupby</span><span class="p">((</span><span class="n">por_dia</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">dayofweek</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">(</span><span class="n">por_dia</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span><span class="o">.</span><span class="n">dayofweek</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">por_dia</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#9ae6b4"</span><span class="p">,</span> <span class="n">showfliers</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">),</span> <span class="p">[</span><span class="s2">"lun"</span><span class="p">,</span> <span class="s2">"mar"</span><span class="p">,</span> <span class="s2">"mié"</span><span class="p">,</span> <span class="s2">"jue"</span><span class="p">,</span> <span class="s2">"vie"</span><span class="p">,</span> <span class="s2">"sáb"</span><span class="p">,</span> <span class="s2">"dom"</span><span class="p">]);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Sismos por día según día de la semana"</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">mensual</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">mensual</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#fbd38d"</span><span class="p">,</span> <span class="n">showfliers</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Sismos por mes según mes calendario"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"07_ciclos.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">chi_h</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">chisquare</span><span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">noche</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">hora_local</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="mi">6</span> <span class="o">/</span> <span class="mi">24</span><span class="p">)</span>
+<span class="n">kw_dia</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">kruskal</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">dsem</span><span class="p">])</span>
+<span class="n">kw_mes</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">kruskal</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">mensual</span><span class="p">[</span><span class="n">mensual</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="n">m_</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">m_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)])</span>
+<span class="n">ciclos</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span>
+    <span class="p">(</span><span class="s2">"hora local"</span><span class="p">,</span> <span class="s2">"χ² uniformidad"</span><span class="p">,</span> <span class="n">chi_h</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="n">chi_h</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"razón noche (0–6 h) / esperado = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">noche</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"día de la semana"</span><span class="p">,</span> <span class="s2">"Kruskal-Wallis (sismos diarios)"</span><span class="p">,</span> <span class="n">kw_dia</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="n">kw_dia</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"ε² = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">eda</span><span class="o">.</span><span class="n">epsilon_cuadrado</span><span class="p">(</span><span class="n">kw_dia</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">por_dia</span><span class="p">)),</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">"mes calendario"</span><span class="p">,</span> <span class="s2">"Kruskal-Wallis (sismos mensuales)"</span><span class="p">,</span> <span class="n">kw_mes</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span> <span class="n">kw_mes</span><span class="o">.</span><span class="n">pvalue</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"ε² = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">eda</span><span class="o">.</span><span class="n">epsilon_cuadrado</span><span class="p">(</span><span class="n">kw_mes</span><span class="o">.</span><span class="n">statistic</span><span class="p">,</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">mensual</span><span class="p">)),</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+<span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"ciclo"</span><span class="p">,</span> <span class="s2">"prueba"</span><span class="p">,</span> <span class="s2">"estadístico"</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">,</span> <span class="s2">"efecto"</span><span class="p">])</span>
+<span class="n">ciclos</span><span class="p">[</span><span class="s2">"p_Holm"</span><span class="p">]</span> <span class="o">=</span> <span class="n">eda</span><span class="o">.</span><span class="n">holm</span><span class="p">(</span><span class="n">ciclos</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">ciclos</span><span class="p">,</span> <span class="s2">"ciclos_temporales.csv"</span><span class="p">)</span>
+<span class="n">ciclos</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ac106b6675a2e621c3e4f7fdba51aef2c6f9bc7371c4261e0d1776b94bc56108.png" src="../_images/ac106b6675a2e621c3e4f7fdba51aef2c6f9bc7371c4261e0d1776b94bc56108.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>ciclo</th>
+      <th>prueba</th>
+      <th>estadístico</th>
+      <th>p</th>
+      <th>efecto</th>
+      <th>p_Holm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>hora local</td>
+      <td>χ² uniformidad</td>
+      <td>29.064771</td>
+      <td>0.178172</td>
+      <td>razón noche (0–6 h) / esperado = 1,00</td>
+      <td>0.534516</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>día de la semana</td>
+      <td>Kruskal-Wallis (sismos diarios)</td>
+      <td>2.680513</td>
+      <td>0.847744</td>
+      <td>ε² = 0,0004</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>mes calendario</td>
+      <td>Kruskal-Wallis (sismos mensuales)</td>
+      <td>5.311084</td>
+      <td>0.915170</td>
+      <td>ε² = 0,026</td>
+      <td>1.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Serie mensual.** No tiene tendencia monótona. Muestra un nivel alto en 2004–2007, una caída en 2008 y una recuperación lenta</span>
+<span class="s2">  desde 2017. Los picos aislados son enjambres.</span>
+<span class="s2">- **Hora del día.** Los sismos M ≥ 2,5 se distribuyen de forma uniforme en las 24 horas (p de Holm = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">ciclos</span><span class="o">.</span><span class="n">p_Holm</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">; la madrugada</span>
+<span class="s2">  local tiene </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">noche</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> veces lo esperado). Es una buena noticia de calidad: el ruido cultural nocturno y diurno (tráfico,</span>
+<span class="s2">  industria) suele producir un ciclo diario de detección en los sismos pequeños, y su ausencia sugiere que a M ≥ 2,5 la detección</span>
+<span class="s2">  no depende de la hora. En todo caso, el modelo agrega por mes.</span>
+<span class="s2">- **Día de la semana.** p de Holm = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">ciclos</span><span class="o">.</span><span class="n">p_Holm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">, efecto nulo: no hay patrón de fin de semana (por ejemplo, por menos analistas revisando).</span>
+<span class="s2">- **Mes calendario.** Sin estacionalidad (p de Holm = </span><span class="si">{</span><span class="n">p_fmt</span><span class="p">(</span><span class="n">ciclos</span><span class="o">.</span><span class="n">p_Holm</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="si">}</span><span class="s2">), lo que confirma los capítulos 3 y 5."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Serie mensual.</strong> No tiene tendencia monótona. Muestra un nivel alto en 2004–2007, una caída en 2008 y una recuperación lenta
+desde 2017. Los picos aislados son enjambres.</p></li>
+<li><p><strong>Hora del día.</strong> Los sismos M ≥ 2,5 se distribuyen de forma uniforme en las 24 horas (p de Holm = 0,535; la madrugada
+local tiene 1,00 veces lo esperado). Es una buena noticia de calidad: el ruido cultural nocturno y diurno (tráfico,
+industria) suele producir un ciclo diario de detección en los sismos pequeños, y su ausencia sugiere que a M ≥ 2,5 la detección
+no depende de la hora. En todo caso, el modelo agrega por mes.</p></li>
+<li><p><strong>Día de la semana.</strong> p de Holm = 1,000, efecto nulo: no hay patrón de fin de semana (por ejemplo, por menos analistas revisando).</p></li>
+<li><p><strong>Mes calendario.</strong> Sin estacionalidad (p de Holm = 1,000), lo que confirma los capítulos 3 y 5.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="descomposicion-stl-tendencia-estacionalidad-residuo">
+<h2>7.3 Descomposición STL (tendencia, estacionalidad, residuo)<a class="headerlink" href="#descomposicion-stl-tendencia-estacionalidad-residuo" title="Link to this heading">#</a></h2>
+<p>Se aplica STL robusta <span id="id1">[<a class="reference internal" href="12_conclusiones.html#id12" title="Robert B. Cleveland, William S. Cleveland, Jean E. McRae, and Irma Terpenning. STL: a seasonal-trend decomposition procedure based on loess. Journal of Official Statistics, 6(1):3–73, 1990.">Cleveland <em>et al.</em>, 1990</a>]</span> a log(1 + sismos por mes), con periodo 12.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Descomposición STL (tendencia, estacionalidad, residuo) de log sismos/mes y fuerza de cada componente</span>
+<span class="n">serie</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">mensual</span><span class="p">)</span>
+<span class="n">stl</span> <span class="o">=</span> <span class="n">STL</span><span class="p">(</span><span class="n">serie</span><span class="p">,</span> <span class="n">period</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">stl</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span> <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">7</span><span class="p">);</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"07_stl.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">var_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">stl</span><span class="o">.</span><span class="n">resid</span><span class="p">)</span>
+<span class="n">fuerza_tend</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">var_r</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">stl</span><span class="o">.</span><span class="n">trend</span> <span class="o">+</span> <span class="n">stl</span><span class="o">.</span><span class="n">resid</span><span class="p">))</span>
+<span class="n">fuerza_est</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">var_r</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">stl</span><span class="o">.</span><span class="n">seasonal</span> <span class="o">+</span> <span class="n">stl</span><span class="o">.</span><span class="n">resid</span><span class="p">))</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.** Con las medidas de Wang, Smith y Hyndman:</span>
+<span class="s2">- **Fuerza de la tendencia = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">fuerza_tend</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">.** La tendencia (nivel de actividad de varios años) explica una parte modesta de la variación mensual;</span>
+<span class="s2">  la mayor parte queda en el residuo.</span>
+<span class="s2">- **Fuerza de la estacionalidad = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">fuerza_est</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">.** Es prácticamente nula.</span>
+<span class="s2">- **Residuo.** Concentra los enjambres (picos).</span>
+<span class="s2">- **Implicaciones.**</span>
+<span class="s2">  - El componente estacional ingenuo no aporta.</span>
+<span class="s2">  - Lo que sí importa es el **nivel reciente**, de ahí las ventanas móviles de 1 a 12 meses.</span>
+<span class="s2">  - Los picos del residuo indican que hay episodios no anticipables con la historia de la serie agregada."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/2f9eea86e03f1b4cff51ef08f7dba5863cbfbb74f73060ddf66bb22749ea610b.png" src="../_images/2f9eea86e03f1b4cff51ef08f7dba5863cbfbb74f73060ddf66bb22749ea610b.png" />
+<p><strong>Interpretación.</strong> Con las medidas de Wang, Smith y Hyndman:</p>
+<ul class="simple">
+<li><p><strong>Fuerza de la tendencia = 0,26.</strong> La tendencia (nivel de actividad de varios años) explica una parte modesta de la variación mensual;
+la mayor parte queda en el residuo.</p></li>
+<li><p><strong>Fuerza de la estacionalidad = 0,00.</strong> Es prácticamente nula.</p></li>
+<li><p><strong>Residuo.</strong> Concentra los enjambres (picos).</p></li>
+<li><p><strong>Implicaciones.</strong></p>
+<ul>
+<li><p>El componente estacional ingenuo no aporta.</p></li>
+<li><p>Lo que sí importa es el <strong>nivel reciente</strong>, de ahí las ventanas móviles de 1 a 12 meses.</p></li>
+<li><p>Los picos del residuo indican que hay episodios no anticipables con la historia de la serie agregada.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="estacionariedad-medias-y-varianzas-moviles-adf-y-kpss">
+<h2>7.4 Estacionariedad: medias y varianzas móviles, ADF y KPSS<a class="headerlink" href="#estacionariedad-medias-y-varianzas-moviles-adf-y-kpss" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estacionariedad: ADF y KPSS sobre la serie agregada y ADF por celda</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">nombre</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">"log sismos/mes (total)"</span><span class="p">,</span> <span class="n">serie</span><span class="p">),</span> <span class="p">(</span><span class="s2">"diferencia de log sismos/mes"</span><span class="p">,</span> <span class="n">serie</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span><span class="o">.</span><span class="n">dropna</span><span class="p">())):</span>
+    <span class="n">adf</span> <span class="o">=</span> <span class="n">adfuller</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">autolag</span><span class="o">=</span><span class="s2">"AIC"</span><span class="p">)</span>
+    <span class="n">kp</span> <span class="o">=</span> <span class="n">kpss</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">regression</span><span class="o">=</span><span class="s2">"c"</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">)</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"serie"</span><span class="p">:</span> <span class="n">nombre</span><span class="p">,</span> <span class="s2">"ADF_estad"</span><span class="p">:</span> <span class="n">adf</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"ADF_p"</span><span class="p">:</span> <span class="n">adf</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"KPSS_estad"</span><span class="p">:</span> <span class="n">kp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"KPSS_p"</span><span class="p">:</span> <span class="n">kp</span><span class="p">[</span><span class="mi">1</span><span class="p">]})</span>
+<span class="c1"># panel: ADF por celda sobre log(1+y) (celdas con suficiente variación)</span>
+<span class="n">adf_celda</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">c_</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">P</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"celda"</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"mes_obj"</span><span class="p">)</span><span class="o">.</span><span class="n">log_y</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+        <span class="n">adf_celda</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">adfuller</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">autolag</span><span class="o">=</span><span class="s2">"AIC"</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">est</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">est</span><span class="p">,</span> <span class="s2">"estacionariedad.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">serie</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">serie</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="s2">"media móvil 12"</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">serie</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">serie</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="n">label</span><span class="o">=</span><span class="s2">"desv. móvil 12"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Media y desviación móviles de log(sismos/mes)"</span><span class="p">);</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"07_moviles.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">est</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/74fd549a834525a83ba193e1eec0197d9dce49b01b14a4a7115aaefcf08cdc27.png" src="../_images/74fd549a834525a83ba193e1eec0197d9dce49b01b14a4a7115aaefcf08cdc27.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>serie</th>
+      <th>ADF_estad</th>
+      <th>ADF_p</th>
+      <th>KPSS_estad</th>
+      <th>KPSS_p</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>log sismos/mes (total)</td>
+      <td>-10.7072</td>
+      <td>0.0</td>
+      <td>1.1540</td>
+      <td>0.01</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>diferencia de log sismos/mes</td>
+      <td>-7.5162</td>
+      <td>0.0</td>
+      <td>0.3214</td>
+      <td>0.10</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Serie agregada.** Para log(sismos/mes), ADF </span><span class="si">{</span><span class="s1">'rechaza'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">est</span><span class="o">.</span><span class="n">ADF_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'no rechaza'</span><span class="si">}</span><span class="s2"> la raíz unitaria (p = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">ADF_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">) y KPSS</span>
+<span class="s2">  </span><span class="si">{</span><span class="s1">'rechaza'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">est</span><span class="o">.</span><span class="n">KPSS_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'no rechaza'</span><span class="si">}</span><span class="s2"> la estacionariedad (p = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">KPSS_p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">; statsmodels acota los p de KPSS entre 0,01 y 0,1).</span>
+<span class="s2">  </span><span class="si">{</span><span class="s1">'Las dos pruebas apuntan en direcciones opuestas: es el caso típico de una serie **estacionaria alrededor de un nivel que cambia lentamente** (cambios de régimen), no de un paseo aleatorio.'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">ADF_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">est</span><span class="o">.</span><span class="n">KPSS_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">''</span><span class="si">}</span>
+<span class="s2">  La media móvil confirma cambios de nivel y una varianza que no es constante.</span>
+<span class="s2">- **Serie diferenciada.** Es estacionaria según ambas pruebas.</span>
+<span class="s2">- **Por celda.** ADF rechaza la raíz unitaria en el </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">adf_celda</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.05</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">pct</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="si">}</span><span class="s2"> de las </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">adf_celda</span><span class="p">)</span><span class="si">}</span><span class="s2"> celdas con variación: las series</span>
+<span class="s2">  individuales son mayoritariamente estacionarias en media.</span>
+<span class="s2">- **Decisiones.**</span>
+<span class="s2">  - Los modelos no usan el nivel absoluto del tiempo (no hay variable «año»), sino conteos de ventanas recientes, que se adaptan</span>
+<span class="s2">    a los cambios de nivel.</span>
+<span class="s2">  - La validación cruzada usa **ventanas crecientes** para que cada pliegue se evalúe en un periodo posterior a su entrenamiento."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Serie agregada.</strong> Para log(sismos/mes), ADF rechaza la raíz unitaria (p = 0,000) y KPSS
+rechaza la estacionariedad (p = 0,010; statsmodels acota los p de KPSS entre 0,01 y 0,1).
+Las dos pruebas apuntan en direcciones opuestas: es el caso típico de una serie <strong>estacionaria alrededor de un nivel que cambia lentamente</strong> (cambios de régimen), no de un paseo aleatorio.
+La media móvil confirma cambios de nivel y una varianza que no es constante.</p></li>
+<li><p><strong>Serie diferenciada.</strong> Es estacionaria según ambas pruebas.</p></li>
+<li><p><strong>Por celda.</strong> ADF rechaza la raíz unitaria en el 94 % de las 163 celdas con variación: las series
+individuales son mayoritariamente estacionarias en media.</p></li>
+<li><p><strong>Decisiones.</strong></p>
+<ul>
+<li><p>Los modelos no usan el nivel absoluto del tiempo (no hay variable «año»), sino conteos de ventanas recientes, que se adaptan
+a los cambios de nivel.</p></li>
+<li><p>La validación cruzada usa <strong>ventanas crecientes</strong> para que cada pliegue se evalúe en un periodo posterior a su entrenamiento.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="dependencia-temporal-acf-pacf-y-correlacion-cruzada-con-rezagos">
+<h2>7.5 Dependencia temporal: ACF, PACF y correlación cruzada con rezagos<a class="headerlink" href="#dependencia-temporal-acf-pacf-y-correlacion-cruzada-con-rezagos" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># ACF y PACF de la serie y correlación cruzada en el panel por rezago</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">serie</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"ACF log(sismos/mes)"</span><span class="p">)</span>
+<span class="n">plot_pacf</span><span class="p">(</span><span class="n">serie</span><span class="p">,</span> <span class="n">lags</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s2">"ywm"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"PACF log(sismos/mes)"</span><span class="p">)</span>
+<span class="c1"># correlación cruzada en el panel: corr(log y_{c,t+1}, log n_c(t+1-k)) agregando todas las celdas</span>
+<span class="n">C</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"C"</span><span class="p">]</span>
+<span class="n">cc_</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"cc"</span><span class="p">][</span><span class="n">tr</span><span class="p">];</span> <span class="n">tm_</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">][</span><span class="n">tr</span><span class="p">]</span>
+<span class="n">ccf</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+    <span class="n">ok</span> <span class="o">=</span> <span class="n">tm_</span> <span class="o">-</span> <span class="n">k</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"y"</span><span class="p">][</span><span class="n">tr</span><span class="p">][</span><span class="n">ok</span><span class="p">]);</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">C</span><span class="p">[</span><span class="n">cc_</span><span class="p">[</span><span class="n">ok</span><span class="p">],</span> <span class="n">tm_</span><span class="p">[</span><span class="n">ok</span><span class="p">]</span> <span class="o">-</span> <span class="n">k</span><span class="p">])</span>
+    <span class="n">ccf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stats</span><span class="o">.</span><span class="n">spearmanr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">ccf</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#2b6cb0"</span><span class="p">);</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Correlación (Spearman) entre y(t+1) y el conteo de la celda k meses antes"</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">"rezago k (meses)"</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"07_acf_pacf_ccf.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">acf_v</span> <span class="o">=</span> <span class="n">acf</span><span class="p">(</span><span class="n">serie</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Serie agregada.** La ACF decae **lentamente** (ρ(1) = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">acf_v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">, ρ(12) = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">acf_v</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">) y la PACF corta tras los primeros rezagos. Es</span>
+<span class="s2">  la firma de un proceso persistente, como un AR de orden bajo sobre un nivel que cambia lentamente.</span>
+<span class="s2">- **Panel.** La correlación cruzada entre el conteo del mes siguiente y el conteo de la misma celda k meses antes es positiva</span>
+<span class="s2">  en todos los rezagos y decae despacio: ρ = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ccf</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> con k = 1 y ρ = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">ccf</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> con k = 12.</span>
+<span class="s2">- **Implicaciones.**</span>
+<span class="s2">  - Los rezagos útiles llegan a **un año**, lo que justifica las ventanas de 1, 3, 6 y 12 meses y el ingenuo estacional como</span>
+<span class="s2">    variable, aunque su valor no venga de la estacionalidad sino de la persistencia.</span>
+<span class="s2">  - La dependencia de corto plazo obliga a dejar un **gap** entre entrenamiento y validación/prueba."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/3b7a8d1761c69a434f1937b0369cef59140e2a517428b6be5cc044ab20837495.png" src="../_images/3b7a8d1761c69a434f1937b0369cef59140e2a517428b6be5cc044ab20837495.png" />
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Serie agregada.</strong> La ACF decae <strong>lentamente</strong> (ρ(1) = 0,28, ρ(12) = 0,24) y la PACF corta tras los primeros rezagos. Es
+la firma de un proceso persistente, como un AR de orden bajo sobre un nivel que cambia lentamente.</p></li>
+<li><p><strong>Panel.</strong> La correlación cruzada entre el conteo del mes siguiente y el conteo de la misma celda k meses antes es positiva
+en todos los rezagos y decae despacio: ρ = 0,26 con k = 1 y ρ = 0,22 con k = 12.</p></li>
+<li><p><strong>Implicaciones.</strong></p>
+<ul>
+<li><p>Los rezagos útiles llegan a <strong>un año</strong>, lo que justifica las ventanas de 1, 3, 6 y 12 meses y el ingenuo estacional como
+variable, aunque su valor no venga de la estacionalidad sino de la persistencia.</p></li>
+<li><p>La dependencia de corto plazo obliga a dejar un <strong>gap</strong> entre entrenamiento y validación/prueba.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="cambios-de-regimen-puntos-de-cambio-y-efectos-de-calendario">
+<h2>7.6 Cambios de régimen, puntos de cambio y efectos de calendario<a class="headerlink" href="#cambios-de-regimen-puntos-de-cambio-y-efectos-de-calendario" title="Link to this heading">#</a></h2>
+<p>Se buscan cambios en la <strong>media</strong> de log(sismos/mes) con segmentación binaria. En cada paso se divide
+el segmento donde más se reduce la suma de cuadrados, y se acepta el corte si el BIC mejora (mínimo 12
+meses por segmento).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Cambios de régimen: segmentación binaria de la media con criterio BIC</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">segmentacion_binaria</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">min_seg</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">max_cortes</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">float</span><span class="p">);</span> <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">cortes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sse</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span> <span class="k">return</span> <span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">a</span><span class="p">:</span><span class="n">b</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">a</span><span class="p">:</span><span class="n">b</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bic</span><span class="p">(</span><span class="n">cs</span><span class="p">):</span> <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">sse</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">cs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span> <span class="o">/</span> <span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">cortes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">&lt;</span> <span class="n">max_cortes</span><span class="p">:</span>
+        <span class="n">mejor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cortes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">cortes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">min_seg</span><span class="p">,</span> <span class="n">b</span> <span class="o">-</span> <span class="n">min_seg</span><span class="p">):</span>
+                <span class="n">ganancia</span> <span class="o">=</span> <span class="n">sse</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">sse</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="o">-</span> <span class="n">sse</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mejor</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ganancia</span> <span class="o">&gt;</span> <span class="n">mejor</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">mejor</span> <span class="o">=</span> <span class="p">(</span><span class="n">ganancia</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mejor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">nuevo</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">cortes</span> <span class="o">+</span> <span class="p">[</span><span class="n">mejor</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+        <span class="k">if</span> <span class="n">bic</span><span class="p">(</span><span class="n">nuevo</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">bic</span><span class="p">(</span><span class="n">cortes</span><span class="p">):</span>
+            <span class="k">break</span>
+        <span class="n">cortes</span> <span class="o">=</span> <span class="n">nuevo</span>
+    <span class="k">return</span> <span class="n">cortes</span>
+
+<span class="n">cortes</span> <span class="o">=</span> <span class="n">segmentacion_binaria</span><span class="p">(</span><span class="n">serie</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="n">segs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([{</span><span class="s2">"desde"</span><span class="p">:</span> <span class="n">serie</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">a</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y-%m"</span><span class="p">),</span> <span class="s2">"hasta"</span><span class="p">:</span> <span class="n">serie</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">"%Y-%m"</span><span class="p">),</span>
+                      <span class="s2">"meses"</span><span class="p">:</span> <span class="n">b</span> <span class="o">-</span> <span class="n">a</span><span class="p">,</span> <span class="s2">"media_sismos_mes"</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">serie</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">a</span><span class="p">:</span><span class="n">b</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">())}</span>
+                     <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cortes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">cortes</span><span class="p">[</span><span class="mi">1</span><span class="p">:])])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">segs</span><span class="p">,</span> <span class="s2">"regimenes.csv"</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mensual</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">mensual</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"#a0aec0"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cortes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">cortes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hlines</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">serie</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">a</span><span class="p">:</span><span class="n">b</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">mensual</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">mensual</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">colors</span><span class="o">=</span><span class="s2">"#c53030"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="s2">"2018-03-01"</span><span class="p">),</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"k"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">"Regímenes de nivel (segmentación binaria + BIC)"</span><span class="p">);</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"07_regimenes.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">segs</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/9f86ac785a939be41c8baa1645d75018b4e8c150c45dec44f1b081541c5bc058.png" src="../_images/9f86ac785a939be41c8baa1645d75018b4e8c150c45dec44f1b081541c5bc058.png" />
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>desde</th>
+      <th>hasta</th>
+      <th>meses</th>
+      <th>media_sismos_mes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2004-01</td>
+      <td>2007-10</td>
+      <td>46</td>
+      <td>192.3</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2007-11</td>
+      <td>2020-11</td>
+      <td>157</td>
+      <td>130.7</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Regímenes.** Se detectan **</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">segs</span><span class="p">)</span><span class="si">}</span><span class="s2"> regímenes** de nivel medio, entre </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">segs</span><span class="o">.</span><span class="n">media_sismos_mes</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> y </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">segs</span><span class="o">.</span><span class="n">media_sismos_mes</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> sismos/mes.</span>
+<span class="s2">- **Cambio de portal (marzo de 2018).** </span><span class="si">{</span><span class="s1">'Coincide con un punto de cambio, así que podría tener un efecto de detección o de escala de magnitud.'</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nb">any</span><span class="p">(</span><span class="n">s_</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'2018'</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">segs</span><span class="o">.</span><span class="n">desde</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">'No coincide con ningún punto de cambio: el paso entre portales no introduce un salto visible en la serie agregada.'</span><span class="si">}</span>
+<span class="s2">  El único cambio detectado separa 2004–2007 (más activo) del resto del entrenamiento. Corresponde a una variación de la actividad</span>
+<span class="s2">  (o de la detección) anterior a los dos portales.</span>
+<span class="s2">- **Efectos de calendario.** No hay feriados ni temporadas que afecten a la Tierra. Los únicos efectos de calendario posibles serían de</span>
+<span class="s2">  **detección** (hora del día, fines de semana o festivos con menos analistas), y la sección 7.2 mostró que no se observan.</span>
+<span class="s2">- **Implicación.** Los cambios de régimen son la razón principal para usar ventanas móviles y para evaluar en un periodo de prueba</span>
+<span class="s2">  posterior. También para medir la estabilidad del desempeño en varios cortes temporales (2018, 2021 y 2023 en el Entregable 2)."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Regímenes.</strong> Se detectan <strong>2 regímenes</strong> de nivel medio, entre 131 y 192 sismos/mes.</p></li>
+<li><p><strong>Cambio de portal (marzo de 2018).</strong> No coincide con ningún punto de cambio: el paso entre portales no introduce un salto visible en la serie agregada.
+El único cambio detectado separa 2004–2007 (más activo) del resto del entrenamiento. Corresponde a una variación de la actividad
+(o de la detección) anterior a los dos portales.</p></li>
+<li><p><strong>Efectos de calendario.</strong> No hay feriados ni temporadas que afecten a la Tierra. Los únicos efectos de calendario posibles serían de
+<strong>detección</strong> (hora del día, fines de semana o festivos con menos analistas), y la sección 7.2 mostró que no se observan.</p></li>
+<li><p><strong>Implicación.</strong> Los cambios de régimen son la razón principal para usar ventanas móviles y para evaluar en un periodo de prueba
+posterior. También para medir la estabilidad del desempeño en varios cortes temporales (2018, 2021 y 2023 en el Entregable 2).</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="deriva-temporal-covariate-shift-y-concept-drift">
+<h2>7.7 Deriva temporal: <em>covariate shift</em> y <em>concept drift</em><a class="headerlink" href="#deriva-temporal-covariate-shift-y-concept-drift" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Dentro del entrenamiento.</strong> Se compara la primera mitad (meses objetivo 2005–2012) con la segunda
+(2013–2020) usando el <strong>PSI</strong> (Population Stability Index) de cada predictora y del objetivo.</p></li>
+<li><p><strong>Entrenamiento contra prueba.</strong> Se repite la comparación <strong>solo de forma descriptiva</strong>: no se usa
+para ninguna decisión.</p></li>
+<li><p><strong>Deriva de concepto.</strong> Se compara la pendiente de log(1 + y) sobre log(1 + n_1m) entre periodos.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deriva: PSI de cada variable (2005–2012 frente a 2013–2020, y entrenamiento frente a prueba) y pendiente de la persistencia por periodo</span>
+<span class="n">fechas_tr</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">fecha_de_mes</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">"tm"</span><span class="p">][</span><span class="n">tr</span><span class="p">])</span>
+<span class="n">temprano</span> <span class="o">=</span> <span class="n">fechas_tr</span> <span class="o">&lt;</span> <span class="s2">"2013-01-01"</span>
+<span class="n">Xte</span> <span class="o">=</span> <span class="n">datos</span><span class="o">.</span><span class="n">panel_dataframe</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">te</span><span class="p">)</span>
+<span class="n">filas</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="s2">"y"</span><span class="p">]:</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">temprano</span><span class="p">,</span> <span class="n">c</span><span class="p">];</span> <span class="n">b</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">temprano</span><span class="p">,</span> <span class="n">c</span><span class="p">];</span> <span class="n">t_</span> <span class="o">=</span> <span class="n">Xte</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+    <span class="n">filas</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"variable"</span><span class="p">:</span> <span class="n">c</span><span class="p">,</span> <span class="s2">"PSI_2005-12_vs_2013-20"</span><span class="p">:</span> <span class="n">eda</span><span class="o">.</span><span class="n">psi</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="s2">"PSI_entrenamiento_vs_prueba"</span><span class="p">:</span> <span class="n">eda</span><span class="o">.</span><span class="n">psi</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">t_</span><span class="p">)})</span>
+<span class="n">deriva</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">filas</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"PSI_2005-12_vs_2013-20"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">deriva</span><span class="p">,</span> <span class="s2">"deriva_psi.csv"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pendiente</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">n_1m</span><span class="p">);</span> <span class="n">b</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">log_y</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">concepto</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([(</span><span class="s2">"2005–2012 (entrenamiento)"</span><span class="p">,</span> <span class="n">pendiente</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="n">temprano</span><span class="p">])),</span> <span class="p">(</span><span class="s2">"2013–2020 (entrenamiento)"</span><span class="p">,</span> <span class="n">pendiente</span><span class="p">(</span><span class="n">P</span><span class="p">[</span><span class="o">~</span><span class="n">temprano</span><span class="p">])),</span>
+                         <span class="p">(</span><span class="s2">"2021–2026 (prueba, descriptivo)"</span><span class="p">,</span> <span class="n">pendiente</span><span class="p">(</span><span class="n">Xte</span><span class="p">))],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"periodo"</span><span class="p">,</span> <span class="s2">"pendiente log y ~ log n_1m"</span><span class="p">])</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">concepto</span><span class="p">,</span> <span class="s2">"deriva_concepto.csv"</span><span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">deriva</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">concepto</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>variable</th>
+      <th>PSI_2005-12_vs_2013-20</th>
+      <th>PSI_entrenamiento_vs_prueba</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>10</th>
+      <td>prof_media_hist</td>
+      <td>0.073</td>
+      <td>0.092</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>mag_media_12m</td>
+      <td>0.064</td>
+      <td>0.027</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>mag_max_12m</td>
+      <td>0.037</td>
+      <td>0.026</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>mag_media_3m</td>
+      <td>0.030</td>
+      <td>0.023</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>n35_12m</td>
+      <td>0.029</td>
+      <td>0.023</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>vec_3m</td>
+      <td>0.024</td>
+      <td>0.161</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>n_12m</td>
+      <td>0.022</td>
+      <td>0.153</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>vec_1m</td>
+      <td>0.020</td>
+      <td>0.049</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>mag_max_3m</td>
+      <td>0.016</td>
+      <td>0.006</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>n_6m</td>
+      <td>0.014</td>
+      <td>0.064</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>n_3m</td>
+      <td>0.009</td>
+      <td>0.025</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>n35_3m</td>
+      <td>0.008</td>
+      <td>0.003</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>y</td>
+      <td>0.005</td>
+      <td>0.005</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>n_1m</td>
+      <td>0.005</td>
+      <td>0.005</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>n_mismo_mes_anio_prev</td>
+      <td>0.003</td>
+      <td>0.008</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>sen_mes</td>
+      <td>0.002</td>
+      <td>0.005</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>cos_mes</td>
+      <td>0.002</td>
+      <td>0.003</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>lat</td>
+      <td>0.000</td>
+      <td>0.000</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>lon</td>
+      <td>0.000</td>
+      <td>0.000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>periodo</th>
+      <th>pendiente log y ~ log n_1m</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2005–2012 (entrenamiento)</td>
+      <td>0.594</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2013–2020 (entrenamiento)</td>
+      <td>0.570</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2021–2026 (prueba, descriptivo)</td>
+      <td>0.660</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Covariables dentro del entrenamiento.** La deriva es **débil**: ninguna variable supera PSI = 0,1. La mayor está en `</span><span class="si">{</span><span class="n">deriva</span><span class="o">.</span><span class="n">variable</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">`</span>
+<span class="s2">  (PSI = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">deriva</span><span class="p">[</span><span class="s1">'PSI_2005-12_vs_2013-20'</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">), que es acumulativa por construcción, seguida de las magnitudes (mezcla de escalas,</span>
+<span class="s2">  capítulo 2).</span>
+<span class="s2">- **Objetivo.** PSI = </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">deriva</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">'variable'</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">'y'</span><span class="p">,</span><span class="w"> </span><span class="s1">'PSI_2005-12_vs_2013-20'</span><span class="p">],</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="si">}</span><span class="s2">: su distribución marginal es estable.</span>
+<span class="s2">- **Entrenamiento contra prueba.** Aparece una deriva **moderada** en </span><span class="si">{</span><span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'`'</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">'`'</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">deriva</span><span class="o">.</span><span class="n">variable</span><span class="p">[</span><span class="n">deriva</span><span class="o">.</span><span class="n">PSI_entrenamiento_vs_prueba</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.1</span><span class="p">])</span><span class="si">}</span>
+<span class="s2">  (PSI &gt; 0,1): en 2021–2026 hay más actividad acumulada a 12 meses y en la vecindad. Es coherente con el aumento de sismos de 2023–2026</span>
+<span class="s2">  del capítulo 2.</span>
+<span class="s2">- **Deriva de concepto.** La relación entre el conteo reciente y el del mes siguiente es estable dentro del entrenamiento (pendiente</span>
+<span class="s2">  </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">concepto</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> en 2005–2012 y </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">concepto</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> en 2013–2020) y algo más fuerte en la prueba (</span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">concepto</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">): en el periodo</span>
+<span class="s2">  reciente la actividad es más persistente.</span>
+<span class="s2">- **Implicaciones.**</span>
+<span class="s2">  - El riesgo de deriva es moderado y está en las variables de actividad acumulada.</span>
+<span class="s2">  - Los modelos de árboles no extrapolan fuera del rango de entrenamiento, así que pueden subestimar meses más activos que los vistos.</span>
+<span class="s2">    Los modelos lineales sí extrapolan.</span>
+<span class="s2">  - Se evalúa la robustez del desempeño en varios cortes temporales (Entregable 2)."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Covariables dentro del entrenamiento.</strong> La deriva es <strong>débil</strong>: ninguna variable supera PSI = 0,1. La mayor está en <code class="docutils literal notranslate"><span class="pre">prof_media_hist</span></code>
+(PSI = 0,07), que es acumulativa por construcción, seguida de las magnitudes (mezcla de escalas,
+capítulo 2).</p></li>
+<li><p><strong>Objetivo.</strong> PSI = 0,005: su distribución marginal es estable.</p></li>
+<li><p><strong>Entrenamiento contra prueba.</strong> Aparece una deriva <strong>moderada</strong> en <code class="docutils literal notranslate"><span class="pre">vec_3m</span></code>, <code class="docutils literal notranslate"><span class="pre">n_12m</span></code>
+(PSI &gt; 0,1): en 2021–2026 hay más actividad acumulada a 12 meses y en la vecindad. Es coherente con el aumento de sismos de 2023–2026
+del capítulo 2.</p></li>
+<li><p><strong>Deriva de concepto.</strong> La relación entre el conteo reciente y el del mes siguiente es estable dentro del entrenamiento (pendiente
+0,59 en 2005–2012 y 0,57 en 2013–2020) y algo más fuerte en la prueba (0,66): en el periodo
+reciente la actividad es más persistente.</p></li>
+<li><p><strong>Implicaciones.</strong></p>
+<ul>
+<li><p>El riesgo de deriva es moderado y está en las variables de actividad acumulada.</p></li>
+<li><p>Los modelos de árboles no extrapolan fuera del rango de entrenamiento, así que pueden subestimar meses más activos que los vistos.
+Los modelos lineales sí extrapolan.</p></li>
+<li><p>Se evalúa la robustez del desempeño en varios cortes temporales (Entregable 2).</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="panel-series-por-entidad-celda-y-heterogeneidad">
+<h2>7.8 Panel: series por entidad (celda) y heterogeneidad<a class="headerlink" href="#panel-series-por-entidad-celda-y-heterogeneidad" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Series de las 6 celdas más activas</span>
+<span class="n">top</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"celda"</span><span class="p">)</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">nlargest</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">index</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">c_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">top</span><span class="p">):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">P</span><span class="p">[</span><span class="n">P</span><span class="o">.</span><span class="n">celda</span> <span class="o">==</span> <span class="n">c_</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"fecha_obj"</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">fecha_obj</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">);</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">"celda (</span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">) · media </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">();</span> <span class="n">eda</span><span class="o">.</span><span class="n">guardar_figura</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">"07_series_por_celda.png"</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">het</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">"celda"</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">g</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span><span class="s2">"media"</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"cv"</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">std</span><span class="p">()</span> <span class="o">/</span> <span class="n">g</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span>
+                                                     <span class="s2">"acf1"</span><span class="p">:</span> <span class="n">g</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">"mes_obj"</span><span class="p">)</span><span class="o">.</span><span class="n">log_y</span><span class="o">.</span><span class="n">autocorr</span><span class="p">(</span><span class="mi">1</span><span class="p">)}))</span>
+<span class="n">eda</span><span class="o">.</span><span class="n">guardar_tabla</span><span class="p">(</span><span class="n">het</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(),</span> <span class="s2">"heterogeneidad_celdas.csv"</span><span class="p">)</span>
+<span class="n">md</span><span class="p">(</span><span class="sa">f</span><span class="s2">"""**Interpretación.**</span>
+<span class="s2">- **Distintos tipos de dinámica.** Las seis celdas más activas muestran desde un **régimen persistente de alto nivel** (el nido, con decenas</span>
+<span class="s2">  de sismos todos los meses) hasta **enjambres episódicos** (meses con cero y picos aislados).</span>
+<span class="s2">- **Heterogeneidad entre celdas.**</span>
+<span class="s2">  - El coeficiente de variación mensual va de </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">het</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> (p10) a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">het</span><span class="o">.</span><span class="n">cv</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.9</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> (p90).</span>
+<span class="s2">  - La autocorrelación de orden 1 de log(1 + y) dentro de cada celda tiene mediana </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">het</span><span class="o">.</span><span class="n">acf1</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> y va de</span>
+<span class="s2">    </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">het</span><span class="o">.</span><span class="n">acf1</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.1</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> a </span><span class="si">{</span><span class="n">es</span><span class="p">(</span><span class="n">het</span><span class="o">.</span><span class="n">acf1</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.9</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">: la persistencia mes a mes es moderada en las celdas activas y casi nula en las</span>
+<span class="s2">    tranquilas. Por eso las ventanas de varios meses (que promedian el ruido) informan más que el mes anterior solo.</span>
+<span class="s2">- **Implicación.** Un modelo global necesita variables que distingan el régimen de cada celda (nivel histórico, profundidad,</span>
+<span class="s2">  ubicación), como ya se concluyó en el capítulo 6."""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/79c62a6962018fcae46f16872c90f1134dadfa751b2bd318b3b8375225c86816.png" src="../_images/79c62a6962018fcae46f16872c90f1134dadfa751b2bd318b3b8375225c86816.png" />
+<p><strong>Interpretación.</strong></p>
+<ul class="simple">
+<li><p><strong>Distintos tipos de dinámica.</strong> Las seis celdas más activas muestran desde un <strong>régimen persistente de alto nivel</strong> (el nido, con decenas
+de sismos todos los meses) hasta <strong>enjambres episódicos</strong> (meses con cero y picos aislados).</p></li>
+<li><p><strong>Heterogeneidad entre celdas.</strong></p>
+<ul>
+<li><p>El coeficiente de variación mensual va de 1,5 (p10) a 4,2 (p90).</p></li>
+<li><p>La autocorrelación de orden 1 de log(1 + y) dentro de cada celda tiene mediana 0,06 y va de
+-0,05 a 0,29: la persistencia mes a mes es moderada en las celdas activas y casi nula en las
+tranquilas. Por eso las ventanas de varios meses (que promedian el ruido) informan más que el mes anterior solo.</p></li>
+</ul>
+</li>
+<li><p><strong>Implicación.</strong> Un modelo global necesita variables que distingan el régimen de cada celda (nivel histórico, profundidad,
+ubicación), como ya se concluyó en el capítulo 6.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="consecuencias-para-el-modelado">
+<h2>7.9 Consecuencias para el modelado<a class="headerlink" href="#consecuencias-para-el-modelado" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Partición cronológica</strong>, nunca aleatoria, con <strong>gap de un mes</strong> entre entrenamiento y prueba.</p></li>
+<li><p><strong>Validación cruzada temporal de ventana creciente</strong> con el mismo gap (5 pliegues sobre el último
+60 % de los meses de entrenamiento; <code class="docutils literal notranslate"><span class="pre">src/datos.py::pliegues_temporales</span></code>).</p></li>
+<li><p><strong>Rezagos y ventanas solo con el pasado.</strong> Las ventanas de 1, 3, 6 y 12 meses terminan en el mes <em>t</em>;
+el objetivo es <em>t</em> + 1.</p></li>
+<li><p><strong>Sin variable de año ni tendencia determinista.</strong> Los cambios de régimen no se extrapolan; el nivel
+reciente los recoge.</p></li>
+<li><p><strong>Componentes cíclicos</strong> (<code class="docutils literal notranslate"><span class="pre">sen_mes</span></code>, <code class="docutils literal notranslate"><span class="pre">cos_mes</span></code>) se incluyen por completitud, pero se espera que pesen
+poco: no hay estacionalidad.</p></li>
+<li><p><strong>Riesgo de deriva</strong> moderado en la actividad acumulada (prueba más activa). Se vigila con el
+desempeño por periodo y con varios cortes temporales.</p></li>
+</ol>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="06_eda_multivariado.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">6. Análisis multivariado (2.4)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="08_eda_espacial.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">8. Componente espacial (2.7) y espacio-temporal (2.8)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#validacion-de-la-variable-temporal">7.1 Validación de la variable temporal</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serie-completa-y-agregaciones-hora-dia-semana-mes">7.2 Serie completa y agregaciones (hora, día, semana, mes)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#descomposicion-stl-tendencia-estacionalidad-residuo">7.3 Descomposición STL (tendencia, estacionalidad, residuo)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estacionariedad-medias-y-varianzas-moviles-adf-y-kpss">7.4 Estacionariedad: medias y varianzas móviles, ADF y KPSS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencia-temporal-acf-pacf-y-correlacion-cruzada-con-rezagos">7.5 Dependencia temporal: ACF, PACF y correlación cruzada con rezagos</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cambios-de-regimen-puntos-de-cambio-y-efectos-de-calendario">7.6 Cambios de régimen, puntos de cambio y efectos de calendario</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deriva-temporal-covariate-shift-y-concept-drift">7.7 Deriva temporal: <em>covariate shift</em> y <em>concept drift</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#panel-series-por-entidad-celda-y-heterogeneidad">7.8 Panel: series por entidad (celda) y heterogeneidad</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consecuencias-para-el-modelado">7.9 Consecuencias para el modelado</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Juan David Polo y Gabriella Pallares
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
